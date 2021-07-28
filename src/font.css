@@ -1,0 +1,10 @@
+@font-face {
+    font-family: 'Disket';
+    src: local('Disket'),
+         url('./fonts/Disket-Mono-Regular.ttf') format('truetype')
+}
+@font-face {
+    font-family: 'Disket-Bold';
+    src: local('Disket-Bold'),
+         url('./fonts/Disket-Mono-Bold.ttf') format('truetype')
+}

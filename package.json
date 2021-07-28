@@ -2,17 +2,23 @@
   "name": "smithed",
   "version": "0.1.0",
   "private": true,
+  "main": "public/electron.js",
   "dependencies": {
+    "@electron/remote": "^1.2.0",
     "@testing-library/jest-dom": "^5.11.4",
     "@testing-library/react": "^11.1.0",
     "@testing-library/user-event": "^12.1.10",
+    "@types/electron-is-dev": "^1.1.1",
     "@types/jest": "^26.0.15",
     "@types/node": "^12.0.0",
     "@types/react": "^17.0.0",
     "@types/react-dom": "^17.0.0",
+    "@types/styled-components": "^5.1.11",
+    "electron-build": "0.0.3",
     "react": "^17.0.2",
     "react-dom": "^17.0.2",
     "react-scripts": "4.0.3",
+    "styled-components": "^5.3.0",
     "typescript": "^4.1.2",
     "web-vitals": "^1.0.1"
   },
@@ -20,7 +26,10 @@
     "start": "react-scripts start",
     "build": "react-scripts build",
     "test": "react-scripts test",
-    "eject": "react-scripts eject"
+    "eject": "react-scripts eject",
+    "electron:serve": "concurrently -k \"cross-env BROWSER=none yarn start\" \"yarn electron:start\"",
+    "electron:build": "yarn build && electron-builder -c.extraMetadata.main=build/electron.js",
+    "electron:start": "wait-on tcp:3000 && electron ."
   },
   "eslintConfig": {
     "extends": [
@@ -39,5 +48,24 @@
       "last 1 firefox version",
       "last 1 safari version"
     ]
+  },
+  "devDependencies": {
+    "concurrently": "^6.2.0",
+    "electron": "^13.1.7",
+    "electron-is-dev": "^2.0.0",
+    "wait-on": "^6.0.0"
+  },
+  "build": {
+    "extends": null,
+    "appId": "live.thenuclearnexus.smithed",
+    "files": [
+      "dist/**/*",
+      "build/**/*",
+      "node_modules/**/*",
+      "package.json"
+    ],
+    "directories": {
+      "buildResources": "assets"
+    }
   }
 }
