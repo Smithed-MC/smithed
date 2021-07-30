@@ -40,6 +40,15 @@ const mccDark = new Palette({
     subText: defaultDark.subText,
     titlebar: defaultDark.titlebar
 })
+const creeperMagnet = new Palette({
+    darkAccent: '#006F1C',
+    lightAccent: '#008721',
+    darkBackground: defaultDark.darkBackground,
+    lightBackground: defaultDark.lightBackground,
+    text: defaultDark.text,
+    subText: defaultDark.subText,
+    titlebar: defaultDark.titlebar
+})
 const defaultLight = new Palette({
     darkAccent: '#1B48C4',
     lightAccent: '#216BEA',
@@ -51,10 +60,11 @@ const defaultLight = new Palette({
 })
 let curPalette: Palette = mccDark
 
-let registeredPalettes : {[key:string]: Palette} = {
+export let registeredPalettes : {[key:string]: Palette} = {
     defaultDark: defaultDark,
     defaultLight: defaultLight,
-    mccDark: mccDark
+    mccDark: mccDark,
+    creeperMagnet: creeperMagnet
 }
 
 
