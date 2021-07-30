@@ -6,6 +6,8 @@ const isDev = require('electron-is-dev')
 
 require('@electron/remote/main').initialize()
 
+
+
 function createWindow() {
   // Create the browser window.
   const win = new BrowserWindow({
@@ -43,3 +45,4 @@ app.on('activate', function () {
   // dock icon is clicked and there are no other windows open.
   if (BrowserWindow.getAllWindows().length === 0) createWindow()
 })
+

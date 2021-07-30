@@ -2,6 +2,8 @@ import React from 'react';
 import ReactDOM from 'react-dom';
 import '../font.css';
 import styled, {css} from 'styled-components';
+import curPalette from '../Palette';
+import appSettings, { saveSettings } from '../Settings';
 
 const fs = window.require('fs')
 const pathModule = window.require('path')
@@ -10,7 +12,7 @@ const TopbarContainer = styled.div`
   -webkit-app-region: drag;
   height:25;
   width:'100wh';
-  background-color: #1B48C4;
+  background-color: ${curPalette.darkAccent};
 ` 
 const ActionButtonSpan = styled.span`
   -webkit-app-region: no-drag;
@@ -23,7 +25,7 @@ const ActionButton = styled.button`
   border: none;
   background: none;
   font-family: Disket-Bold;
-  color: #FFFFFF;
+  color: ${curPalette.titlebar};
   font-size: 14px;
   text-align: left;
   vertical-align: center;
@@ -31,29 +33,29 @@ const ActionButton = styled.button`
 
 
 function closeWindow() {
-    remoteModule.app.exit()
-    console.log('ran')
-  }
-  
-  function minimizeWindow() {
-    remoteModule.getCurrentWindow().minimize()
-  }
-  function maximizeWindow() {
-    const win = remoteModule.getCurrentWindow()
-    if(win.isMaximized())
-      win.unmaximize()
-    else
-      win.maximize()
-  }
+  saveSettings()
+  remoteModule.app.quit()
+}
+
+function minimizeWindow() {
+  remoteModule.getCurrentWindow().minimize()
+}
+function maximizeWindow() {
+  const win = remoteModule.getCurrentWindow()
+  if(win.isMaximized())
+    win.unmaximize()
+  else
+    win.maximize()
+}
   
 
 function Titlebar() {
     return (
         <TopbarContainer>
             <div style={{display:'flex',flexDirection:'row',justifyContent:'space-around'}}>
-                <text style={{padding:'3px', fontSize:'12px', fontFamily:'Disket-Bold', color:'#FFFFFF', textAlign:'left', verticalAlign:'center'}}>
+                <label style={{padding:'3px', fontSize:'14px', fontFamily:'Disket-Bold', color:curPalette.titlebar, textAlign:'left', verticalAlign:'center'}}>
                     Smithed
-                </text>
+                </label>
                 <li style={{visibility: 'hidden', flexGrow: 1}}></li>
                 <ActionButtonSpan>
                     <ActionButton 
@@ -67,7 +69,7 @@ function Titlebar() {
                     >X</ActionButton>
                 </ActionButtonSpan>
             </div>
-            <div style={{height:5, backgroundColor:'#206AEA'}}></div>
+            <div style={{height:5, backgroundColor:curPalette.lightAccent}}></div>
         </TopbarContainer>
     )
 }
