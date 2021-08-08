@@ -1,6 +1,7 @@
 import ReactDOM from 'react-dom';
 import React from 'react';
 import appSettings, { reloadSettings } from './Settings';
+import { Index } from '.';
 
 class Palette {
     darkAccent : string

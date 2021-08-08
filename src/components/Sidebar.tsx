@@ -8,8 +8,10 @@ import CreateSvg from '../icons/create.svg'
 import DiscordSvg from '../icons/discord.svg'
 import SettingsSvg from '../icons/settings.svg' 
 import SidebarOption from './SidebarOption';
+import SignOutSvg from '../icons/sign_out.svg'
 import * as app from '../App';
 import curPalette from '../Palette';
+import { firebaseApp, firebaseUser, Index, setFirebaseUser } from '..';
 
 const SidebarContainer = styled.div`
     display: flex;
@@ -41,6 +43,7 @@ function Sidebar(props: SidebarProps) {
         <SidebarOption img={DiscordSvg} hint='Join the Discord' style={{height:48, width:48, marginLeft:-7.75, marginTop:-3}} onClick={()=>{
           window.require("electron").shell.openExternal('https://discord.gg/tDxtDHv2fS')
         }}/>
+        <SidebarOption img={SignOutSvg} hint='Sign Out' onClick={() => {firebaseApp.auth().signOut(); setFirebaseUser(null); Index.instance.setState({page:'login'})}}/>
     </SidebarContainer>
   );
 }

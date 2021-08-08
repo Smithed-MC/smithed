@@ -19,6 +19,12 @@ const WhiteImage = styled.img`
     filter: ${filter};
     -webkit-user-select: none;
     -webkit-user-drag: none;
+    :hover {
+        filter: ${filter} brightness(80%);
+    }
+    :active {
+        filter: ${filter} brightness(70%);
+    }
 `
 
 interface SidebarOptionProps {
@@ -36,20 +42,23 @@ function UpdateBrightness(e : EventTarget, b : number) {
 
 function SidebarOption(props: SidebarOptionProps) {
   return (
-    <div style={{height:32, width:32 }}>
-        <WhiteImage src={props.img} title={props.hint} style={props.style} onMouseOver={(e)=>{
-            UpdateBrightness(e.target, 0.85)
-        }} onMouseLeave ={(e)=>{
-            UpdateBrightness(e.target, 1)
-        }} onMouseDown = {(e) => {
-            UpdateBrightness(e.target, 0.5)
+    <div style={{height:32, width:32}}>
+        <WhiteImage src={props.img} title={props.hint} style={props.style} onClick={()=>{
             if(props.onClick != null)
                 props.onClick()
-        }} onMouseUp = {(e) => {
-            UpdateBrightness(e.target, 0.85)
         }}/>
     </div>
   );
 }
-
+// onMouseOver={(e)=>{
+//     UpdateBrightness(e.target, 0.85)
+// }} onMouseLeave ={(e)=>{
+//     UpdateBrightness(e.target, 1)
+// }} onMouseDown = {(e) => {
+//     UpdateBrightness(e.target, 0.5)
+//     if(props.onClick != null)
+//         props.onClick()
+// }} onMouseUp = {(e) => {
+//     UpdateBrightness(e.target, 0.85)
+// }}
 export default SidebarOption;

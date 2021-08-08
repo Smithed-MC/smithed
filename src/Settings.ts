@@ -1,6 +1,8 @@
-const fs = window.require('fs')
-const remote = window.require('@electron/remote')
-const pathModule = window.require('path')
+import { dirExists } from "./FSWrapper"
+
+export const fs = window.require('fs')
+export const remote = window.require('@electron/remote')
+export const pathModule = window.require('path')
 interface Settings {
     palette: string,
     leftOffPage: string,
@@ -10,7 +12,7 @@ interface Settings {
 
 let appSettings = {palette: 'defaultDark', leftOffPage: 'news'}
 
-let settingsFolder = pathModule.join(remote.app.getPath('appData'), 'smithed')
+export const settingsFolder = pathModule.join(remote.app.getPath('appData'), 'smithed')
 let appSettingsPath = pathModule.join(settingsFolder, 'app.settings')
 console.log('Settings at: ' +  + appSettingsPath)
 
@@ -20,13 +22,14 @@ if(!fs.statSync(settingsFolder).isDirectory()) {
         saveSettings()
 }
 
+if(!dirExists(pathModule.join(settingsFolder, 'Instances')))
+    fs.mkdirSync(pathModule.join(settingsFolder, 'Instances'))
 
 try {
     let data = fs.readFileSync(appSettingsPath)
     appSettings = JSON.parse(data)
 } catch {}
 
-export default appSettings
 
 export function saveSettings() {
     fs.writeFileSync(appSettingsPath, JSON.stringify(appSettings))
@@ -40,3 +43,5 @@ export function reloadSettings() {
     saveSettings()
     remote.getCurrentWindow().reload()
 }
+
+export default appSettings

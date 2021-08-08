@@ -2,7 +2,9 @@ import React from 'react';
 import styled from 'styled-components';
 import '../font.css'
 import curPalette, { changePalette, registeredPalettes } from '../Palette';
-
+import Dropdown, {Option} from '../components/Dropdown';
+import appSettings from '../Settings';
+import { Header1, Header3, RowDiv } from '..';
 class Settings extends React.Component {
     constructor(props: any) {
         super(props)
@@ -11,19 +13,25 @@ class Settings extends React.Component {
         let final = []
 
         for(let p in registeredPalettes) {
-            final.push(<button onClick={()=>changePalette(p)}>{p}</button>)
+            if(p == appSettings.palette)
+                final.unshift(<Option key={p} value={p}/>)
+            else
+                final.push(<Option key={p} value={p}/>)
         }
 
         return(
-            <div>
-                {final}
-            </div>
+            <RowDiv style={{justifyContent:'bottom'}}>
+                <Header3 style={{marginTop:6}}>Palette:</Header3>
+                <Dropdown onChange={(p)=>{changePalette(p)}}>
+                    {final}
+                </Dropdown>
+            </RowDiv>
         )
     }
     render() {
         return (
             <div style={{flexGrow:1,display:'flex',flexDirection:'column',alignItems:'center'}}>
-                <label style={{color:curPalette.text}}>SETTINGS</label>
+                <Header1>SETTINGS</Header1>
                 {this.renderPalettes()}
             </div>
         );

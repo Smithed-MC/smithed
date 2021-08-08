@@ -34,3 +34,7 @@ code {
 ::-webkit-scrollbar-thumb:hover {
   background: #555;
 }
+
+*:focus {
+  outline: none;
+}

@@ -23,17 +23,15 @@ function UpdateBrightness(e : EventTarget, b : number) {
 function NewsArrow(props: NewsArrowProps) {
   return (
     
-    <Image src={LeftArrow} style={{width:'20%',transform:props.transform}} onMouseOver={(e)=>{
+    <Image src={LeftArrow} style={{width:'100px',transform:props.transform}} onMouseOver={(e)=>{
         UpdateBrightness(e.target, 0.85)
     }} onMouseLeave ={(e)=>{
         UpdateBrightness(e.target, 1)
     }} onMouseDown = {(e) => {
         UpdateBrightness(e.target, 0.5)
-        if(props.onClick != null)
-            props.onClick()
     }} onMouseUp = {(e) => {
         UpdateBrightness(e.target, 0.85)
-    }}/>
+    }} onClick={props.onClick}/>
     
   );
 }
