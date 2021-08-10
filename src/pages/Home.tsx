@@ -2,7 +2,7 @@ import React, { version } from 'react';
 import logo from './logo.svg';
 import styled from 'styled-components';
 import '../font.css'
-import { ColumnDiv, firebaseApp, Header1, Header2, Header3, TabButton, StyledInput, firebaseUser } from '..';
+import { ColumnDiv, firebaseApp, Header1, Header2, Header3, TabButton, StyledInput, firebaseUser, userData } from '..';
 import ProfileDisplay from '../components/ProfileDisplay';
 import curPalette from '../Palette';
 import Dropdown, {Option} from '../components/Dropdown';
@@ -11,15 +11,13 @@ import { fs, pathModule, settingsFolder } from '../Settings';
 import { fileExists } from '../FSWrapper';
 import { setupProfile } from '../ProfileHelper';
 import RadioButton from '../components/RadioButton';
+import { Dependency, Pack, packTest } from '../Pack'
 const { ipcRenderer } = window.require('electron');
 
 
 interface HomeState {
     tab: number,
-    versions: string[],
-    profiles: Profile[],
     activeProfile: string,
-    modsDict: {[key: string]: any}
 }
 
 const CreateButton = styled.button`
@@ -42,7 +40,7 @@ export interface Profile {
     name: string,
     version: string,
     img?: string,
-    packs?: string[],
+    packs?: Dependency[],
     directory?: string,
     author?: string
 }
@@ -55,18 +53,9 @@ class Home extends React.Component {
     static instance: Home
     constructor(props: any) {
         super(props)
-
-        let profiles: Profile[] = []
-        if(fileExists(pathModule.join(settingsFolder, 'profiles.json')))
-            profiles = JSON.parse(fs.readFileSync(pathModule.join(settingsFolder, 'profiles.json')))
-        else
-            fs.writeFileSync(pathModule.join(settingsFolder, 'profiles.json'), '[]')
-            
-        this.state = {tab: 0, versions:[], profiles:profiles, activeProfile:'', modsDict:{}}
-        console.log(this.state.profiles)
+    
+        this.state = {tab: 0, activeProfile:''}
         
-        this.getVersionOptions()
-
         Home.instance = this
 
         ipcRenderer.on('update-profile', (event: any, profile: string) => {
@@ -94,7 +83,7 @@ class Home extends React.Component {
     swapTab(tab: number) {
         if(tab != this.state.tab) {
             this.setState({tab: tab, emailValid:null, passwordValid: null, password2Valid: null})
-            this.profileCreationInfo = {name: '', version: this.state.versions[this.state.versions.length - 1]}
+            this.profileCreationInfo = {name: '', version: userData.versions[userData.versions.length - 1]}
         }
     }
 
@@ -125,8 +114,8 @@ class Home extends React.Component {
     renderMyProfiles() {
         let profileDisplays: JSX.Element[] = []
 
-        for(let i = 0; i < this.state.profiles.length; i++) {
-            let p = this.state.profiles[i]
+        for(let i = 0; i < userData.profiles.length; i++) {
+            let p = userData.profiles[i]
             profileDisplays.push(
                 <ProfileDisplay key={i} profile={p} active={p.name == this.state.activeProfile}/>
             )
@@ -162,16 +151,6 @@ class Home extends React.Component {
         )
     }
 
-    getVersionOptions() {
-        firebaseApp.database().ref('meta/mods').get().then((snapshot) => {
-            this.setState({modsDict: snapshot.val()})
-            console.log(this.state.modsDict)
-        })
-        firebaseApp.database().ref('versions').get().then((snapshot) => {
-            this.setState({versions: snapshot.val()})
-        })
-    }
-
     renderVersions(versions: string[]) {
         let options: JSX.Element[] = []
         for(var i = versions.length - 1; i >= 0; i--)
@@ -184,10 +163,10 @@ class Home extends React.Component {
         const verison = this.profileCreationInfo.version.replaceAll('.','_')
 
         let options: JSX.Element[] = []
-        if(this.state.modsDict != null) {
-            this.selectedMods = {fabric_api: this.state.modsDict["fabric-api"][verison]}
+        if(userData.modsDict != null) {
+            this.selectedMods = {fabric_api: userData.modsDict["fabric-api"][verison]}
             mods.map((val) => {
-                const download = this.state.modsDict[val][verison]
+                const download = userData.modsDict[val][verison]
                 if(download != null) {
                     options.push(<RadioButton key={val} value={`Add ${val[0].toUpperCase() + val.substring(1)}`} onChange={(value)=>{
                         if(value) {
@@ -195,7 +174,6 @@ class Home extends React.Component {
                         } else {
                             this.selectedMods[val] = null
                         }
-                        console.log(this.selectedMods)
                     }}/>)
                 }
             })
@@ -216,12 +194,12 @@ class Home extends React.Component {
                     this.profileCreationInfo.name = v
                 }}/>
                 <Dropdown placeholder="Pick a version" onChange={(v)=>{this.profileCreationInfo.version = v}} style={{width:'15.8%'}}>
-                    {this.renderVersions(this.state.versions)}
+                    {this.renderVersions(userData.versions)}
                 </Dropdown>
                 <CreateButton onClick={async () => {
                     if(firebaseUser == null) return;
 
-                    let p = this.state.profiles
+                    let p = userData.profiles
 
                     let newProfile = {
                         name: this.profileCreationInfo.name,

@@ -1,0 +1,50 @@
+{
+    "meta":{
+        "versionTemplate":"x.x.x"
+    },
+    "display": {
+        "name": "The Creeper's Code",
+        "icon": "Link to icon",
+        "description": "Vanilla+ Content"
+    },
+    "id":"tcc",
+    "versions": {
+        "0.4": {
+            "breaking": false,
+            "supports": [
+                "1.16.5"
+            ],
+            "downloads":{
+                "datapack": "https://github.com/CreeperMagnet/tcc/releases/download/V0.4/TCC.Datapack.zip",
+                "resourcepack": "https://github.com/CreeperMagnet/tcc/releases/download/V0.4/TCC.Resourcepack.zip"
+            },
+            "dependencies": [
+                {"id":"creepermagnet_:tcc@resourcepack", "version":"0.4"}
+            ]
+        },
+        "0.5": {
+            "supports": [
+                "1.17.x"
+            ],
+            "downloads":{
+                "datapack": "https://github.com/CreeperMagnet/tcc/releases/download/V0.5/TCC.Datapack.zip",
+                "resourcepack": "https://github.com/CreeperMagnet/tcc/releases/download/V0.5/TCC.Resourcepack.zip"
+            },
+            "dependencies": [
+                {"id":"creepermagnet_:tcc@resourcepack", "version":"0.5"}
+            ]
+        },
+        "0.5.1": {
+            "breaking": false,
+            "supports": [
+                "1.17.x"
+            ],
+            "downloads":{
+                "datapack": "https://github.com/CreeperMagnet/tcc/releases/download/V0.5.1/TCC.Datapack.zip"
+            },
+            "dependencies": [
+                {"id":"creepermagnet_:tcc@resourcepack", "version":"0.5"}
+            ]
+        }
+    }
+}

@@ -1,0 +1,41 @@
+{
+    "meta":{
+        "versionTemplate":"x.x.x" // This defines how your version numbers are parsed, defaults to x.x.x 
+    },
+    "display": { // Display object or 'hidden', 'hidden' packs will not display in discovery
+        "name": "The Creeper's Code", // Displayed in discovery,
+        "icon": "Link to icon",
+        "description": "Vanilla+ Content" // Truncated with '...' if too long for discovery page
+    },
+    "id":"tcc", // This will be appended your displayName in order to create it's unique ID (creepermagnet_:tcc)
+    "versions": {
+        "0.4": {
+            "breaking": false, // Breaking specifies whether or not the previous version can be upgraded, defaults to true
+            "supports": [
+                "1.16.5"
+            ],
+            "downloads":{
+                "datapack": "https://github.com/CreeperMagnet/tcc/releases/download/V0.4/TCC.Datapack.zip",
+                "resourcepack": "https://github.com/CreeperMagnet/tcc/releases/download/V0.4/TCC.Resourcepack.zip"
+            },
+            "dependencies": [
+                {"id":"creepermagnet_:tcc@resourcepack", "version":"0.4"}   // Dependencies are defined in the following format
+                                                                            // <displayName.toLower()>:<pack id> or if a specific portion is needed
+                                                                            // <displayName.toLower()>:<pack id>@<portion>
+            ]
+        },
+        "0.5": {
+            "breaking": true,
+            "supports": [
+                "1.17.x"
+            ],
+            "downloads":{
+                "datapack": "https://github.com/CreeperMagnet/tcc/releases/download/V0.5/TCC.Datapack.zip",
+                "resourcepack": "https://github.com/CreeperMagnet/tcc/releases/download/V0.5/TCC.Resourcepack.zip"
+            },
+            "dependencies": [
+                {"id":"creepermagnet_:tcc@resourcepack", "version":"0.5"}
+            ]
+        }
+    }
+}

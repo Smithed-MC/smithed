@@ -28,7 +28,7 @@ const StyledOption = styled.option`
 
 
 interface DropdownProps {
-    onChange: (value: string)=>void,
+    onChange?: (value: string)=>void,
     placeholder?: string,
     children?: any,
     style?: React.CSSProperties
@@ -43,12 +43,16 @@ class Dropdown extends React.Component {
 
     onChange(e: React.ChangeEvent<HTMLSelectElement>) {
         let s = e.target as HTMLSelectElement
-        this.props.onChange(s.value)
+        if(this.props.onChange != null)
+            this.props.onChange(s.value)
     }
     render() {
         return (
             <DropdownWrapper style={this.props.style != null ? this.props.style : {}}>
-                <StyledSelect id="options" name="options" placeholder={this.props.placeholder} onChange={e=>this.onChange(e)} value=''>
+                <StyledSelect id="options" name="options" defaultValue="null" onChange={e=>{
+                    this.onChange(e)
+                }}>
+                    {this.props.placeholder != null && <Option value='null' disabled hidden>{this.props.placeholder}</Option>}
                     {this.props.children}
                 </StyledSelect>
             </DropdownWrapper>
@@ -60,8 +64,8 @@ export default Dropdown;
 
 export function Option(props: any) {
     return (
-      <StyledOption selected={props.selected}>
-        {props.value}
+      <StyledOption selected={props.selected} value={props.value} hidden={props.hidden} disabled={props.disabled}>
+        {props.children != null ? props.children : props.value}
       </StyledOption>
     );
   }

@@ -10,7 +10,6 @@ import curPalette from '../Palette';
 
 
 const filter = colorize.colorize(curPalette.lightAccent).filter.replace('filter: ','').replace(';','')
-console.log(filter)
 
 const WhiteImage = styled.img`
     height: 32px;

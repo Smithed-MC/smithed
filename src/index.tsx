@@ -15,6 +15,11 @@ import 'firebase/auth';
 import 'firebase/database';
 import { fs, pathModule, remote, settingsFolder } from './Settings';
 import { fileExists } from './FSWrapper';
+import { Profile } from './pages/Home';
+import { collectUserData } from './UserData';
+import { PackEntry } from './pages/Browse';
+import { Enumerable } from 'linq-es5/lib/enumerable';
+import { asEnumerable } from 'linq-es5';
 const { ipcRenderer } = window.require('electron');
 
 export const firebaseApp = firebase.initializeApp({
@@ -37,15 +42,38 @@ export function setIgnoreStateChange(val: boolean) {ignoreStateChange = val}
 firebaseApp.auth().onAuthStateChanged((user)=>{
   if(user != null && !ignoreStateChange) {
     setFirebaseUser(user)
+    collectUserData()
     Index.instance.setState({page: 'app'})
   }
 })
 
 
 export let firebaseUser: firebase.User | null
-export function setFirebaseUser(user: firebase.User | null) {
+export async function setFirebaseUser(user: firebase.User | null) {
   firebaseUser = user
+  if(firebaseUser != null) {
+    const data = await (await (firebaseApp.database().ref(`users/${firebaseUser.uid}`).get())).val()
+    userData.displayName = data.displayName
+    userData.role = data.role
+    userData.uid = firebaseUser.uid
+  }
 }
+
+interface UserData {
+  uid: string,
+  displayName: string,
+  role: string
+  profiles: Profile[],
+  packs: Enumerable<PackEntry>,
+  modsDict: {[key: string]: {[key: string]: string}}
+  versions: string[]
+}
+
+export let userData: UserData = {uid:'',displayName:'',role:'',profiles:[], modsDict: {}, versions: [], packs: asEnumerable([])}
+export function setUserData(data: UserData) {
+  userData = data
+}
+
 
 export const TabButton = styled.button`
   font-family: Disket-Bold;
@@ -141,6 +169,7 @@ export class Index extends React.Component {
       <React.StrictMode>
         <Titlebar/>
         {this.state.page == 'login' && <Login onSuccess={()=>{
+          collectUserData()
           this.setState({page: 'app'})
         }}/>}
         {this.state.page == 'app' && <App/>}

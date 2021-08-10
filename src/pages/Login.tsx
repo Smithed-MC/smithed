@@ -13,20 +13,20 @@ const strongRegex = new RegExp(/^(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])(?=.*[!@#\$%\^
 
 
 const LoginContainer = styled.div`
-  position: absolute;
-  top: 25px;
-  bottom: 0;
-  width: 100%;
-  display: flex;
-  overflow: clip;
-  background-color: ${curPalette.lightBackground};
-  align-items: center;
-  flex-direction: column;
+    position: absolute;
+    top: 25px;
+    bottom: 0;
+    width: 100%;
+    display: flex;
+    overflow: clip;
+    background-color: ${curPalette.lightBackground};
+    align-items: center;
+    flex-direction: column;
 `
 
 const ErrorLabel = styled.label`
-  color: red;
-  font-family: Consolas;
+    color: red;
+    font-family: Consolas;
 `
 
 const LoginInput = styled.input`
@@ -307,7 +307,7 @@ class Login extends React.Component {
                         if(firebaseUser == null) return;
 
                         firebaseApp.database().ref(`users/${firebaseUser.uid}/displayName`).set(this.displayName)
-
+                        firebaseApp.database().ref(`users/${firebaseUser.uid}/role`).set('member')
                         this.props.onSuccess()
     
                     }}>Finish</LoginButton>

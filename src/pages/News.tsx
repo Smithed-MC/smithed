@@ -46,27 +46,6 @@ const ArticleBody = styled.text`
     padding: 8px 16px;
 `
 
-const txt = `
-Added:\n
-<p style="color: #69D858;">
-- Proper **1.18 category**\n
-</p>
-Removed:\n
-<p style="color: #BA2A2A;">
-- Removed old **1.18 Snapshots** category\n
-</p>
-<br/><br/><br/> This update was
-really really really really really really really really really really really really really really really really really really
-really really really really really really really really really really really really really really really really really really
-really really really really really really really really really really really really really really really really really really
-really really really really really really really really really really really really really really really really really really
-really really really really really really really really really really really really really really really really really really
-really really really really really really really really really really really really really really really really really really
-really really really really really really really really really really really really really really really really really really
-really really really really really really really really really really really really really really really really really really
-really really really really really really really really really really really really really really really really really really
-really really really really really really really really really really really really really really really really really really long
-`
 
 const NewsImg = styled.img`
     width: 100%;

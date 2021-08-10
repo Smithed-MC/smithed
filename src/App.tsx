@@ -8,6 +8,7 @@ import Home from './pages/Home';
 import curPalette from './Palette';
 import Settings from './pages/Settings';
 import appSettings, { saveSettings } from './Settings';
+import Browse from './pages/Browse';
 
 const AppContainer = styled.div`
   position: absolute;
@@ -28,13 +29,11 @@ class App extends React.Component {
   constructor(props: any) {
     super(props)
     this.state = {page:appSettings.leftOffPage}
-
   }
 
   changePage(p: string) {
     this.setState({page: p})
     appSettings.leftOffPage = p
-    console.log(appSettings)
   } 
 
   render() {
@@ -43,8 +42,8 @@ class App extends React.Component {
         <Sidebar onClick={(p: string) => {this.changePage(p)}}/>
         { this.state.page == 'news' ? <News/> : null}
         { this.state.page == 'home' ? <Home/> : null}
+        { this.state.page == 'browse' ? <Browse/> : null}
         { this.state.page == 'settings' ? <Settings/> : null}
-
       </AppContainer>
     );
   }

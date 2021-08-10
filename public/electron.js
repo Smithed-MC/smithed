@@ -95,8 +95,6 @@ class HandleLauncher {
       this.launcher = exec(`"C:\\Program Files (x86)\\Minecraft Launcher\\MinecraftLauncher.exe" --workdir ${profile.directory}`)
 
       this.loop = setInterval(this.isRunning, 200)
-
-      this.cacheSaves()
     })
 
     ipcMain.on('stop-launcher', ()=>{
@@ -104,47 +102,10 @@ class HandleLauncher {
     })
   }
 
-  copyDatapacks(dest) {
-    if(!dirExists(dest))
-      fs.mkdirSync(dest)
-
-    const datapacks = path.join(this.runningProfile.directory, 'datapacks')
-    fs.readdirSync(datapacks).forEach(d => {
-      fs.copyFile(path.join(datapacks, d), path.join(dest, d), ()=>{})
-    })
-  }
-
-  cacheSaves() {
-    const savesFolder = path.join(this.runningProfile.directory, 'saves')
-    if(dirExists(savesFolder)) {
-      fs.readdirSync(savesFolder).forEach(d => {this.cachedSaves.push(path.join(savesFolder, d))})
-
-      this.cachedSaves.forEach(d => {
-        this.copyDatapacks(path.join(d, 'datapacks'))
-      })
-    } else {
-      fs.mkdirSync(path.join(this.runningProfile.directory, 'saves'))
-    }
-  }
-
-
   isRunning = () => {
     if(isRunning(this.launcher.pid)) {
       this.window.webContents.send('update-profile', this.runningProfile.name)
 
-      const savesFolder = path.join(this.runningProfile.directory, 'saves')
-      let tempSaves = fs.readdirSync(savesFolder)
-
-      tempSaves = tempSaves.filter(val => !this.cachedSaves.includes(path.join(savesFolder, val)))
-      if(tempSaves.length > 0) {
-        tempSaves.forEach(d => {
-          d = path.join(savesFolder, d)
-          console.log(d)
-          this.copyDatapacks(path.join(d, 'datapacks'))
-          
-          this.cachedSaves.push(d)
-        })
-      }
     }
     else {
       this.window.webContents.send('update-profile', '')

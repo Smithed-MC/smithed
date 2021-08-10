@@ -14,7 +14,6 @@ let appSettings = {palette: 'defaultDark', leftOffPage: 'news'}
 
 export const settingsFolder = pathModule.join(remote.app.getPath('appData'), 'smithed')
 let appSettingsPath = pathModule.join(settingsFolder, 'app.settings')
-console.log('Settings at: ' +  + appSettingsPath)
 
 if(!fs.statSync(settingsFolder).isDirectory()) {
     fs.mkdirSync(settingsFolder)
