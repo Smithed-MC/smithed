@@ -26,14 +26,14 @@ const LoginContainer = styled.div`
 
 const ErrorLabel = styled.label`
     color: red;
-    font-family: Consolas;
+    font-family: Inconsolata;
 `
 
 const LoginInput = styled.input`
     height: 24px;
     padding: 4px;
     width: 50%;
-    font-family: Consolas;
+    font-family: Inconsolata;
     border-radius: 4px;
     border: 2px solid ${curPalette.darkAccent};
     color: ${curPalette.text};
@@ -74,7 +74,7 @@ class Login extends React.Component {
     constructor(props: LoginProps) {
         super(props)
         this.props = props
-        this.state = {tab:0,page:'main'}
+        this.state = {tab:1,page:'main'}
     }
 
     validate(): boolean {
@@ -281,8 +281,8 @@ class Login extends React.Component {
         return(
             <ColumnDiv style={{width:'100%'}}>
                 <RowDiv style={{backgroundColor:curPalette.darkBackground, width:'100%', height:'30px',justifyContent:'center',gap:36}}>
-                    <TabButton style={this.getSelectedStyle(0)} onClick={()=>this.swapTab(0)}>Sign Up</TabButton>
                     <TabButton style={this.getSelectedStyle(1)} onClick={()=>this.swapTab(1)}>Sign In</TabButton>
+                    <TabButton style={this.getSelectedStyle(0)} onClick={()=>this.swapTab(0)}>Sign Up</TabButton>
                 </RowDiv>
                 {this.state.tab == 0 && this.renderSignUp()}
                 {this.state.tab == 1 && this.renderSignIn()}

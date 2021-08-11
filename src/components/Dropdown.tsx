@@ -16,14 +16,14 @@ const StyledSelect = styled.select`
     border: none;
     color: ${curPalette.text};
     border-radius: 8px;
-    font-family: Consolas;
+    font-family: Inconsolata;
 `;
 
 const StyledOption = styled.option`
     background-color: ${curPalette.darkBackground};
     color: ${curPalette.text};
     border: none;
-    font-family: Consolas;
+    font-family: Inconsolata;
 `;
 
 

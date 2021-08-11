@@ -8,6 +8,7 @@ interface FoldoutProps {
     style?: React.CSSProperties,
     children?: any,
     defaultValue?: boolean
+    disabled?: boolean
 }
 
 const FoldoutContainer = styled.div`
@@ -27,7 +28,7 @@ class Foldout extends React.Component {
     constructor(props: FoldoutProps) {
         super(props)
         this.props = props
-        this.state = {open: false}
+        this.state = {open: this.props.defaultValue ? this.props.defaultValue : false}
     }
 
     renderChildren() {
@@ -58,8 +59,8 @@ class Foldout extends React.Component {
 
         return (
             <FoldoutContainer style={this.props.style ? this.props.style : {}}>
-                <RowDiv style={{alignItems:'center', gap:8}} onClick={()=>{this.setState({open: !this.state.open})}}>
-                    <label style={{color:curPalette.text, fontFamily:'Consolas', WebkitUserSelect:'none'}}>{this.props.text}</label>
+                <RowDiv style={{alignItems:'center', gap:8}} onClick={()=>{if(this.props.disabled) return; this.setState({open: !this.state.open})}}>
+                    <label style={{color:curPalette.text, fontFamily:'Inconsolata', WebkitUserSelect:'none'}}>{this.props.text}</label>
                     <div style={triangle}/>
                 </RowDiv>
                 {this.state.open && this.renderChildren()}

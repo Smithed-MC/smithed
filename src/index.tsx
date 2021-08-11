@@ -130,6 +130,7 @@ export const StyledInput = styled.input`
     border: none;
     color: ${curPalette.text};
     border-radius: 8px;
+    font-family: Inconsolata;
     &::placeholder {
         color: ${curPalette.subText}
     }

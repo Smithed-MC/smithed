@@ -122,7 +122,7 @@ class Home extends React.Component {
         }
 
         return (
-            <div style={{flexGrow:1, width:'99%',display:'inline-flex', overflowY:'auto', overflowX:'clip', flexWrap:'wrap', gap:8, padding:8}}>
+            <div style={{flexGrow:1, width:'99%',display:'inline-flex', overflowY:'auto', overflowX:'clip', flexWrap:'wrap', gap:8, padding:8, alignContent:'flex-start'}}>
                 {profileDisplays}
                 {this.renderAddProfile()}
             </div>
@@ -168,7 +168,7 @@ class Home extends React.Component {
             mods.map((val) => {
                 const download = userData.modsDict[val][verison]
                 if(download != null) {
-                    options.push(<RadioButton key={val} value={`Add ${val[0].toUpperCase() + val.substring(1)}`} onChange={(value)=>{
+                    options.push(<RadioButton key={val} text={`Add ${val[0].toUpperCase() + val.substring(1)}`} onChange={(value)=>{
                         if(value) {
                             this.selectedMods[val] = download
                         } else {

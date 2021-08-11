@@ -48,7 +48,7 @@ const ProfileNameLabel = styled.label`
     width: 100%;
     text-align: 'left';
     color: ${curPalette.text};
-    font-family: Consolas;
+    font-family: Inconsolata;
     font-size: 20px;
     -webkit-user-select: none;
 `
@@ -74,7 +74,7 @@ class ProfileDisplay extends React.Component {
             <ProfileDisplayDiv onMouseEnter={() => this.setMouseOver(true)} onMouseLeave={() => this.setMouseOver(false)}>
                 <div style={{display: 'flex', flexDirection:'column', alignItems:'center'}}>
                     <img style={{width:192,height:192,backgroundColor:curPalette.darkAccent}} src={this.props.profile.img}/>
-                    <label style={{width:'40%',position:'relative',textAlign:'center', top:-180, left:45, backgroundColor:'rgba(0.140625,0.13671875,0.16796875,0.25)', color:curPalette.text, fontFamily:'Consolas', WebkitUserSelect: 'none'}}>{this.props.profile.version}</label>
+                    <label style={{width:'40%',position:'relative',textAlign:'center', top:-180, left:45, backgroundColor:'rgba(0.140625,0.13671875,0.16796875,0.25)', color:curPalette.text, fontFamily:'Inconsolata', WebkitUserSelect: 'none'}}>{this.props.profile.version}</label>
                 </div>
                 <div style={{width:'90%', flexGrow:1, display:'flex', flexDirection:'column', alignItems:'center'}}>
                     {!this.state.mouseOver && 

@@ -38,7 +38,7 @@ const ArticleBody = styled.text`
     min-height: 30%; 
     text-align: left;
     color: ${curPalette.text};
-    font-family: Consolas;
+    font-family: Inconsolata;
     background-color: ${curPalette.darkBackground};
     border-radius: 8px;
     -webkit-user-drag: none;

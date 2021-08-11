@@ -8,3 +8,8 @@
     src: local('Disket-Bold'),
          url('./fonts/Disket-Mono-Bold.ttf') format('truetype')
 }
+@font-face {
+    font-family: 'Inconsolata';
+    src: local('Inconsolata'),
+         url('./fonts/Inconsolata.otf') format('opentype')
+}

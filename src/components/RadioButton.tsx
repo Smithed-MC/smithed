@@ -6,7 +6,8 @@ import curPalette from '../Palette'
 
 interface RadioButtonProps {
     onChange?: (value: boolean)=>void,
-    value: string,
+    text: string,
+    defaultValue?: boolean;
     children?: any,
     style?: React.CSSProperties
 }
@@ -18,12 +19,10 @@ interface RadioButtonState {
 const RadioButtonContainer = styled.div`
     display: flex;
     flex-direction: row;
-    justify-content: space-between;
-    -webkit-user-drag: none;
+    justify-content: center;
     gap:8px;
-    alignItems: center;
-    width:100%;
-    flex-grow: 1;
+    align-items: center;
+    -webkit-user-drag: none;
 `
 
 const Box = styled.button`
@@ -49,7 +48,7 @@ class RadioButton extends React.Component {
     constructor(props: RadioButtonProps) {
         super(props)
         this.props = props
-        this.state = {toggled: false}
+        this.state = {toggled: this.props.defaultValue ? this.props.defaultValue : false}
     }
 
 
@@ -63,7 +62,7 @@ class RadioButton extends React.Component {
                 }}>
                     {this.state.toggled && <div style={{width:12, height:12, backgroundColor:curPalette.lightAccent}}></div>}
                 </Box>
-                <label style={{color:curPalette.text,fontFamily:'Consolas', textAlign:'left', width:'100%'}}>{this.props.value}</label>
+                <label style={{color:curPalette.text,fontFamily:'Inconsolata', textAlign:'left', width:'100%'}}>{this.props.text}</label>
             </RadioButtonContainer>
         );
     }

@@ -22,7 +22,7 @@ const PackName = styled.label`
     font-size: 18px;
 `
 const PackStats = styled.label`
-    font-family: Consolas;
+    font-family: Inconsolata;
     color: ${curPalette.subText};
     text-align: left;
     width: auto;
@@ -31,7 +31,7 @@ const PackStats = styled.label`
     vertical-align: middle;
 `
 const PackDescription = styled.label`
-    font-family: Consolas;
+    font-family: Inconsolata;
     color: ${curPalette.text};
     text-align: left;
     width: 100%;
@@ -73,6 +73,18 @@ class PackDisplay extends React.Component {
     saveProfiles(profiles: Profile[]) {
         fs.writeFileSync(pathModule.join(settingsFolder, 'profiles.json'), JSON.stringify(profiles, null, 2))
     }
+
+    profileContains(): boolean {
+        if(Browse.instance.state.profile.packs != null) {
+            for(let p of Browse.instance.state.profile.packs) {
+                console.log(`${p.id} | ${this.props.packEntry.id}`)
+                if(p.id == this.props.packEntry.id) 
+                    return true
+            }
+        }
+        return false
+    }
+
     render() {
         const dateAdded = new Date(this.props.packEntry.added)
         const timeDiff = Math.floor(Math.abs(dateAdded.getTime() - Date.now()) / (1000 * 3600 * 24))
@@ -81,6 +93,7 @@ class PackDisplay extends React.Component {
 
         if(display == 'hidden') return
 
+        const contained = this.profileContains()
         return (
             <div style={{width:'85%'}}>
                 <RowDiv style={{backgroundColor:curPalette.darkBackground, width: '100%',padding:16, justifyContent:'left', gap:16, borderRadius:8}}>
@@ -88,7 +101,7 @@ class PackDisplay extends React.Component {
                     <ColumnDiv style={{alignItems:'left',width:'100%', justifyContent:'space-evenly'}}>
                         <RowDiv style={{alignItems:'left', width:'100%', justifyContent:'space-evenly'}}>
                             <PackName>{display.name}</PackName>
-                            <PackAddButton disabled={Browse.instance.state.profile.name == ''} onClick={()=>{
+                            {!contained && <PackAddButton disabled={Browse.instance.state.profile.name == ''} onClick={()=>{
                                 const packVersion = PackHelper.getLatestVersionForVersion(this.props.packEntry.data, Browse.instance.state.profile.version)
 
                                 let temp: Dependency[] = []
@@ -97,16 +110,17 @@ class PackDisplay extends React.Component {
                                 temp.push({id: this.props.packEntry.id, version: packVersion})
                                 temp.concat(PackHelper.resolveDependencies(this.props.packEntry.data, packVersion))
 
-                                
-
                                 temp.forEach(d => {
-                                    if(packs.includes(d)) {
+                                    if(!packs.includes(d)) {
                                         packs.push(d)
                                     }
                                 })
+
+                                Browse.instance.state.profile.packs = packs
                                 
                                 this.saveProfiles(userData.profiles)
-                            }}>Add</PackAddButton>
+                            }}>+</PackAddButton>}
+                            {contained && <PackAddButton>-</PackAddButton>}
                         </RowDiv>
                         <RowDiv style={{justifySelf:'left', gap:32, width:'100%'}}>
                             <PackStats>{'100M Downloads'}</PackStats>

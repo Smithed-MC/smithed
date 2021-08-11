@@ -9,6 +9,7 @@ import curPalette from './Palette';
 import Settings from './pages/Settings';
 import appSettings, { saveSettings } from './Settings';
 import Browse from './pages/Browse';
+import Create from './pages/Create';
 
 const AppContainer = styled.div`
   position: absolute;
@@ -43,6 +44,7 @@ class App extends React.Component {
         { this.state.page == 'news' ? <News/> : null}
         { this.state.page == 'home' ? <Home/> : null}
         { this.state.page == 'browse' ? <Browse/> : null}
+        { this.state.page == 'create' ? <Create/> : null}
         { this.state.page == 'settings' ? <Settings/> : null}
       </AppContainer>
     );
