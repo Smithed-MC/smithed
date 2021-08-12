@@ -17,6 +17,10 @@ jobs:
     - uses: actions/setup-node@master
       with:
         node-version: 16.5.0
+    - name: install dependencies
+      run: npm install
+    - name: build command
+      run: npm run electron:build
     - name: see directory
       run: ls
   build_on_win:
@@ -28,5 +32,9 @@ jobs:
     - uses: actions/setup-node@master
       with:
         node-version: 16.5.0
+    - name: install dependencies
+      run: npm install
+    - name: build command
+      run: npm run electron:build
     - name: see directory
       run: ls
