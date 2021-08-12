@@ -27,8 +27,8 @@ jobs:
           node-version: 16.5.0
 
       - name: Install dependencies
-        run: |
-          npm ci
+        run: | 
+          npm i react-scripts --save && npm ci
       - name: Publish releases
         run: |
           yarn build && electron-builder -c.extraMetadata.main=build/electron.js --publish always --win --mac --linux
