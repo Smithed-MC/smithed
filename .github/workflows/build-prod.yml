@@ -2,6 +2,7 @@
 name: Build Prod
 # this will help you specify where to run 
 on:
+  workflow_dispatch:
   push:
     branches:
     # this will run on the electron branch
