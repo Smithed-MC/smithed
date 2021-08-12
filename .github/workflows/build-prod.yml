@@ -20,8 +20,13 @@ jobs:
         node-version: 16.5.0
     - name: install dependencies
       run: npm install
-    - name: build command
-      run: npm run electron:build
+      
+    - name: build react
+      run: yarn build
+      
+    - name: build electron
+      run: electron-builder -c.extraMetadata.main=build/electron.js
+      
     - name: see directory
       run: ls
   build_on_win:
