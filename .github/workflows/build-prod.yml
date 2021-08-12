@@ -25,7 +25,8 @@ jobs:
         uses: actions/setup-node@v1
         with:
           node-version: 16.5.0
-
+      - name: Update yarn
+        run: yarn upgrade && yarn add yarn
       - name: Install dependencies
         run: | 
           npm i react-scripts --save && npm ci
