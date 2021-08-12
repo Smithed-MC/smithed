@@ -23,6 +23,12 @@ const RadioButtonContainer = styled.div`
     gap:8px;
     align-items: center;
     -webkit-user-drag: none;
+    :hover {
+        filter: brightness(85%);
+    }
+    :active {
+        filter: brightness(75%);
+    }
 `
 
 const Box = styled.button`
@@ -34,12 +40,6 @@ const Box = styled.button`
     flex-direction: column;
     align-items: center;
     justify-content: center;
-    :hover {
-        filter: brightness(85%);
-    }
-    :active {
-        filter: brightness(75%);
-    }
 `
 
 class RadioButton extends React.Component {
@@ -54,15 +54,15 @@ class RadioButton extends React.Component {
 
     render() {
         return (
-            <RadioButtonContainer style={this.props.style != null ? this.props.style : {}}>
-                <Box onClick={()=>{
-                    this.setState({toggled:!this.state.toggled})
-                    if(this.props.onChange != null)
-                        this.props.onChange(!this.state.toggled)
-                }}>
+            <RadioButtonContainer style={this.props.style != null ? this.props.style : {}} onClick={()=>{
+                this.setState({toggled:!this.state.toggled})
+                if(this.props.onChange != null)
+                    this.props.onChange(!this.state.toggled)
+            }}>
+                <Box>
                     {this.state.toggled && <div style={{width:12, height:12, backgroundColor:curPalette.lightAccent}}></div>}
                 </Box>
-                <label style={{color:curPalette.text,fontFamily:'Inconsolata', textAlign:'left', width:'100%'}}>{this.props.text}</label>
+                <label style={{color:curPalette.text,fontFamily:'Inconsolata', textAlign:'left', width:'100%', WebkitUserSelect:'none'}}>{this.props.text}</label>
             </RadioButtonContainer>
         );
     }

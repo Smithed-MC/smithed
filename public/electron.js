@@ -1,4 +1,4 @@
-const { app, BrowserWindow, ipcRenderer, ipcMain } = require('electron')
+const { app, BrowserWindow, ipcRenderer, ipcMain, globalShortcut } = require('electron')
 require('@electron/remote/main').initialize()
 
 const path = require('path')
@@ -32,9 +32,37 @@ function createWindow() {
       ? 'http://localhost:3000'
       : `file://${path.join(__dirname, '../build/index.html')}`
   )
+  
+  globalShortcut.register('Alt+CommandOrControl+N', () => {
+    const settingsFolder = path.join(app.getPath('appData'), 'smithed')
+    const fpath = path.join(settingsFolder, 'news.md')
+    const raw = fs.readFileSync(fpath, {encoding:'utf8'})
+    const lines = raw.split('\n')
+  
+    let meta = {}
+    for(var i = 0; i < lines.length; i++) {
+      if(lines[i].trim() == '#EndMeta')
+        break;
+      
+      const colon = lines[i].indexOf(':')
+      const start = lines[i].substring(0, colon)
+      const arg = lines[i].substring(colon+1)
+      
+      meta[start.trim()] = arg.trim()
+    }
+    lines.splice(0, i+1)
+  
+    win.webContents.send('upload-news', meta['article'], {
+      image: meta['image'],
+      title: meta['title'],
+      description: meta['description'],
+      content: lines.join('\n')
+    })
+  })
 
   new HandleLauncher(win)
 }
+
 
 app.on('ready', createWindow)
 

@@ -3,7 +3,7 @@ import styled from 'styled-components';
 import curPalette from '../Palette'
 import { ColumnDiv, RowDiv } from '..';
 
-interface FoldoutProps {
+export interface FoldoutProps {
     text: string,
     style?: React.CSSProperties,
     children?: any,
@@ -21,9 +21,23 @@ const FoldoutContainer = styled.div`
     border-radius: 8px;
 `
 
+export const FoldoutHeader = styled.div`
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    -webkit-user-drag: none;
+
+    :hover {
+        filter: brightness(85%);
+    }
+    :active {
+        filter: brightness(65%);
+    }
+`
+
 
 class Foldout extends React.Component {
-    state: {open: boolean}
+    public state: {open: boolean}
     props: FoldoutProps
     constructor(props: FoldoutProps) {
         super(props)
@@ -38,6 +52,11 @@ class Foldout extends React.Component {
                 {this.props.children}
             </ColumnDiv>
         )
+    }
+
+    onClick = () => {
+        if(this.props.disabled) return; 
+        this.setState({open: !this.state.open})
     }
 
     render() {
@@ -59,10 +78,10 @@ class Foldout extends React.Component {
 
         return (
             <FoldoutContainer style={this.props.style ? this.props.style : {}}>
-                <RowDiv style={{alignItems:'center', gap:8}} onClick={()=>{if(this.props.disabled) return; this.setState({open: !this.state.open})}}>
+                <FoldoutHeader style={{alignItems:'center', gap:8}} onClick={this.onClick}>
                     <label style={{color:curPalette.text, fontFamily:'Inconsolata', WebkitUserSelect:'none'}}>{this.props.text}</label>
                     <div style={triangle}/>
-                </RowDiv>
+                </FoldoutHeader>
                 {this.state.open && this.renderChildren()}
             </FoldoutContainer>
         );

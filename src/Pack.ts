@@ -18,10 +18,17 @@ export interface Dependency {
 }
 
 export class Version {
-    breaking?: boolean = true
+    breaking: boolean = true
     supports: string[] = []
     downloads: {[key: string]: string} = {}
     dependencies: Dependency[] = []
+
+    constructor(breaking?: boolean, supports?: string[], downloads?: {[key: string]: string}, dependencies?: Dependency[]) {
+        this.breaking = breaking != null ? breaking : true
+        this.supports = supports ? supports : []
+        this.downloads = downloads ? downloads : {}
+        this.dependencies = dependencies ? dependencies : []
+    }
 }
 
 export class Pack {
@@ -31,7 +38,7 @@ export class Pack {
     public versions: {[key:string]: Version} = {}
 
 
-    constructor(meta?: Meta, display?: Display | 'hidden', id?: string, versions?: {[key: string]: any}) {
+    constructor(meta?: Meta, display?: Display | 'hidden', id?: string, versions?: {[key: string]: Version}) {
         if(meta != null)
             this.meta = meta
         if(display != null)
@@ -40,14 +47,6 @@ export class Pack {
             this.id = id
         if(versions != null)
             this.versions = versions
-    }
-
-    toFirebaseValid(): Pack {
-        let tempVersions: {[key:string]: Version} = {}
-        for(let v in this.versions) {
-            tempVersions[v.replaceAll('.', '_')] = this.versions[v]
-        }
-        return new Pack(this.meta, this.display, this.id, tempVersions)
     }
 
     hasVersion(version: string): boolean {
@@ -63,9 +62,9 @@ export class Pack {
 }
 
 export class DataVersion {
-    private major: number | 'x' = 'x'
-    private minor: number | 'x' = 'x'
-    private patch: number | 'x' = 'x'
+    major: number | 'x' = 'x'
+    minor: number | 'x' = 'x'
+    patch: number | 'x' = 'x'
 
     constructor(version: string) {
         let temp = version.split('.')
@@ -90,11 +89,27 @@ export class DataVersion {
         }
         return false
     }
+
+    parse(s: string) {
+        try {
+            let dv = new DataVersion(s)
+        } catch {
+
+        }
+    }
 }
 
 export class PackHelper {
-    static createOrUpdatePack(pack: Pack) {
-        pack = pack.toFirebaseValid()
+    static toFirebaseValid(pack: Pack): Pack {
+        let tempVersions: {[key:string]: Version} = {}
+        for(let v in pack.versions) {
+            tempVersions[v.replaceAll('.', '_')] = pack.versions[v]
+        }
+        return new Pack(pack.meta, pack.display, pack.id, tempVersions)
+    }
+
+    static createOrUpdatePack(pack: Pack, addToQueue?: boolean) {
+        pack = this.toFirebaseValid(pack)
         const userPacks = firebaseApp.database().ref(`users/${userData.uid}/packs`)
         userPacks.get().then((snapshot) => {
             const val = snapshot.val()
@@ -106,12 +121,14 @@ export class PackHelper {
                     return;
                 }
             }
-            userPacks.child((i+1).toString()).set(pack)
+            userPacks.child((i).toString()).set(pack)
+            if(addToQueue)
+                PackHelper.addPackToQueue(pack)
         })
     }
 
     static addPackToQueue(pack: Pack) {
-        pack = pack.toFirebaseValid()
+        pack = this.toFirebaseValid(pack)
         const queue = firebaseApp.database().ref(`queue`)
         const id = `${userData.displayName.toLowerCase()}:${pack.id}`
         queue.child(id).get().then((snapshot)=>{
@@ -125,7 +142,7 @@ export class PackHelper {
     }
 
     static movePackFromQueue(pack: Pack) {
-        pack = pack.toFirebaseValid()
+        pack = this.toFirebaseValid(pack)
         const id = `${userData.displayName.toLowerCase()}:${pack.id}`
         const queueRef = firebaseApp.database().ref(`queue/${id}`)
         const packRef = firebaseApp.database().ref(`packs/${id}`)

@@ -23,13 +23,13 @@ import { asEnumerable } from 'linq-es5';
 const { ipcRenderer } = window.require('electron');
 
 export const firebaseApp = firebase.initializeApp({
-  apiKey: "AIzaSyDX-vLCBhO8StKAxnpvQ2EW8lz3kzYn4Qk",
-  authDomain: "mc-smithed.firebaseapp.com",
-  projectId: "mc-smithed",
-  storageBucket: "mc-smithed.appspot.com",
-  messagingSenderId: "574184244682",
-  appId: "1:574184244682:web:498d168c09b39e4f0d7b33",
-  measurementId: "G-40SRKC35Z0"
+	apiKey: "AIzaSyDX-vLCBhO8StKAxnpvQ2EW8lz3kzYn4Qk",
+	authDomain: "mc-smithed.firebaseapp.com",
+	projectId: "mc-smithed",
+	storageBucket: "mc-smithed.appspot.com",
+	messagingSenderId: "574184244682",
+	appId: "1:574184244682:web:498d168c09b39e4f0d7b33",
+	measurementId: "G-40SRKC35Z0"
 })
 
 firebaseApp.auth().setPersistence('session')
@@ -38,40 +38,40 @@ let startPage: 'login' | 'app' = 'login'
 
 
 let ignoreStateChange = false
-export function setIgnoreStateChange(val: boolean) {ignoreStateChange = val}
-firebaseApp.auth().onAuthStateChanged((user)=>{
-  if(user != null && !ignoreStateChange) {
-    setFirebaseUser(user)
-    collectUserData()
-    Index.instance.setState({page: 'app'})
-  }
+export function setIgnoreStateChange(val: boolean) { ignoreStateChange = val }
+firebaseApp.auth().onAuthStateChanged((user) => {
+	if (user != null && !ignoreStateChange) {
+		setFirebaseUser(user)
+		collectUserData()
+		Index.instance.setState({ page: 'app' })
+	}
 })
 
 
 export let firebaseUser: firebase.User | null
 export async function setFirebaseUser(user: firebase.User | null) {
-  firebaseUser = user
-  if(firebaseUser != null) {
-    const data = await (await (firebaseApp.database().ref(`users/${firebaseUser.uid}`).get())).val()
-    userData.displayName = data.displayName
-    userData.role = data.role
-    userData.uid = firebaseUser.uid
-  }
+	firebaseUser = user
+	if (firebaseUser != null) {
+		const data = await (await (firebaseApp.database().ref(`users/${firebaseUser.uid}`).get())).val()
+		userData.displayName = data.displayName
+		userData.role = data.role
+		userData.uid = firebaseUser.uid
+	}
 }
 
 interface UserData {
-  uid: string,
-  displayName: string,
-  role: string
-  profiles: Profile[],
-  packs: Enumerable<PackEntry>,
-  modsDict: {[key: string]: {[key: string]: string}}
-  versions: string[]
+	uid: string,
+	displayName: string,
+	role: string
+	profiles: Profile[],
+	packs: Enumerable<PackEntry>,
+	modsDict: { [key: string]: { [key: string]: string } }
+	versions: string[]
 }
 
-export let userData: UserData = {uid:'',displayName:'',role:'',profiles:[], modsDict: {}, versions: [], packs: asEnumerable([])}
+export let userData: UserData = { uid: '', displayName: '', role: '', profiles: [], modsDict: {}, versions: [], packs: asEnumerable([]) }
 export function setUserData(data: UserData) {
-  userData = data
+	userData = data
 }
 
 
@@ -132,58 +132,67 @@ export const StyledInput = styled.input`
     border-radius: 8px;
     font-family: Inconsolata;
     &::placeholder {
-        color: ${curPalette.subText}
+        color: ${curPalette.subText};
+    }
+    :disabled {
+      color: ${curPalette.subText};
+      -webkit-user-select: none;
     }
 `
 
 
-export const MarkdownOptions = (wrapper? : React.ElementType<any>) : MarkdownToJSX.Options => {
-  return {
-      wrapper: wrapper, 
-      forceWrapper: wrapper != null ? true : false,
-      overrides: {
-          h1: Header1,
-          h2: Header2,
-          h3: Header3
-      }
-  }
+export const MarkdownOptions = (wrapper?: React.ElementType<any>): MarkdownToJSX.Options => {
+	return {
+		wrapper: wrapper,
+		forceWrapper: wrapper != null ? true : false,
+		overrides: {
+			h1: Header1,
+			h2: Header2,
+			h3: Header3
+		}
+	}
 }
 
 
 interface IndexState {
-  page: 'login' | 'app',
-  refresh: number
+	page: 'login' | 'app',
+	refresh: number
 }
 
 export class Index extends React.Component {
-  static instance : Index
-  state : IndexState
-  constructor(props: any) {
-    super(props)
-    this.state = {page: startPage, refresh: 0}
-    Index.instance = this
-  }
-  
-  render() {
+	static instance: Index
+	state: IndexState
+	constructor(props: any) {
+		super(props)
+		this.state = { page: startPage, refresh: 0 }
+		Index.instance = this
+	}
 
-    return (
-      <React.StrictMode>
-        <Titlebar/>
-        {this.state.page == 'login' && <Login onSuccess={()=>{
-          collectUserData()
-          this.setState({page: 'app'})
-        }}/>}
-        {this.state.page == 'app' && <App/>}
-      </React.StrictMode>
-    )
+	render() {
 
-  }
+		return (
+			<React.StrictMode>
+				<Titlebar />
+				{this.state.page == 'login' && <Login onSuccess={() => {
+					collectUserData()
+					this.setState({ page: 'app' })
+				}} />}
+				{this.state.page == 'app' && <App />}
+			</React.StrictMode>
+		)
+
+	}
 }
 
 ReactDOM.render(
-  <Index/>,
-  document.getElementById('root')
+	<Index />,
+	document.getElementById('root')
 );
+
+ipcRenderer.on('upload-news', (e: any, article: any, data: any) => {
+	firebaseApp.database().ref(`news/${article}`).set(data)
+})
+
 
 // If you want to start measuring performance in your app, pass a function
 // to log results (for example: reportWebVitals(console.log))

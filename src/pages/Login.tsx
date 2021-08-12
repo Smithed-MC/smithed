@@ -306,8 +306,7 @@ class Login extends React.Component {
                         if(this.displayName.length < 3 || this.displayName.length > 15) return;
                         if(firebaseUser == null) return;
 
-                        firebaseApp.database().ref(`users/${firebaseUser.uid}/displayName`).set(this.displayName)
-                        firebaseApp.database().ref(`users/${firebaseUser.uid}/role`).set('member')
+                        firebaseApp.database().ref(`users/${firebaseUser.uid}`).set({displayName: this.displayName, role:'member', packs:[]})
                         this.props.onSuccess()
     
                     }}>Finish</LoginButton>

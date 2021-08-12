@@ -7,8 +7,12 @@ import Home, { Profile } from '../pages/Home';
 import curPalette from '../Palette'
 import {Header3} from '..'
 import { fs, pathModule, settingsFolder } from '../Settings';
+import Hidden from '../icons/hidden.svg'
+import colorize from 'css-colorize'
+
 interface CreatePackDisplayProps {
-    pack: Pack
+    pack: Pack,
+    onClick?: ()=>void
 }
 
 interface CreatePackDisplayState {
@@ -60,6 +64,8 @@ const PackAddButton = styled.button`
     }
 `
 
+const filter = colorize.colorize(curPalette.lightAccent).filter.replace('filter: ','').replace(';','')
+
 
 class CreatePackDisplay extends React.Component {
     props: CreatePackDisplayProps
@@ -72,9 +78,9 @@ class CreatePackDisplay extends React.Component {
 
     render() {
         return(
-            <RowDiv style={{backgroundColor:curPalette.darkBackground, alignItems:'center', justifyContent:'left', padding: 8, gap: 8, width:320, height:64}}>
-                <img style={{width:64,height:64}} src={this.props.pack.display != 'hidden' ? this.props.pack.display.icon : ''}/>
-                <label style={{fontFamily:'Disket-Bold', color:curPalette.text}}>{this.props.pack.display != 'hidden' ? this.props.pack.display.name : this.props.pack.id}</label>
+            <RowDiv style={{backgroundColor:curPalette.darkBackground, alignItems:'center', justifyContent:'left', padding: 8, gap: 8, width:320, height:64}} onClick={this.props.onClick}>
+                <img style={{width:64,height:64, WebkitUserSelect:'none', filter: this.props.pack.display == 'hidden' ? filter : ''}} src={this.props.pack.display != 'hidden' ? this.props.pack.display.icon : Hidden}/>
+                <label style={{WebkitUserSelect:'none',fontFamily:'Disket-Bold', color:curPalette.text}}>{this.props.pack.display != 'hidden' ? this.props.pack.display.name : this.props.pack.id}</label>
             </RowDiv>
         );
     }
