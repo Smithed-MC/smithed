@@ -86,7 +86,7 @@
     "mac":{
       "category": "public.app-category.utilities",
       "target": "dmg",
-      "icon": "./build/icon.ico"
+      "icon": "./build/icon.icns"
     },
     "linux": {
       "target": "AppImage",
