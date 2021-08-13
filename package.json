@@ -89,7 +89,8 @@
       "icon": "./build/icon.ico"
     },
     "linux": {
-      "icon": "./build/icon.ico",
+      "target": "AppImage",
+      "icon": "./build/icon.png",
       "category": "Utility"
     },
     "nsis": {
