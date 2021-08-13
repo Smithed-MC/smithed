@@ -25,4 +25,10 @@ jobs:
       with:
         node-version: ${{ matrix.node-version }}
     - run: npm ci && npm install -g electron-builder
-    - run: CI=false npm run electron:pro-build --if-present
+    - name: If Ubuntu
+      if: ${{ matrix.os == 'ubuntu-latest'}}
+      run: sudo snap install snapcraft --classic
+    - name: Build App
+      env:
+        CI: false
+      run: npm run electron:pro-build --if-present
