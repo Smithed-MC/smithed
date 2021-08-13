@@ -83,6 +83,16 @@
     "win": {
       "icon": "./build/icon.ico"
     },
+    "mac":{
+      "category": "public.app-category.utilities",
+      "target": "dmg",
+      "icon": "./build/icon.ico"
+    },
+    "linux": {
+      "target": "AppImage",
+      "icon": "./build/icon.ico",
+      "category": "Utility"
+    },
     "nsis": {
       "installerIcon": "./build/icon.ico",
       "oneClick": false,
