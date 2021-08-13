@@ -57,6 +57,8 @@ const AddButton = styled.button`
 `
 
 
+
+
 function InputField(props: any) {
     return (                    
         <StyledInput placeholder={props.text} style={props.style ? props.style : {width:'75%'}} title={props.text} defaultValue={props.defaultValue !== '' ? props.defaultValue : null} disabled={props.disabled} onChange={(e)=>{
