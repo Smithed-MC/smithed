@@ -25,7 +25,7 @@ jobs:
       with:
         node-version: ${{ matrix.node-version }}
     - run: npm ci && npm install -g electron-builder
-    - name: If Ubuntu
+    - name: If building Ubuntu
       if: ${{ matrix.os == 'ubuntu-latest'}}
       run: sudo snap install snapcraft --classic
     - name: Build App
@@ -33,3 +33,25 @@ jobs:
         CI: false
         GH_TOKEN: ${{ secrets.GH_TOKEN }}
       run: npm run electron:pro-build --if-present
+    - name: Upload artifacts Windows
+      if: ${{ matrix.os == 'windows-latest'}}
+      uses: actions/upload-artifact@v2
+      with:
+        name: windows-artifacts
+        path: dist/*.exe
+    - name: Upload artifacts Ubuntu
+      if: ${{ matrix.os == 'ubuntu-latest'}}
+      uses: actions/upload-artifact@v2
+      with:
+        name: ubuntu-artifacts
+        path: |
+          dist/*.AppImage
+          dist/*.snap
+    - name: Upload artifacts MacOs
+      if: ${{ matrix.os == 'macos-latest'}}
+      uses: actions/upload-artifact@v2
+      with:
+        name: macos-artifacts
+        path: |
+          dist/*.dmg
+          dist/*.zip
