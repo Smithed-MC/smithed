@@ -1,6 +1,6 @@
 {
   "name": "smithed",
-  "version": "0.1.1",
+  "version": "PA-0.1.1",
   "private": true,
   "main": "public/electron.js",
   "homepage": "./",
@@ -99,6 +99,13 @@
       "perMachine": false,
       "allowToChangeInstallationDirectory": true,
       "artifactName": "${productName}-${version}.${ext}"
+    },
+    "publish": {
+      "provider":"github",
+      "owner":"TheNuclearNexus",
+      "repo":"smithed",
+      "private": false,
+      "vPrefixedTagName": false
     }
   }
 }
