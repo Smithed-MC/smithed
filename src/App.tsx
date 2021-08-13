@@ -41,11 +41,11 @@ class App extends React.Component {
     return (
       <AppContainer>
         <Sidebar onClick={(p: string) => {this.changePage(p)}}/>
-        { this.state.page == 'news' ? <News/> : null}
-        { this.state.page == 'home' ? <Home/> : null}
-        { this.state.page == 'browse' ? <Browse/> : null}
-        { this.state.page == 'create' ? <Create/> : null}
-        { this.state.page == 'settings' ? <Settings/> : null}
+        { this.state.page === 'news' ? <News/> : null}
+        { this.state.page === 'home' ? <Home/> : null}
+        { this.state.page === 'browse' ? <Browse/> : null}
+        { this.state.page === 'create' ? <Create/> : null}
+        { this.state.page === 'settings' ? <Settings/> : null}
       </AppContainer>
     );
   }

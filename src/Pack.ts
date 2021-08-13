@@ -52,7 +52,7 @@ export class Pack {
     hasVersion(version: string): boolean {
         for(let v in this.versions) {
             this.versions[v].supports.forEach(s => {
-                if(s == version) {
+                if(s === version) {
                     return true
                 }
             })
@@ -71,7 +71,7 @@ export class DataVersion {
         
         let parts: (number | 'x')[] = []
         temp.forEach(p => {
-            if(p == 'x')
+            if(p === 'x')
                 parts.push(p)
             else
                 parts.push(Number.parseInt(p))
@@ -83,9 +83,9 @@ export class DataVersion {
     }
 
     equal(b: DataVersion): boolean {
-        if (this.major == b.major && this.minor == b.minor) {
-            if(this.patch == b.patch) return true
-            else if(this.patch == 'x' || b.patch == 'x') return true
+        if (this.major === b.major && this.minor === b.minor) {
+            if(this.patch === b.patch) return true
+            else if(this.patch === 'x' || b.patch === 'x') return true
         }
         return false
     }
@@ -116,7 +116,7 @@ export class PackHelper {
             let packs: Pack[] = val != null ? val : []
             
             for(var i = 0; i < packs.length; i++) {
-                if(packs[i].id == pack.id) {
+                if(packs[i].id === pack.id) {
                     userPacks.child(i.toString()).set(pack)
                     return;
                 }
@@ -132,7 +132,7 @@ export class PackHelper {
         const queue = firebaseApp.database().ref(`queue`)
         const id = `${userData.displayName.toLowerCase()}:${pack.id}`
         queue.child(id).get().then((snapshot)=>{
-            if(snapshot.val() == null) {
+            if(snapshot.val() === null) {
                 queue.child(id).set({
                     owner: userData.uid,
                     added: Date.now()
@@ -184,12 +184,12 @@ export class PackHelper {
 
     static resolveSubDependencies(id: string, version: string): Dependency[] {
         id = id.split('@')[0]
-        const result = userData.packs.Where(p => p.id == id)
+        const result = userData.packs.Where(p => p.id === id)
 
-        if(result.Count() == 0) {
+        if(result.Count() === 0) {
             let pack = result.ElementAt(0)
             let dependencies = pack.data.versions[version].dependencies
-            if(dependencies == null) return []
+            if(dependencies === null) return []
 
             dependencies.forEach(e => {
                 dependencies.concat(this.resolveSubDependencies(e.id, e.version))
@@ -202,7 +202,7 @@ export class PackHelper {
     static resolveDependencies(pack: Pack, version: string): Dependency[] {
         let dependencies = pack.versions[version].dependencies
 
-        if(dependencies == null) return []
+        if(dependencies === null) return []
 
         dependencies.forEach(e => {
             dependencies.concat(this.resolveSubDependencies(e.id, e.version))

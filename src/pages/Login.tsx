@@ -1,15 +1,12 @@
 import React from 'react';
-import logo from './logo.svg';
 import styled from 'styled-components';
 import '../font.css'
-import { ColumnDiv, firebaseUser, Header1, Header2, Header3,  MarkdownOptions, RowDiv, setFirebaseUser, setIgnoreStateChange, TabButton } from '..';
+import { ColumnDiv, firebaseUser, RowDiv, setFirebaseUser, setIgnoreStateChange, TabButton } from '..';
 import curPalette from '../Palette';
 import {firebaseApp} from '../index'
-import firebase from 'firebase';
-import {fs, pathModule, settingsFolder} from '../Settings'
-import { off } from 'process';
-const emailRegex = new RegExp(/^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/);
-const strongRegex = new RegExp(/^(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])(?=.*[!@#\$%\^&\*])(?=.{8,})/);
+
+const emailRegex = new RegExp(/^(([^<>()\]\\.,;:\s@"]+(\.[^<>()\]\\.,;:\s@"]+)*)|(".+"))@(([0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/);
+const strongRegex = new RegExp(/^(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])(?=.*[!@#$%^&*])(?=.{8,})/);
 
 
 const LoginContainer = styled.div`
@@ -79,25 +76,25 @@ class Login extends React.Component {
 
     validate(): boolean {
         let valid: boolean = true
-        if(!this.email.match(emailRegex) && this.email != '') {
+        if(!this.email.match(emailRegex) && this.email !== '') {
             this.setState({emailValid: false})
             valid = false
         } else {
-            if(this.email == '') valid = false
+            if(this.email === '') valid = false
             this.setState({emailValid: true})
         }
-        if(!this.password.match(strongRegex) && this.password != '') {
+        if(!this.password.match(strongRegex) && this.password !== '') {
             this.setState({passwordValid: false})
             valid = false
         } else {
-            if(this.password == '') valid = false
+            if(this.password === '') valid = false
             this.setState({passwordValid: true})
         }
-        if(this.password != this.password2 && this.password2 != '') {
+        if(this.password !== this.password2 && this.password2 !== '') {
             this.setState({password2Valid: false})
             valid = false
         } else {
-            if(this.password2 == '') valid = false
+            if(this.password2 === '') valid = false
             this.setState({password2Valid: true})
         }
 
@@ -121,7 +118,6 @@ class Login extends React.Component {
         })
         .catch((error) => {
             var errorCode = error.code;
-            var errorMessage = error.message;
             // ..
             console.log(errorCode)
             switch(errorCode) {
@@ -145,7 +141,6 @@ class Login extends React.Component {
             }
         }).catch((error) => {
             var errorCode = error.code;
-            var errorMessage = error.message;
             // ..
             console.log(errorCode)
             switch(errorCode) {
@@ -169,7 +164,7 @@ class Login extends React.Component {
     }
     
     swapTab(tab: number) {
-        if(tab != this.state.tab) {
+        if(tab !== this.state.tab) {
             this.setState({tab: tab, emailValid:null, passwordValid: null, password2Valid: null, loginError: null})
             this.email = ''
             this.password = ''
@@ -177,7 +172,7 @@ class Login extends React.Component {
         }
     }
     getSelectedStyle(tab: number) : React.CSSProperties {
-        if(this.state.tab == tab) {
+        if(this.state.tab === tab) {
             return {
                 marginTop: 4,
                 borderBottom: `4px solid ${curPalette.lightAccent}`
@@ -189,7 +184,7 @@ class Login extends React.Component {
     renderEmailField() {
         return(
             <ColumnDiv style={{width:'100%', gap:4}}>
-                {this.state.emailValid == null || this.state.emailValid == false && <ErrorLabel>Invalid email!</ErrorLabel>}
+                {(this.state.emailValid === null || this.state.emailValid === false) && <ErrorLabel>Invalid email!</ErrorLabel>}
                 <LoginInput type="email" onChange={(e) => {
                     let input = e.target as HTMLInputElement
                     this.email = input.value
@@ -201,8 +196,8 @@ class Login extends React.Component {
     renderDisplayNameField() {
         return(
             <ColumnDiv style={{width:'100%', gap:4}}>
-                {this.state.displayNameValid == null || this.state.displayNameValid == false && <ErrorLabel>Invalid display name! Must be between 3 and 15 characters!</ErrorLabel>}
-                {this.state.displayNameValid2 == null || this.state.displayNameValid2 == false && <ErrorLabel>Name taken!</ErrorLabel>}
+                {(this.state.displayNameValid === null || this.state.displayNameValid === false) && <ErrorLabel>Invalid display name! Must be between 3 and 15 characters!</ErrorLabel>}
+                {(this.state.displayNameValid2 === null || this.state.displayNameValid2 === false) && <ErrorLabel>Name taken!</ErrorLabel>}
 
                 <LoginInput type="email" onChange={async (e) => {
                     let input = e.target as HTMLInputElement
@@ -219,7 +214,7 @@ class Login extends React.Component {
                     let snapshot = await ref.get()
                     let users : {[key: string]: {displayName: string}} = snapshot.val()
                     for(let u in users) {
-                        if(users[u].displayName == this.displayName) {
+                        if(users[u].displayName === this.displayName) {
                             this.setState({displayNameValid2: false})
                             return;
                         }
@@ -233,11 +228,11 @@ class Login extends React.Component {
     renderPasswordField() {
         return(
             <ColumnDiv style={{width:'100%', gap:4}}>
-                {this.state.passwordValid == null || this.state.passwordValid == false && <ErrorLabel>Password must contain 1 lowercase, 1 uppercase, 1 symbol, 1 number, and be at least 8 characters</ErrorLabel>}
+                {(this.state.passwordValid === null || this.state.passwordValid === false) && <ErrorLabel>Password must contain 1 lowercase, 1 uppercase, 1 symbol, 1 number, and be at least 8 characters</ErrorLabel>}
                 <LoginInput type="password" onChange={(e) => {
                     let input = e.target as HTMLInputElement
                     this.password = input.value
-                    if(this.state.tab == 0)
+                    if(this.state.tab === 0)
                         this.validate()
                 }} placeholder='Password'/>
             </ColumnDiv>
@@ -246,7 +241,7 @@ class Login extends React.Component {
     renderPassword2Field() {
         return(
             <ColumnDiv style={{width:'100%', gap:4}}>
-                {this.state.password2Valid == null || this.state.password2Valid == false && <ErrorLabel>Passwords do not match!</ErrorLabel>}
+                {(this.state.password2Valid === null || this.state.password2Valid === false) && <ErrorLabel>Passwords do not match!</ErrorLabel>}
                 <LoginInput type="password" onChange={(e) => {
                     let input = e.target as HTMLInputElement
                     this.password2 = input.value
@@ -284,8 +279,8 @@ class Login extends React.Component {
                     <TabButton style={this.getSelectedStyle(1)} onClick={()=>this.swapTab(1)}>Sign In</TabButton>
                     <TabButton style={this.getSelectedStyle(0)} onClick={()=>this.swapTab(0)}>Sign Up</TabButton>
                 </RowDiv>
-                {this.state.tab == 0 && this.renderSignUp()}
-                {this.state.tab == 1 && this.renderSignIn()}
+                {this.state.tab === 0 && this.renderSignUp()}
+                {this.state.tab === 1 && this.renderSignIn()}
             </ColumnDiv>
         )
     }
@@ -304,7 +299,7 @@ class Login extends React.Component {
                     <LoginButton onClick={async ()=>{
 
                         if(this.displayName.length < 3 || this.displayName.length > 15) return;
-                        if(firebaseUser == null) return;
+                        if(firebaseUser === null) return;
 
                         firebaseApp.database().ref(`users/${firebaseUser.uid}`).set({displayName: this.displayName, role:'member', packs:[]})
                         this.props.onSuccess()
@@ -318,8 +313,8 @@ class Login extends React.Component {
 
         return (
             <LoginContainer>
-                {this.state.page == 'main' && this.renderMain()}
-                {this.state.page == 'finish-setup' && this.renderSetup()}
+                {this.state.page === 'main' && this.renderMain()}
+                {this.state.page === 'finish-setup' && this.renderSetup()}
             </LoginContainer>
         );
     }

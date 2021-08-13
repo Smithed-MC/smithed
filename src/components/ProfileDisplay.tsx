@@ -86,11 +86,11 @@ class ProfileDisplay extends React.Component {
                             {`by ${this.props.profile.author}`}
                         </ProfileNameLabel>}
                     {this.state.mouseOver && <ProfilePlayButton onClick={async ()=>{
-                        if(Home.instance.state.activeProfile == '')
+                        if(Home.instance.state.activeProfile === '')
                             ipcRenderer.send('start-launcher', this.props.profile)
 
                         Home.instance.renderMyProfiles()
-                    }} disabled={Home.instance.state.activeProfile != ''}>
+                    }} disabled={Home.instance.state.activeProfile !== ''}>
                             {this.props.active ? 'RUNNING' : 'PLAY'}
                         </ProfilePlayButton>}
                 </div>

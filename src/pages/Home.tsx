@@ -1,17 +1,15 @@
-import React, { version } from 'react';
-import logo from './logo.svg';
+import React from 'react';
 import styled from 'styled-components';
 import '../font.css'
-import { ColumnDiv, firebaseApp, Header1, Header2, Header3, TabButton, StyledInput, firebaseUser, userData } from '..';
+import { ColumnDiv, firebaseApp, Header2, TabButton, StyledInput, firebaseUser, userData } from '..';
 import ProfileDisplay from '../components/ProfileDisplay';
 import curPalette from '../Palette';
 import Dropdown, {Option} from '../components/Dropdown';
 import Foldout from '../components/Foldout';
 import { fs, pathModule, settingsFolder } from '../Settings';
-import { fileExists } from '../FSWrapper';
 import { setupProfile } from '../ProfileHelper';
 import RadioButton from '../components/RadioButton';
-import { Dependency, Pack, packTest } from '../Pack'
+import { Dependency } from '../Pack'
 const { ipcRenderer } = window.require('electron');
 
 
@@ -59,7 +57,7 @@ class Home extends React.Component {
         Home.instance = this
 
         ipcRenderer.on('update-profile', (event: any, profile: string) => {
-            if((this.state.activeProfile != profile)) {
+            if((this.state.activeProfile !== profile)) {
                 this.setState({activeProfile: profile})
             }
         })
@@ -70,7 +68,7 @@ class Home extends React.Component {
     }
 
     getSelectedStyle(tab: number) : React.CSSProperties {
-        if(this.state.tab == tab) {
+        if(this.state.tab === tab) {
             return {
                 marginTop: 4,
                 borderBottom: `4px solid ${curPalette.lightAccent}`
@@ -81,7 +79,7 @@ class Home extends React.Component {
     }
 
     swapTab(tab: number) {
-        if(tab != this.state.tab) {
+        if(tab !== this.state.tab) {
             this.setState({tab: tab, emailValid:null, passwordValid: null, password2Valid: null})
             this.profileCreationInfo = {name: '', version: userData.versions[userData.versions.length - 1]}
         }
@@ -117,7 +115,7 @@ class Home extends React.Component {
         for(let i = 0; i < userData.profiles.length; i++) {
             let p = userData.profiles[i]
             profileDisplays.push(
-                <ProfileDisplay key={i} profile={p} active={p.name == this.state.activeProfile}/>
+                <ProfileDisplay key={i} profile={p} active={p.name === this.state.activeProfile}/>
             )
         }
 
@@ -145,8 +143,8 @@ class Home extends React.Component {
                         onClick={()=>{this.swapTab(1)}}
                     >Trending Profiles</TabButton>
                 </div>
-                {this.state.tab == 0 && this.renderMyProfiles()}
-                {this.state.tab == 1 && this.renderTrendingProfiles()}
+                {this.state.tab === 0 && this.renderMyProfiles()}
+                {this.state.tab === 1 && this.renderTrendingProfiles()}
             </div>
         )
     }
@@ -165,7 +163,7 @@ class Home extends React.Component {
         let options: JSX.Element[] = []
         if(userData.modsDict != null) {
             this.selectedMods = {fabric_api: userData.modsDict["fabric-api"][verison]}
-            mods.map((val) => {
+            mods.map((val, i, arr) => {
                 const download = userData.modsDict[val][verison]
                 if(download != null) {
                     options.push(<RadioButton key={val} text={`Add ${val[0].toUpperCase() + val.substring(1)}`} onChange={(value)=>{
@@ -176,6 +174,7 @@ class Home extends React.Component {
                         }
                     }}/>)
                 }
+                return val
             })
         }
 
@@ -197,7 +196,7 @@ class Home extends React.Component {
                     {this.renderVersions(userData.versions)}
                 </Dropdown>
                 <CreateButton onClick={async () => {
-                    if(firebaseUser == null) return;
+                    if(firebaseUser === null) return;
 
                     let p = userData.profiles
 
@@ -226,8 +225,8 @@ class Home extends React.Component {
 
         return (
             <ColumnDiv style={{flexGrow:1}}>
-                {this.state.tab != 2 && this.renderMain()}
-                {this.state.tab == 2 && this.renderNewProfile()}
+                {this.state.tab !== 2 && this.renderMain()}
+                {this.state.tab === 2 && this.renderNewProfile()}
             </ColumnDiv>
         );
     }

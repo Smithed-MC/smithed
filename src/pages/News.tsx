@@ -1,15 +1,9 @@
 import React from 'react';
-import logo from './logo.svg';
 import styled from 'styled-components';
 import '../font.css'
-import Sidebar from '../components/NewsArrow';
 import { firebaseApp, Header1, Header2, Header3, MarkdownOptions } from '..';
-import Markdown, { MarkdownToJSX } from 'markdown-to-jsx';
-import img from '../images/img.png'
-import img2 from '../images/img2.png'
-import img3 from '../images/img3.png'
+import Markdown from 'markdown-to-jsx';
 import curPalette from '../Palette';
-import LeftArrow from '../icons/left_arrow.svg'
 import NewsArrow from '../components/NewsArrow';
 
 const NewsContainer = styled.div`
@@ -83,7 +77,7 @@ class News extends React.Component {
     }
 
     renderPrevious(prevArticle: Article | null) {
-        if(prevArticle == null) {
+        if(prevArticle === null) {
             return(
                 <NewsSection style={{flex:'25%', padding:'6px', marginLeft: 4}}></NewsSection>
             )
@@ -106,7 +100,7 @@ class News extends React.Component {
         )
     }
     renderNext(nextArticle: Article | null) {
-        if(nextArticle == null) {
+        if(nextArticle === null) {
             return(
                 <NewsSection style={{flex:'25%', padding:'6px', marginRight: 4}}></NewsSection>
             )
@@ -137,7 +131,7 @@ class News extends React.Component {
 
         return (
             <div style={{flexGrow:1,display:'flex',flexDirection:'column',alignItems:'center',gap:'-10px'}}>
-                <Header1>{this.state.current == this.state.articles.length-1 ? 'Latest News' : 'Older News'}</Header1>
+                <Header1>{this.state.current === this.state.articles.length-1 ? 'Latest News' : 'Older News'}</Header1>
                 <NewsContainer>
                     {this.renderPrevious(prevArticle)}
                     <NewsSection style={{flex:'50%', padding:'6px'}}>

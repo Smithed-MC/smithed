@@ -20,7 +20,7 @@ class GroupedFoldout extends Foldout {
 
     onClick = () => {
         if(this.props.disabled) return; 
-        if(this.state.open == false)
+        if(this.state.open === false)
             GroupedFoldout.eventEmitter.emit(`${this.props.group}-off`)
         this.setState({open: !this.state.open})
     }

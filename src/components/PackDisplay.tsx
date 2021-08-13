@@ -78,7 +78,7 @@ class PackDisplay extends React.Component {
         if(Browse.instance.state.profile.packs != null) {
             for(let p of Browse.instance.state.profile.packs) {
                 console.log(`${p.id} | ${this.props.packEntry.id}`)
-                if(p.id == this.props.packEntry.id) 
+                if(p.id === this.props.packEntry.id) 
                     return true
             }
         }
@@ -91,7 +91,7 @@ class PackDisplay extends React.Component {
 
         const display: Display | 'hidden' = this.props.packEntry.data.display
 
-        if(display == 'hidden') return
+        if(display === 'hidden') return
 
         const contained = this.profileContains()
         return (
@@ -101,7 +101,7 @@ class PackDisplay extends React.Component {
                     <ColumnDiv style={{alignItems:'left',width:'100%', justifyContent:'space-evenly'}}>
                         <RowDiv style={{alignItems:'left', width:'100%', justifyContent:'space-evenly'}}>
                             <PackName>{display.name}</PackName>
-                            {!contained && <PackAddButton disabled={Browse.instance.state.profile.name == ''} onClick={()=>{
+                            {!contained && <PackAddButton disabled={Browse.instance.state.profile.name === ''} onClick={()=>{
                                 const packVersion = PackHelper.getLatestVersionForVersion(this.props.packEntry.data, Browse.instance.state.profile.version)
 
                                 let temp: Dependency[] = []
@@ -124,7 +124,7 @@ class PackDisplay extends React.Component {
                         </RowDiv>
                         <RowDiv style={{justifySelf:'left', gap:32, width:'100%'}}>
                             <PackStats>{'100M Downloads'}</PackStats>
-                            <PackStats>{`Updated ${timeDiff} day${timeDiff != 1 ? 's' : ''} ago`}</PackStats>
+                            <PackStats>{`Updated ${timeDiff} day${timeDiff !== 1 ? 's' : ''} ago`}</PackStats>
                             <PackStats>{`Added ${dateAdded.toLocaleDateString()}`}</PackStats>
                             <li style={{flexGrow:1, width:'100%', visibility:'hidden'}}/>
                         </RowDiv>

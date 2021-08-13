@@ -41,6 +41,8 @@
     "eject": "react-scripts eject",
     "electron:serve": "concurrently -k \"cross-env BROWSER=none yarn start\" \"yarn electron:start\"",
     "electron:build": "yarn build && electron-builder -c.extraMetadata.main=build/electron.js",
+    "electron:pro-build": "npm prune --production && rmdir /S /Q dist && npm run electron:publish",
+    "electron:publish": "yarn build && electron-builder -c.extraMetadata.main=build/electron.js --publish always" ,
     "electron:start": "wait-on tcp:3000 && electron ."
   },
   "eslintConfig": {

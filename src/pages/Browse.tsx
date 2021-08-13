@@ -46,7 +46,7 @@ class Browse extends React.Component {
     }
 
     getSelectedStyle(tab: number) : React.CSSProperties {
-        if(this.state.tab == tab) {
+        if(this.state.tab === tab) {
             return {
                 marginTop: 4,
                 borderBottom: `4px solid ${curPalette.lightAccent}`
@@ -57,7 +57,7 @@ class Browse extends React.Component {
     }
 
     swapTab(tab: number) {
-        if(tab != this.state.tab) {
+        if(tab !== this.state.tab) {
             this.setState({tab: tab, emailValid:null, passwordValid: null, password2Valid: null})
         }
     }
@@ -81,11 +81,11 @@ class Browse extends React.Component {
     renderPacks() {
         let packDisplays: JSX.Element[] = []
         
-        let packs = userData.packs.Where(p => p.data.display != 'hidden' ? this.state.search != '' ? p.data.display.name.toLowerCase().includes(this.state.search) : true : true)
+        let packs = userData.packs.Where(p => p.data.display !== 'hidden' ? this.state.search !== '' ? p.data.display.name.toLowerCase().includes(this.state.search) : true : true)
 
-        if(this.state.profile.version != '') {
+        if(this.state.profile.version !== '') {
             packs = packs.Where(p => {
-                if(p.data == null) return false
+                if(p.data === null) return false
                 return PackHelper.hasVersion(p.data, this.state.profile.version)
             })
         }
@@ -121,7 +121,7 @@ class Browse extends React.Component {
                     <ColumnDiv style={{flex:'25%'}}>
                         <Dropdown style={{width:'78.5%'}} onChange={(v)=>{
                             userData.profiles.forEach(p => {
-                                if(p.name == v) {
+                                if(p.name === v) {
                                     this.setState({profile: p})
                                     return
                                 }

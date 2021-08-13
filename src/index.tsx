@@ -173,11 +173,11 @@ export class Index extends React.Component {
 		return (
 			<React.StrictMode>
 				<Titlebar />
-				{this.state.page == 'login' && <Login onSuccess={() => {
+				{this.state.page === 'login' && <Login onSuccess={() => {
 					collectUserData()
 					this.setState({ page: 'app' })
 				}} />}
-				{this.state.page == 'app' && <App />}
+				{this.state.page === 'app' && <App />}
 			</React.StrictMode>
 		)
 

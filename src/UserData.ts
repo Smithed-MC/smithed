@@ -13,7 +13,7 @@ async function getPack(pack: {added: number, owner: string}, id: string): Promis
 
     if(packs != null) {
         for(let i = 0; i < packs.length; i++) {
-            if(packs[i].id == id.split(':')[1])
+            if(packs[i].id === id.split(':')[1])
                 return packs[i]
         }
     }
@@ -38,7 +38,7 @@ export async function collectUserData() {
         let packs: PackEntry[] = []
         let i = 0
         for(let p in packDict) {
-            if(i % 20 == 0) {
+            if(i % 20 === 0) {
                 userData.packs = linq.asEnumerable(packs)
                 remote.getCurrentWindow().webContents.send('update-displayed-packs')
             }

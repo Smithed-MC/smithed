@@ -1,12 +1,8 @@
-import React, { version } from 'react';
+import React from 'react';
 import styled from 'styled-components';
-import { ColumnDiv, firebaseApp, RowDiv, userData } from '..';
-import { Dependency, Display, Pack, PackHelper } from '../Pack';
-import Browse, { PackEntry } from '../pages/Browse';
-import Home, { Profile } from '../pages/Home';
+import { RowDiv } from '..';
+import { Pack } from '../Pack';
 import curPalette from '../Palette'
-import {Header3} from '..'
-import { fs, pathModule, settingsFolder } from '../Settings';
 import Hidden from '../icons/hidden.svg'
 import colorize from 'css-colorize'
 
@@ -79,8 +75,8 @@ class CreatePackDisplay extends React.Component {
     render() {
         return(
             <RowDiv style={{backgroundColor:curPalette.darkBackground, alignItems:'center', justifyContent:'left', padding: 8, gap: 8, width:320, height:64}} onClick={this.props.onClick}>
-                <img style={{width:64,height:64, WebkitUserSelect:'none', filter: this.props.pack.display == 'hidden' ? filter : ''}} src={this.props.pack.display != 'hidden' ? this.props.pack.display.icon : Hidden}/>
-                <label style={{WebkitUserSelect:'none',fontFamily:'Disket-Bold', color:curPalette.text}}>{this.props.pack.display != 'hidden' ? this.props.pack.display.name : this.props.pack.id}</label>
+                <img style={{width:64,height:64, WebkitUserSelect:'none', filter: this.props.pack.display === 'hidden' ? filter : ''}} src={this.props.pack.display !== 'hidden' ? this.props.pack.display.icon : Hidden}/>
+                <label style={{WebkitUserSelect:'none',fontFamily:'Disket-Bold', color:curPalette.text}}>{this.props.pack.display !== 'hidden' ? this.props.pack.display.name : this.props.pack.id}</label>
             </RowDiv>
         );
     }
