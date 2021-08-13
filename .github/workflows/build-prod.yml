@@ -16,20 +16,13 @@ jobs:
     strategy:
       matrix:
         os: [ macos-latest ]
+        node-version: [10.x, 12.x, 14.x]
 
     steps:
-      - name: Checkout git repo
-        uses: actions/checkout@v1
-
-      - name: Install Node, NPM and Yarn
-        uses: actions/setup-node@v1
-        with:
-          node-version: 16.5.0
-      - name: Update yarn
-        run: yarn upgrade && yarn add yarn
-      - name: Install dependencies
-        run: | 
-          npm i react-scripts --save && npm ci
-      - name: Publish releases
-        run: |
-          yarn build && electron-builder -c.extraMetadata.main=build/electron.js --publish always --win --mac --linux
+    - uses: actions/checkout@v2
+    - name: Use Node.js ${{ matrix.node-version }}
+      uses: actions/setup-node@v1
+      with:
+        node-version: ${{ matrix.node-version }}
+    - run: npm ci
+    - run: npm run build --if-present
