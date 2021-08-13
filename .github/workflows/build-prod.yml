@@ -2,31 +2,27 @@
 name: Build Prod
 # this will help you specify where to run 
 on:
+  workflow_dispatch:
   push:
     branches:
     # this will run on the electron branch
       - prod
 # this is where the magic happens, each job happens in parallel btw
+
 jobs:
-  build_on_mac:
-    runs-on: macOS-latest
+  publish:
+    runs-on: ${{ matrix.os }}
+
+    strategy:
+      matrix:
+        os: [ macos-latest ]
+        node-version: [16.x]
+
     steps:
-    - uses: actions/checkout@master
+    - uses: actions/checkout@v2
+    - name: Use Node.js ${{ matrix.node-version }}
+      uses: actions/setup-node@v1
       with:
-        ref: prod
-    - uses: actions/setup-node@master
-      with:
-        node-version: 16.5.0
-    - name: see directory
-      run: ls
-  build_on_win:
-    runs-on: windows-2016
-    steps:
-    - uses: actions/checkout@master
-      with:
-        ref: feature/github-actions        
-    - uses: actions/setup-node@master
-      with:
-        node-version: 16.5.0
-    - name: see directory
-      run: ls
+        node-version: ${{ matrix.node-version }}
+    - run: npm ci
+    - run: CI=false npm run build --if-present
