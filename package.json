@@ -89,7 +89,6 @@
       "icon": "./build/icon.ico"
     },
     "linux": {
-      "target": "AppImage",
       "icon": "./build/icon.ico",
       "category": "Utility"
     },
