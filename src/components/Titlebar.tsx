@@ -113,8 +113,8 @@ function MacOSContent() {
 function Titlebar() {
 	return (
 		<TopbarContainer>
-			{process.platform === 'darwin' && MacOSContent()}
-			{process.platform !== 'darwin' && WindowsContent()}
+			{window.process.platform === 'darwin' && MacOSContent()}
+			{window.process.platform !== 'darwin' && WindowsContent()}
 			<div style={{ height: 5, backgroundColor: curPalette.lightAccent }}></div>
 		</TopbarContainer>
 	)

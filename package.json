@@ -1,6 +1,6 @@
 {
   "name": "smithed",
-  "version": "0.1.2",
+  "version": "0.1.1",
   "private": true,
   "main": "public/electron.js",
   "homepage": "./",
@@ -21,6 +21,7 @@
     "download": "^8.0.0",
     "electron-build": "0.0.3",
     "electron-is-dev": "^2.0.0",
+    "electron-updater": "^4.3.9",
     "execa": "^1.0.0",
     "firebase": "^8.8.1",
     "is-running": "^2.1.0",
@@ -40,9 +41,9 @@
     "test": "react-scripts test",
     "eject": "react-scripts eject",
     "electron:serve": "concurrently -k \"cross-env BROWSER=none yarn start\" \"yarn electron:start\"",
-    "electron:build": "yarn build && electron-builder -c.extraMetadata.main=build/electron.js",
+    "electron:build": "yarn build && electron-builder -c.extraMetadata.main=build/electron.js --publish never",
     "electron:pro-build": "npm prune --production && npm run electron:build",
-    "electron:publish": "yarn build && electron-builder -c.extraMetadata.main=build/electron.js --publish always" ,
+    "electron:publish": "yarn build && electron-builder -c.extraMetadata.main=build/electron.js --publish always",
     "electron:start": "wait-on tcp:3000 && electron ."
   },
   "eslintConfig": {
@@ -83,13 +84,13 @@
     "win": {
       "icon": "./build/icon.ico"
     },
-    "mac":{
+    "mac": {
       "category": "public.app-category.utilities",
-      "icon": "./build/icon.ico"
+      "icon": "./build/icon.icns"
     },
     "linux": {
       "target": "AppImage",
-      "icon": "./build/icon.ico",
+      "icon": "./build/icon.png",
       "category": "Utility"
     },
     "nsis": {
@@ -100,9 +101,9 @@
       "artifactName": "${productName}-${version}.${ext}"
     },
     "publish": {
-      "provider":"github",
-      "owner":"TheNuclearNexus",
-      "repo":"smithed",
+      "provider": "github",
+      "owner": "TheNuclearNexus",
+      "repo": "smithed",
       "private": false,
       "vPrefixedTagName": false
     }

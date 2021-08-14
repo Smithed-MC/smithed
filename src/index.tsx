@@ -20,6 +20,8 @@ import { collectUserData } from './UserData';
 import { PackEntry } from './pages/Browse';
 import { Enumerable } from 'linq-es5/lib/enumerable';
 import { asEnumerable } from 'linq-es5';
+import Download from './pages/Download';
+import { UpdateCheckResult } from 'electron-updater';
 const { ipcRenderer } = window.require('electron');
 
 export const firebaseApp = firebase.initializeApp({
@@ -34,7 +36,7 @@ export const firebaseApp = firebase.initializeApp({
 
 firebaseApp.auth().setPersistence('session')
 
-let startPage: 'login' | 'app' = 'login'
+let startPage: 'login' | 'app' | 'update' = 'login'
 
 
 let ignoreStateChange = false
@@ -155,8 +157,8 @@ export const MarkdownOptions = (wrapper?: React.ElementType<any>): MarkdownToJSX
 
 
 interface IndexState {
-	page: 'login' | 'app',
-	refresh: number
+	page: 'login' | 'app' | 'update',
+	versionFound: string
 }
 
 export class Index extends React.Component {
@@ -164,7 +166,7 @@ export class Index extends React.Component {
 	state: IndexState
 	constructor(props: any) {
 		super(props)
-		this.state = { page: startPage, refresh: 0 }
+		this.state = { page: startPage, versionFound: ''}
 		Index.instance = this
 	}
 
@@ -178,6 +180,7 @@ export class Index extends React.Component {
 					this.setState({ page: 'app' })
 				}} />}
 				{this.state.page === 'app' && <App />}
+				{this.state.page === 'update' && <Download version={this.state.versionFound}/>}
 			</React.StrictMode>
 		)
 
@@ -192,7 +195,12 @@ ReactDOM.render(
 ipcRenderer.on('upload-news', (e: any, article: any, data: any) => {
 	firebaseApp.database().ref(`news/${article}`).set(data)
 })
-
+ipcRenderer.on('message', (e: any, message: string) => {
+	console.log(message)
+})
+ipcRenderer.on('update-found', (e:any, version: string) => {
+	Index.instance.setState({page:'update',versionFound:version})
+})
 
 // If you want to start measuring performance in your app, pass a function
 // to log results (for example: reportWebVitals(console.log))
