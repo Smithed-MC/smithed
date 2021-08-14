@@ -86,6 +86,7 @@
     },
     "mac": {
       "category": "public.app-category.utilities",
+      "target": "default",
       "icon": "./build/icon.icns"
     },
     "linux": {
