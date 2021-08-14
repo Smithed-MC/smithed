@@ -65,7 +65,7 @@ class Download extends React.Component {
                 <Header2 style={{color:curPalette.subText, marginTop:-20}}>Version: {this.props.version}</Header2>
                 <RowDiv style={{gap:4}}>
                     <DownloadButton onClick={()=>{
-                        remote.getCurrentWindow().quit()
+                        remote.app.quit()
                     }}>Exit</DownloadButton>
                     <DownloadButton onClick={()=>{
                         ipcRenderer.send('download-update')

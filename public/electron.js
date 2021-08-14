@@ -7,6 +7,7 @@ const isDev = require('electron-is-dev')
 const execa = require('execa');
 const { exec } = require('child_process');
 const isRunning = require('is-running')
+const cmp = require('semver-compare')
 
 const fs = require('fs')
 
@@ -72,7 +73,8 @@ function createWindow() {
 		win.on('ready-to-show', () => {
 			autoUpdater.checkForUpdates().then((u) => {
 				updateInfo = u.updateInfo
-				win.webContents.send('update-found', u.updateInfo.version)
+				if(cmp(app.getVersion(), u.updateInfo.version) === -1)
+					win.webContents.send('update-found', u.updateInfo.version)
 			}).catch((e) => {
 				sendMessage(e)
 			})
@@ -101,7 +103,6 @@ function createWindow() {
 
 	new HandleLauncher(win)
 }
-
 
 app.on('ready', createWindow)
 
