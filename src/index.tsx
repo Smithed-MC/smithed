@@ -166,7 +166,7 @@ export class Index extends React.Component {
 	state: IndexState
 	constructor(props: any) {
 		super(props)
-		this.state = { page: 'update', versionFound: ''}
+		this.state = { page: startPage, versionFound: ''}
 		Index.instance = this
 	}
 

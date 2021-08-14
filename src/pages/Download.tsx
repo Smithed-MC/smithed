@@ -51,7 +51,7 @@ class Download extends React.Component {
     constructor(props: DownloadProps) {
         super(props)
         this.props = props
-        this.state = {tab:1,page:'main',progress:0}
+        this.state = {tab:0,page:'main',progress:0}
 
         ipcRenderer.on('download-progress', (e: any, percent: any)=>{
             this.setState({progress: percent})
