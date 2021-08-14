@@ -71,9 +71,10 @@ function createWindow() {
 
 	if(!isDev) {
 		win.on('ready-to-show', () => {
+			
 			autoUpdater.checkForUpdates().then((u) => {
 				updateInfo = u.updateInfo
-				if(cmp(app.getVersion(), u.updateInfo.version) === -1)
+				if(cmp(app.getVersion(), u.updateInfo.version.replace('-','.')) === -1)
 					win.webContents.send('update-found', u.updateInfo.version)
 			}).catch((e) => {
 				sendMessage(e)
