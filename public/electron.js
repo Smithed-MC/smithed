@@ -80,7 +80,7 @@ function createWindow() {
 			autoUpdater.downloadUpdate().then(()=>{
 				sendMessage('done')
 				win.webContents.send('download-progress', 100)
-			})
+			}).catch((e)=>sendMessage(e))
 		})
 
 		ipcMain.on('install-update', ()=>{

@@ -39,10 +39,10 @@ function Sidebar(props: SidebarProps) {
         <SidebarOption img={BrowseSvg} hint='Browse' onClick={() => {props.onClick('browse')}}/>
         <SidebarOption img={CreateSvg} hint='Create' onClick={() => {props.onClick('create')}}/>
         <li style={{visibility: 'hidden', flexGrow: 1}}/>
-        <SidebarOption img={SettingsSvg} hint='Settings' onClick={() => {props.onClick('settings')}}/>
-        <SidebarOption img={DiscordSvg} hint='Join the Discord' style={{height:48, width:48, marginLeft:-7.75, marginTop:-3}} onClick={()=>{
+        <SidebarOption img={DiscordSvg} hint='Join the Discord' style={{height:44, width:44, marginLeft:-6, marginTop:-5}} onClick={()=>{
           window.require("electron").shell.openExternal('https://discord.gg/tDxtDHv2fS')
         }}/>
+        <SidebarOption img={SettingsSvg} hint='Settings' onClick={() => {props.onClick('settings')}}/>
         <SidebarOption img={SignOutSvg} hint='Sign Out' onClick={() => {firebaseApp.auth().signOut(); setFirebaseUser(null); Index.instance.setState({page:'login'})}}/>
     </SidebarContainer>
   );
