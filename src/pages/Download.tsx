@@ -69,7 +69,8 @@ class Download extends React.Component {
                     }}>Exit</DownloadButton>
                     <DownloadButton onClick={()=>{
                         ipcRenderer.send('download-update')
-                        this.setState({tab:1})
+                        if(window.process.platform !== 'darwin')
+                            this.setState({tab:1})
                     }}>Update</DownloadButton>
                 </RowDiv>
             </ColumnDiv>

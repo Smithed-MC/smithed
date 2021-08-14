@@ -11,6 +11,7 @@ const isRunning = require('is-running')
 const fs = require('fs')
 
 let win = null
+let updateInfo = null
 
 function createWindow() {
 	// Create the browser window.
@@ -70,6 +71,7 @@ function createWindow() {
 	if(!isDev) {
 		win.on('ready-to-show', () => {
 			autoUpdater.checkForUpdates().then((u) => {
+				updateInfo = u.updateInfo
 				win.webContents.send('update-found', u.updateInfo.version)
 			}).catch((e) => {
 				sendMessage(e)
@@ -77,10 +79,14 @@ function createWindow() {
 		})
 
 		ipcMain.on('download-update', ()=>{
-			autoUpdater.downloadUpdate().then(()=>{
-				sendMessage('done')
-				win.webContents.send('download-progress', 100)
-			}).catch((e)=>sendMessage(e))
+			if(process.platform !== 'darwin') {
+				autoUpdater.downloadUpdate().then(()=>{
+					sendMessage('done')
+					win.webContents.send('download-progress', 100)
+				}).catch((e)=>sendMessage(e))
+			} else {
+				open(`https://github.com/TheNuclearNexus/smithed/releases/latest`)
+			}
 		})
 
 		ipcMain.on('install-update', ()=>{

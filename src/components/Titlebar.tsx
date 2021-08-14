@@ -92,7 +92,7 @@ function WindowsContent() {
 function MacOSContent() {
 	return (
 		<div style={{ display: 'flex', flexDirection: 'row', justifyContent: 'space-around', paddingLeft:6 }}>
-			<ActionButtonSpan style={{gap:'4px', width:'50px',justifyContent:'left'}}>
+			<ActionButtonSpan style={{gap:'4px', width:'50px',justifyContent:'left', zIndex: 1}}>
 				<CircleButton style={{backgroundColor:'#EB6B63'}}
 					onClick={closeWindow}
 				/>
@@ -113,8 +113,8 @@ function MacOSContent() {
 function Titlebar() {
 	return (
 		<TopbarContainer>
-			{window.process.platform === 'darwin' && MacOSContent()}
-			{window.process.platform !== 'darwin' && WindowsContent()}
+			{window.process.platform !== 'darwin' && MacOSContent()}
+			{window.process.platform === 'darwin' && WindowsContent()}
 			<div style={{ height: 5, backgroundColor: curPalette.lightAccent }}></div>
 		</TopbarContainer>
 	)
