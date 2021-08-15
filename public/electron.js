@@ -7,12 +7,28 @@ const isDev = require('electron-is-dev')
 const execa = require('execa');
 const { exec } = require('child_process');
 const isRunning = require('is-running')
-const cmp = require('semver-compare')
 
 const fs = require('fs')
 
 let win = null
 let updateInfo = null
+
+function cmp(a, b) {
+    var pa = a.split('.');
+    var pb = b.split('.');
+    for (var i = 0; i < (pa.length > pb.length ? pa.length : pb.length); i++) {
+		if(i >= pa.length) return -1
+		if(i >= pb.length) return 1
+		
+        var na = Number(pa[i]);
+        var nb = Number(pb[i]);
+        if (na > nb) return 1;
+        if (nb > na) return -1;
+        if (!isNaN(na) && isNaN(nb)) return 1;
+        if (isNaN(na) && !isNaN(nb)) return -1;
+    }
+    return 0;
+}
 
 function createWindow() {
 	// Create the browser window.
@@ -73,8 +89,12 @@ function createWindow() {
 		win.on('ready-to-show', () => {
 			
 			autoUpdater.checkForUpdates().then((u) => {
+				sendMessage('checking for update')
 				updateInfo = u.updateInfo
-				if(cmp(app.getVersion().replace('-','.'), u.updateInfo.version.replace('-','.')) === -1)
+				sendMessage(updateInfo)
+				const r = cmp(app.getVersion().replace('-','.'), u.updateInfo.version.replace('-','.'))
+				sendMessage(r)
+				if(r === -1)
 					win.webContents.send('update-found', u.updateInfo.version)
 			}).catch((e) => {
 				sendMessage(e)
