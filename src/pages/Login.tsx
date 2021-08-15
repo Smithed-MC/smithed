@@ -4,6 +4,7 @@ import '../font.css'
 import { ColumnDiv, firebaseUser, RowDiv, setFirebaseUser, setIgnoreStateChange, TabButton } from '..';
 import curPalette from '../Palette';
 import {firebaseApp} from '../index'
+import appSettings, { saveSettings } from '../Settings';
 
 const emailRegex = new RegExp(/^(([^<>()\]\\.,;:\s@"]+(\.[^<>()\]\\.,;:\s@"]+)*)|(".+"))@(([0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/);
 const strongRegex = new RegExp(/^(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])(?=.*[!@#$%^&*])(?=.{8,})/);
@@ -37,6 +38,7 @@ const LoginInput = styled.input`
     background-color: ${curPalette.darkBackground};
     &::placeholder {
         color: ${curPalette.subText};
+        -webkit-user-select: none;
     }
 `
 
@@ -48,7 +50,8 @@ const LoginButton = styled.button`
     font-size:20px;
     border: none;
     font-family: Disket-Bold;
-
+    -webkit-user-select: none;
+    
     :hover {
         filter: brightness(85%);
     }
@@ -137,6 +140,8 @@ class Login extends React.Component {
             var user = userCredential.user;
             if(user != null) {
                 setFirebaseUser(user)
+                appSettings.lastEmail = this.email
+                saveSettings()
                 this.props.onSuccess()
             }
         }).catch((error) => {
@@ -156,6 +161,10 @@ class Login extends React.Component {
                     this.setState({loginError:'Incorrect password or email!'})
                     break
                 }
+                case 'auth/invalid-email': {
+                    this.setState({loginError:'Invalid email!'})
+                    break
+                }
                 default: {
                     this.setState({loginError: errorCode})
                 }
@@ -165,7 +174,7 @@ class Login extends React.Component {
     
     swapTab(tab: number) {
         if(tab !== this.state.tab) {
-            this.setState({tab: tab, emailValid:null, passwordValid: null, password2Valid: null, loginError: null})
+            this.setState({tab: tab, emailValid:true, passwordValid: true, password2Valid: true, loginError: null})
             this.email = ''
             this.password = ''
             this.password2 = ''
@@ -189,7 +198,7 @@ class Login extends React.Component {
                     let input = e.target as HTMLInputElement
                     this.email = input.value
                     this.validate()
-                }} placeholder='Email'/>
+                }} placeholder='Email' defaultValue={appSettings.lastEmail}/>
             </ColumnDiv>
         )
     }
@@ -302,6 +311,8 @@ class Login extends React.Component {
                         if(firebaseUser === null) return;
 
                         firebaseApp.database().ref(`users/${firebaseUser.uid}`).set({displayName: this.displayName, role:'member', packs:[]})
+                        appSettings.lastEmail = this.email
+                        saveSettings()
                         this.props.onSuccess()
     
                     }}>Finish</LoginButton>

@@ -158,12 +158,23 @@ class HandleLauncher {
 	constructor(window) {
 		this.window = window
 
-		ipcMain.on('start-launcher', async (event, profile) => {
-			this.runningProfile = profile
-			console.log(`--workdir ${profile.directory}`)
-			this.launcher = exec(`"C:\\Program Files (x86)\\Minecraft Launcher\\MinecraftLauncher.exe" --workdir ${profile.directory}`)
+		ipcMain.on('start-launcher', async (event, profile, launcherPath) => {
+			if(!fileExists(launcherPath)) {
+				window.webContents.send('invalid-launcher')
+			} else {
+				this.runningProfile = profile
 
-			this.loop = setInterval(this.isRunning, 200)
+				const platform = process.platform
+
+				let cmd = 
+					platform == 'win32' ? `"${launcherPath}"` :
+					platform == 'linux' ? `./${launcherPath}` :
+					platform == 'darwin'? `open ${launcherPath}` : `./${launcherPath}`
+
+				this.launcher = exec(`${cmd} --workdir ${profile.directory}`)
+
+				this.loop = setInterval(this.isRunning, 200)
+			}
 		})
 
 		ipcMain.on('stop-launcher', () => {

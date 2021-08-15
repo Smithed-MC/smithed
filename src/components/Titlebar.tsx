@@ -3,7 +3,7 @@ import ReactDOM from 'react-dom';
 import '../font.css';
 import styled, { css } from 'styled-components';
 import curPalette from '../Palette';
-import appSettings, { saveSettings } from '../Settings';
+import appSettings, { remote, saveSettings } from '../Settings';
 
 const fs = window.require('fs')
 const pathModule = window.require('path')
@@ -22,13 +22,20 @@ const ActionButtonSpan = styled.span`
   align-items: center;
 `
 const ActionButton = styled.button`
-  border: none;
-  background: none;
-  font-family: Disket-Bold;
-  color: ${curPalette.titlebar};
-  font-size: 14px;
-  text-align: left;
-  vertical-align: center;
+	border: none;
+	background: none;
+	font-family: Disket-Bold;
+	color: ${curPalette.titlebar};
+	font-size: 14px;
+	text-align: left;
+	vertical-align: center;
+	-webkit-user-select: none;
+	:hover {
+		filter: brightness(85%);
+	}
+	:active {
+		filter: brightness(75%);
+	}
 `
 
 const CircleButton = styled.div`
@@ -71,8 +78,8 @@ function maximizeWindow() {
 function WindowsContent() {
 	return (
 		<div style={{ display: 'flex', flexDirection: 'row', justifyContent: 'space-around' }}>
-			<label style={{ padding: '3px', fontSize: '14px', fontFamily: 'Disket-Bold', color: curPalette.titlebar, textAlign: 'left', verticalAlign: 'center' }}>
-				Smithed
+			<label style={{ padding: '3px', fontSize: '14px', fontFamily: 'Disket-Bold', color: curPalette.titlebar, textAlign: 'left', WebkitUserSelect: 'none', verticalAlign: 'center' }}>
+				Smithed <label style={{color:curPalette.subText, fontSize:12}}>v{remote.app.getVersion()}</label>
 			</label>
 			<li style={{ visibility: 'hidden', flexGrow: 1 }}></li>
 			<ActionButtonSpan>
@@ -103,8 +110,11 @@ function MacOSContent() {
 					onClick={maximizeWindow}
 				/>
 			</ActionButtonSpan>
-			<label style={{ marginLeft:-50, width:'100%', padding: '3px', fontSize: '14px', fontFamily: 'Disket-Bold', color: curPalette.titlebar, textAlign: 'center', verticalAlign: 'center' }}>
+			<label style={{ marginLeft:50, width:'100%', padding: '3px', fontSize: '14px', fontFamily: 'Disket-Bold', color: curPalette.titlebar, textAlign: 'center', verticalAlign: 'center' }}>
 				Smithed
+			</label>
+			<label style={{color:curPalette.subText, fontSize:12, fontFamily: 'Disket-Bold', width:'100px', textAlign: 'right', alignSelf:'center', verticalAlign: 'center', WebkitUserSelect: 'none', marginRight: 6}}>
+				v{remote.app.getVersion()}
 			</label>
 		</div>
 	)

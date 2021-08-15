@@ -2,6 +2,7 @@ import React, { version } from 'react';
 import styled from 'styled-components';
 import Home, {Profile} from '../pages/Home';
 import curPalette from '../Palette'
+import appSettings from '../Settings';
 
 const { ipcRenderer } = window.require('electron');
 const execa = window.require('execa')
@@ -60,6 +61,10 @@ class ProfileDisplay extends React.Component {
         super(props)
         this.props = props
         this.state = {mouseOver: false}
+
+        ipcRenderer.on('invalid-launcher', ()=> {
+            alert('Unable to find your Minecraft Launcher, please fix it in \'Settings\'')
+        })
     }
     setMouseOver(value: boolean) {
         this.setState({mouseOver: value})
@@ -87,7 +92,7 @@ class ProfileDisplay extends React.Component {
                         </ProfileNameLabel>}
                     {this.state.mouseOver && <ProfilePlayButton onClick={async ()=>{
                         if(Home.instance.state.activeProfile === '')
-                            ipcRenderer.send('start-launcher', this.props.profile)
+                            ipcRenderer.send('start-launcher', this.props.profile, appSettings.launcher)
 
                         Home.instance.renderMyProfiles()
                     }} disabled={Home.instance.state.activeProfile !== ''}>

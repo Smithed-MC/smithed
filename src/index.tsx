@@ -135,6 +135,7 @@ export const StyledInput = styled.input`
     font-family: Inconsolata;
     &::placeholder {
         color: ${curPalette.subText};
+		-webkit-user-select: none;
     }
     :disabled {
       color: ${curPalette.subText};
