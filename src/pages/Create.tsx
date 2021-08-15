@@ -94,7 +94,7 @@ class Create extends React.Component {
     }
 
     swapToAddPage(pack?: Pack) {
-        this.setState({page:1, new: pack ? false : true, pack: pack ? pack : new Pack()})
+        this.setState({page:1, new: pack ? false : true, pack: pack ? pack : new Pack(), displayHidden: this.state.pack.display === 'hidden'})
         this.renderVersions()
     }
 
@@ -260,7 +260,7 @@ class Create extends React.Component {
         }
         if(pack.id.length < 3)
             return 'Pack Id must be atleast 3 characters'
-        if(pack.versions === null || pack.versions === {})
+        if(pack.versions == null || pack.versions === {})
             return 'No versions have been specified'
         else {
             for(let v in pack.versions) {
@@ -275,7 +275,6 @@ class Create extends React.Component {
     }
 
     renderNewPack() {
-        if(this.state.pack.display === 'hidden') this.setState({displayHidden: true})
         return (
             <ColumnDiv style={{width:'100%', alignItems:'left', gap: 8}}>
                 <InputField text="Pack Id (ex. 'tcc')" defaultValue={this.state.pack.id} style={{width:'15%', marginBottom:3}} onChange={(v: string)=>{this.state.pack.id=v}} disabled={!this.state.new}/>
@@ -311,8 +310,11 @@ class Create extends React.Component {
                             <AddButton style={{fontFamily:'Disket-Bold',}} onClick={()=>{
 
                                 if(this.newVersionNumber === '') return
+                                this.newVersionNumber = this.newVersionNumber.replaceAll('.','_')
 
-                                if(this.state.pack.versions[this.newVersionNumber] === null) {
+                                if(this.state.pack.versions == null)
+                                    this.state.pack.versions = {}
+                                if(this.state.pack.versions[this.newVersionNumber] == null) {
                                     this.state.pack.versions[this.newVersionNumber] = new Version()
                                     this.renderVersions()
                                 }

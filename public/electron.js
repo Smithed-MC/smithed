@@ -168,7 +168,7 @@ class HandleLauncher {
 
 				let cmd = 
 					platform == 'win32' ? `"${launcherPath}"` :
-					platform == 'linux' ? `./${launcherPath}` :
+					platform == 'linux' ? `${launcherPath}` :
 					platform == 'darwin'? `open ${launcherPath}` : `./${launcherPath}`
 
 				this.launcher = exec(`${cmd} --workdir ${profile.directory}`)
@@ -176,7 +176,7 @@ class HandleLauncher {
 				this.loop = setInterval(this.isRunning, 200)
 			}
 		})
-
+		
 		ipcMain.on('stop-launcher', () => {
 			this.launcher.kill()
 		})

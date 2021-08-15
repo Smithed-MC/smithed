@@ -75,6 +75,7 @@ class Login extends React.Component {
         super(props)
         this.props = props
         this.state = {tab:1,page:'main'}
+        this.email = appSettings.lastEmail
     }
 
     validate(): boolean {
@@ -198,7 +199,7 @@ class Login extends React.Component {
                     let input = e.target as HTMLInputElement
                     this.email = input.value
                     this.validate()
-                }} placeholder='Email' defaultValue={appSettings.lastEmail}/>
+                }} placeholder='Email' defaultValue={this.email}/>
             </ColumnDiv>
         )
     }
