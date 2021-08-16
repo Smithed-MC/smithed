@@ -108,7 +108,7 @@ export class PackHelper {
         return new Pack(pack.meta, pack.display, pack.id, tempVersions)
     }
 
-    static createOrUpdatePack(pack: Pack, addToQueue?: boolean) {
+    static createOrUpdatePack(pack: Pack, addToQueue?: boolean, callback?: ()=>void) {
         pack = this.toFirebaseValid(pack)
         const userPacks = firebaseApp.database().ref(`users/${userData.uid}/packs`)
         userPacks.get().then((snapshot) => {
@@ -124,6 +124,9 @@ export class PackHelper {
             userPacks.child((i).toString()).set(pack)
             if(addToQueue)
                 PackHelper.addPackToQueue(pack)
+
+            if(callback != undefined)
+                callback()
         })
     }
 

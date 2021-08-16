@@ -89,13 +89,15 @@ class Create extends React.Component {
     updatePacks() {
         firebaseApp.database().ref(`users/${userData.uid}/packs`).get().then(snapshot=>{
             let packs: Pack[] = snapshot.val()
+            console.log(packs)
             this.setState({packs: packs})
         })
     }
 
     swapToAddPage(pack?: Pack) {
-        this.setState({page:1, new: pack ? false : true, pack: pack ? pack : new Pack(), displayHidden: this.state.pack.display === 'hidden'})
-        this.renderVersions()
+        this.setState({page:1, new: pack ? false : true, pack: pack ? pack : new Pack(), displayHidden: this.state.pack.display === 'hidden'}, () => {
+            this.renderVersions()
+        })
     }
 
     renderUsersPacks() {
@@ -193,7 +195,9 @@ class Create extends React.Component {
                 }}/>
                 <GroupedFoldout group={v} text="Downloads" defaultValue={false} style={{width:'95%', backgroundColor:'transparent'}}>         
                     <Dropdown placeholder="Add a download" onChange={(e)=> {
-                        if(version.downloads[e.toLowerCase()] === null) {
+                        if(version.downloads == null)
+                            version.downloads = {}
+                        if(version.downloads[e.toLowerCase()] == null) {
                             version.downloads[e.toLowerCase()] = ""
                             this.renderVersions()
                         }
@@ -280,7 +284,7 @@ class Create extends React.Component {
                 <InputField text="Pack Id (ex. 'tcc')" defaultValue={this.state.pack.id} style={{width:'15%', marginBottom:3}} onChange={(v: string)=>{this.state.pack.id=v}} disabled={!this.state.new}/>
                 <GroupedFoldout group="mainGroup" text="Display" style={{width:'40%',backgroundColor:'transparent',border:`1px solid ${curPalette.subText}`}} defaultValue={false}>
                     <ColumnDiv style={{width:'100%', alignItems:'', gap: 8}}>                    
-                        <RadioButton text="Hidden?" defaultValue={this.state.displayHidden} onChange={(value)=>{
+                        <RadioButton text="Hidden?" defaultValue={this.state.pack.display === 'hidden'} onChange={(value)=>{
                             if(value) this.state.pack.display = 'hidden'
                             else this.state.pack.display = new Display()
 
@@ -332,9 +336,10 @@ class Create extends React.Component {
                         const result = this.validatePack()
 
                         if(result === '') {
-                            PackHelper.createOrUpdatePack(this.state.pack, true)
+                            PackHelper.createOrUpdatePack(this.state.pack, true, () => {
+                                this.updatePacks()
+                            })
                             this.setState({page: 0})
-                            this.updatePacks()
                         } else {
                             this.setState({error: result})
                         }

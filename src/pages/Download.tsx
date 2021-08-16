@@ -80,13 +80,16 @@ class Download extends React.Component {
     renderProgress() {
         return (
             <ColumnDiv>
-                <Header1>Downloading</Header1>
-                <Header2 style={{color:curPalette.subText, marginTop:-20}}>Progress: {this.state.progress}/100%</Header2>
-                {this.state.progress === 100 && <DownloadButton onClick={()=>{
-                    ipcRenderer.send('install-update')
-                }}>
-                        Install
-                    </DownloadButton>}
+                {this.state.progress !== 100 && <Header1>Downloading Update...</Header1>}
+                {this.state.progress === 100 && 
+                    <ColumnDiv>
+                        <Header1>Download Complete!</Header1>
+                        <DownloadButton onClick={()=>{
+                            ipcRenderer.send('install-update')
+                        }}>
+                            Install
+                        </DownloadButton>
+                    </ColumnDiv>}
             </ColumnDiv>
         )
     }

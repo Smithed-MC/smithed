@@ -91,9 +91,7 @@ function createWindow() {
 			autoUpdater.checkForUpdates().then((u) => {
 				sendMessage('checking for update')
 				updateInfo = u.updateInfo
-				sendMessage(updateInfo)
 				const r = cmp(app.getVersion().replace('-','.'), u.updateInfo.version.replace('-','.'))
-				sendMessage(r)
 				if(r === -1)
 					win.webContents.send('update-found', u.updateInfo.version)
 			}).catch((e) => {
@@ -117,6 +115,7 @@ function createWindow() {
 		})
 
 		autoUpdater.on('download-progress', (progress, bytesPerSecond, percent, total, transferred) => {
+			console.log(progress)
 			win.webContents.send('download-progress', percent)
 		})
 	}
