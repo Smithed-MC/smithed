@@ -203,7 +203,7 @@ class Home extends React.Component {
                     let newProfile = {
                         name: this.profileCreationInfo.name,
                         version: this.profileCreationInfo.version,
-                        author: (await (await firebaseApp.database().ref(`users/${firebaseUser.uid}/displayName`).get()).val()),
+                        author: (await firebaseApp.database().ref(`users/${firebaseUser.uid}/displayName`).get()).val(),
                         directory: pathModule.join(settingsFolder, `Instances/${this.profileCreationInfo.name}`)
                     }
 

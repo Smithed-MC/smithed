@@ -144,18 +144,21 @@ export class PackHelper {
         })
     }
 
-    static movePackFromQueue(pack: Pack) {
-        pack = this.toFirebaseValid(pack)
-        const id = `${userData.displayName.toLowerCase()}:${pack.id}`
+    static movePackFromQueue(pack: Pack | string, callback?: ()=>void) {
+        const id = typeof pack == 'string' ? pack : `${userData.displayName.toLowerCase()}:${pack.id}`
         const queueRef = firebaseApp.database().ref(`queue/${id}`)
         const packRef = firebaseApp.database().ref(`packs/${id}`)
 
         queueRef.get().then((snapshot)=>{
             let val = snapshot.val()
             if(val != null) {
-                queueRef.set(null)
-                val.added = Date.now()
-                packRef.set(val)
+                queueRef.set(null).then(() => {
+                    val.added = Date.now()
+                    packRef.set(val).then(()=>{
+                        if(callback != null)
+                            callback()
+                    })
+                })
             }
         })
     }

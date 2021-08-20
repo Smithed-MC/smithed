@@ -7,7 +7,7 @@ import {firebaseApp} from '../index'
 import appSettings, { saveSettings } from '../Settings';
 
 const emailRegex = new RegExp(/^(([^<>()\]\\.,;:\s@"]+(\.[^<>()\]\\.,;:\s@"]+)*)|(".+"))@(([0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/);
-const strongRegex = new RegExp(/^(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])(?=.*[!@#$%^&*])(?=.{8,})/);
+const strongRegex = new RegExp(/^(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])(?=.*[!@#$%^&*-./:])(?=.{8,})/);
 
 
 const LoginContainer = styled.div`
@@ -148,7 +148,11 @@ class Login extends React.Component {
         }).catch((error) => {
             var errorCode = error.code;
             // ..
-            console.log(errorCode)
+            if (errorCode != null)
+                console.log(errorCode)
+            else
+                console.log(error)
+
             switch(errorCode) {
                 case 'auth/user-disabled': {
                     this.setState({loginError:'That user has been disabled!'})

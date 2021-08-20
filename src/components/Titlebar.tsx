@@ -24,7 +24,6 @@ const ActionButtonSpan = styled.span`
 const ActionButton = styled.button`
 	border: none;
 	background: none;
-	font-family: Disket-Bold;
 	color: ${curPalette.titlebar};
 	font-size: 14px;
 	text-align: left;
@@ -83,15 +82,15 @@ function WindowsContent() {
 			</label>
 			<li style={{ visibility: 'hidden', flexGrow: 1 }}></li>
 			<ActionButtonSpan>
-				<ActionButton
+				<ActionButton style={{marginTop:-3}}
 					onClick={minimizeWindow}
-				>-</ActionButton>
+				>–</ActionButton>
 				<ActionButton
 					onClick={maximizeWindow}
-				>⯀</ActionButton>
+				>☐</ActionButton>
 				<ActionButton
 					onClick={closeWindow}
-				>X</ActionButton>
+				>⨉</ActionButton>
 			</ActionButtonSpan>
 		</div>
 	)

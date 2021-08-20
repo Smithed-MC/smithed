@@ -6,7 +6,7 @@ import { PackEntry, PackDict } from './pages/Browse'
 import { Pack } from './Pack'
 import * as linq from 'linq-es5'
 
-async function getPack(pack: {added: number, owner: string}, id: string): Promise<Pack> {
+export async function getPack(pack: {added: number, owner: string}, id: string): Promise<Pack> {
     const userPacksRef = firebaseApp.database().ref(`users/${pack.owner}/packs`)
     const snapshot = await userPacksRef.get()
     const packs: Pack[] = snapshot.val()
@@ -55,6 +55,10 @@ export async function collectUserData() {
         userData.packs = linq.asEnumerable(packs).OrderBy(p => p.added)
         remote.getCurrentWindow().webContents.send('update-displayed-packs')
     })
+
+    if (newUserData.role === 'admin') {
+        newUserData.discordWebhook = (await firebaseApp.database().ref('secret/webhook').get()).val()
+    }
     
     setUserData(newUserData)
 }

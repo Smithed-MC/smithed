@@ -22,6 +22,8 @@ import { Enumerable } from 'linq-es5/lib/enumerable';
 import { asEnumerable } from 'linq-es5';
 import Download from './pages/Download';
 import { UpdateCheckResult } from 'electron-updater';
+import { Route, RouteComponentProps, Router, Switch, useHistory, withRouter } from 'react-router';
+import { HashRouter } from 'react-router-dom';
 const { ipcRenderer } = window.require('electron');
 
 export const firebaseApp = firebase.initializeApp({
@@ -46,6 +48,8 @@ firebaseApp.auth().onAuthStateChanged((user) => {
 		setFirebaseUser(user)
 		collectUserData()
 		Index.instance.setState({ page: 'app' })
+		console.log('ran')
+		remote.getCurrentWindow().webContents.send('user-data-changed')
 	}
 })
 
@@ -68,12 +72,14 @@ interface UserData {
 	profiles: Profile[],
 	packs: Enumerable<PackEntry>,
 	modsDict: { [key: string]: { [key: string]: string } }
-	versions: string[]
+	versions: string[],
+	discordWebhook?: string
 }
 
 export let userData: UserData = { uid: '', displayName: '', role: '', profiles: [], modsDict: {}, versions: [], packs: asEnumerable([]) }
 export function setUserData(data: UserData) {
 	userData = data
+	remote.getCurrentWindow().webContents.send('user-data-changed')
 }
 
 
@@ -91,6 +97,29 @@ export const TabButton = styled.button`
   :active {
     filter: brightness(75%);
   }
+`
+
+export const StyledLabel = styled.label`
+  	color: ${curPalette.text};
+	font-family: Inconsolata;
+`
+
+export const StyledButton = styled.button`
+    height:32px;
+    width:128px;
+    color:${curPalette.text};
+    background-color:${curPalette.lightAccent};
+    font-size:20px;
+    border: none;
+    font-family: Disket-Bold;
+    -webkit-user-select: none;
+    
+    :hover {
+        filter: brightness(85%);
+    }
+    :active {
+        filter: brightness(75%);
+    }
 `
 
 export const Header1 = styled.h1`
@@ -162,34 +191,51 @@ interface IndexState {
 	versionFound: string
 }
 
+
 export class Index extends React.Component {
 	static instance: Index
 	state: IndexState
-	constructor(props: any) {
+	props: RouteComponentProps
+	constructor(props: RouteComponentProps) {
 		super(props)
+		this.props = props
 		this.state = { page: startPage, versionFound: ''}
 		Index.instance = this
 	}
 
-	render() {
+	static changePage(path: string) {
+		this.instance.props.history.push(path)
+	}
 
+	render() {
 		return (
 			<React.StrictMode>
 				<Titlebar />
-				{this.state.page === 'login' && <Login onSuccess={() => {
-					collectUserData()
-					this.setState({ page: 'app' })
-				}} />}
-				{this.state.page === 'app' && <App />}
-				{this.state.page === 'update' && <Download version={this.state.versionFound}/>}
+				<HashRouter>
+					<Route path='/' render={({history})=>(
+						<Login onSuccess={() => {
+							collectUserData()
+							Index.changePage('/app')
+						}} />
+					)}/>
+					<Route path='/app' component={App}/>
+					<Route path='/update'>
+						<Download version={this.state.versionFound}/>
+					</Route>
+				</HashRouter>
 			</React.StrictMode>
 		)
 
 	}
 }
 
+const IndexWithRouter = withRouter(Index)
+
 ReactDOM.render(
-	<Index />,
+	<HashRouter>
+		<IndexWithRouter />
+	</HashRouter>
+	,
 	document.getElementById('root')
 );
 

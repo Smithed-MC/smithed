@@ -129,7 +129,7 @@ class PackDisplay extends React.Component {
                             <li style={{flexGrow:1, width:'100%', visibility:'hidden'}}/>
                         </RowDiv>
                         <div style={{width:'100%'}}>
-                            <PackDescription>{display.description}</PackDescription>
+                            <PackDescription>{display.description.length < 70 ? display.description : display.description.substring(0, 70) + '...'}</PackDescription>
                         </div>
                     </ColumnDiv>
                 </RowDiv>

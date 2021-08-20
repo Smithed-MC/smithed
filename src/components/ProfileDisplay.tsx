@@ -1,8 +1,10 @@
 import React, { version } from 'react';
 import styled from 'styled-components';
+import { RowDiv } from '..';
 import Home, {Profile} from '../pages/Home';
 import curPalette from '../Palette'
 import appSettings from '../Settings';
+import Dropdown, { Option } from './Dropdown';
 
 const { ipcRenderer } = window.require('electron');
 const execa = window.require('execa')
@@ -30,7 +32,6 @@ const ProfilePlayButton = styled.button`
     height: 60%;
     font-family: Disket-Bold;
     font-size: 24px;
-    margin-top: 12px;
     color: ${curPalette.text};
     border: none;
     background-color: ${curPalette.lightAccent};
@@ -70,10 +71,6 @@ class ProfileDisplay extends React.Component {
         this.setState({mouseOver: value})
     }
 
-    setButtonBrightness(e: React.MouseEvent, b: number) {
-        (e.target as HTMLButtonElement).style.filter = `brightness(${b})`
-    }
-
     render() {
         return (
             <ProfileDisplayDiv onMouseEnter={() => this.setMouseOver(true)} onMouseLeave={() => this.setMouseOver(false)}>
@@ -90,14 +87,22 @@ class ProfileDisplay extends React.Component {
                         <ProfileNameLabel style={{color:curPalette.subText, fontSize:18}}>
                             {`by ${this.props.profile.author}`}
                         </ProfileNameLabel>}
-                    {this.state.mouseOver && <ProfilePlayButton onClick={async ()=>{
-                        if(Home.instance.state.activeProfile === '')
-                            ipcRenderer.send('start-launcher', this.props.profile, appSettings.launcher)
 
-                        Home.instance.renderMyProfiles()
-                    }} disabled={Home.instance.state.activeProfile !== ''}>
-                            {this.props.active ? 'RUNNING' : 'PLAY'}
-                        </ProfilePlayButton>}
+                    <Dropdown style={{display:'none'}} id="context-menu">
+                        <Option value="Edit"/>
+                    </Dropdown>
+                    {this.state.mouseOver && 
+                        <RowDiv style={{width:'100%', height:'100%', gap:4, alignItems:'center',marginTop:-4}}>
+                            <ProfilePlayButton onClick={async (e)=>{
+                                console.log(e)
+                                if(Home.instance.state.activeProfile === '')
+                                    ipcRenderer.send('start-launcher', this.props.profile, appSettings.launcher)
+
+                                Home.instance.renderMyProfiles()
+                            }} disabled={Home.instance.state.activeProfile !== ''}>
+                                {this.props.active ? 'RUNNING' : 'PLAY'}
+                            </ProfilePlayButton>
+                        </RowDiv>}
                 </div>
             </ProfileDisplayDiv>  
         );

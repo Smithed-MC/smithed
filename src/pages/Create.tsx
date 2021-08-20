@@ -1,7 +1,7 @@
 import React from 'react';
 import styled from 'styled-components';
 import '../font.css'
-import { ColumnDiv, firebaseApp, StyledInput, RowDiv, userData } from '..';
+import { ColumnDiv, firebaseApp, StyledInput, RowDiv, userData, Index } from '..';
 import curPalette from '../Palette';
 import * as linq from 'linq-es5'
 import { DataVersion, Dependency, Display, Pack, PackHelper, Version } from '../Pack';
@@ -9,6 +9,8 @@ import Dropdown, { Option } from '../components/Dropdown';
 import CreatePackDisplay from '../components/CreatePackDisplay';
 import RadioButton from '../components/RadioButton';
 import GroupedFoldout from '../components/GroupedFoldout';
+import { Route, RouteComponentProps, Switch, withRouter } from 'react-router';
+import { HashRouter } from 'react-router-dom';
 
 
 interface CreateState {
@@ -76,10 +78,16 @@ class Create extends React.Component {
     
     newDependency: Dependency = {id:'', version:''}
 
-    constructor(props: any) {
+    props: RouteComponentProps
+    constructor(props: RouteComponentProps) {
         super(props)
+        this.props = props
         this.state = {page: 0, packs:[], pack: new Pack(), new: true}
         Create.instance = this
+
+        // if(this.props.match.url === '/app/create/new_pack') {
+
+        // }
     }
 
     componentDidMount() {
@@ -95,7 +103,8 @@ class Create extends React.Component {
     }
 
     swapToAddPage(pack?: Pack) {
-        this.setState({page:1, new: pack ? false : true, pack: pack ? pack : new Pack(), displayHidden: this.state.pack.display === 'hidden'}, () => {
+        this.setState({new: pack ? false : true, pack: pack ? pack : new Pack(), displayHidden: this.state.pack.display === 'hidden'}, () => {
+            this.props.history.push('/app/create/new_pack')
             this.renderVersions()
         })
     }
@@ -239,6 +248,7 @@ class Create extends React.Component {
                         <AddButton onClick={()=>{
                             if(this.newDependency.id.length < 3) return;
                             if(this.newDependency.version === '') return;
+                            if(version.dependencies == null) version.dependencies = []
                             if(!this.hasDependency(version)) {
                                 version.dependencies.push({id: this.newDependency.id, version: this.newDependency.version})
                                 
@@ -330,7 +340,7 @@ class Create extends React.Component {
                 {(this.state.error != null && this.state.error !== '') && <b style={{fontFamily:'Inconsolata', color:'red'}}>{this.state.error}</b>}
                 <RowDiv style={{gap:8,justifyContent:'space-evenly',width:'10%'}}>
                     <AddButton onClick={()=>{
-                        this.setState({page: 0})
+                        this.props.history.push('/app/create')
                     }}>Cancel</AddButton>
                     <AddButton onClick={()=>{
                         const result = this.validatePack()
@@ -339,7 +349,7 @@ class Create extends React.Component {
                             PackHelper.createOrUpdatePack(this.state.pack, true, () => {
                                 this.updatePacks()
                             })
-                            this.setState({page: 0})
+                            this.props.history.push('/app/create')
                         } else {
                             this.setState({error: result})
                         }
@@ -354,12 +364,14 @@ class Create extends React.Component {
         return (
             <ColumnDiv style={{width:'100%', height:'100%', padding: 16}}>
                 <RowDiv style={{display:'inline-flex', height: '100%', width:'100%', flexWrap:'wrap', justifyContent:'left', gap:12, alignContent:'flex-start'}}>
-                    {this.state.page === 0 && this.renderUsersPacks()}
-                    {this.state.page === 1 && this.renderNewPack()}
+                    <Switch>
+                        <Route path='/app/create/new_pack'>{this.renderNewPack()}</Route>
+                        <Route path={this.props.match.path}>{this.renderUsersPacks()}</Route>
+                    </Switch>
                 </RowDiv>
             </ColumnDiv>
         );
     }
 }
 
-export default Create;
+export default withRouter(Create);
