@@ -1,0 +1,3 @@
+[submodule "src/weld"]
+	path = src/weld
+	url = https://github.com/TheNuclearNexus/SmithedWeld
