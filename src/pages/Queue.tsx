@@ -10,8 +10,10 @@ import { getPack } from '../UserData';
 import GroupedFoldout from '../components/GroupedFoldout';
 import curPalette from '../Palette';
 import { PackHelper } from '../Pack';
+import Popup from 'reactjs-popup';
 const {Webhook} = window.require('simple-discord-webhooks');
 
+let reason = ''
 function QueueEntry(props: any) {
     return (
         <GroupedFoldout text={props.id} group="queue" style={{width:'95%'}}>
@@ -20,7 +22,23 @@ function QueueEntry(props: any) {
                     <StyledLabel style={{}}><b style={{fontSize:18}}>Description: </b> {props.data.display.description < 400 ? props.data.display.description : props.data.display.description.substring(0, 400) + '...'}</StyledLabel>
                 </div>}
                 <RowDiv style={{gap:8, marginTop:8}}>
-                    <StyledButton style={{backgroundColor:curPalette.lightBackground}}>Reject</StyledButton>
+                    <Popup trigger={
+                        <StyledButton style={{backgroundColor:curPalette.lightBackground}} onClick={()=>{reason=''}}>
+                            Reject
+                        </StyledButton>} modal
+                    >
+                        <ColumnDiv style={{backgroundColor:curPalette.lightBackground, padding:16, border: `4px solid ${curPalette.darkAccent}`, borderRadius: 8}}>
+                            <StyledInput placeholder="Reason for rejection..." style={{width:'384px'}} defaultValue={reason} onChange={(e) => {reason = e.target.value}}/>
+                            <StyledButton onClick={()=> {
+                                if(reason != '') {
+                                    PackHelper.removePackFromQueue(props.id, props.owner, reason, ()=>{
+                                        Queue.instance.renderQueue()
+                                    })
+                                }
+                            }}>Confirm</StyledButton>
+                        </ColumnDiv>
+                    </Popup>
+
                     <StyledButton onClick={()=>{
                         PackHelper.movePackFromQueue(props.id, () => {
                             Queue.instance.renderQueue()

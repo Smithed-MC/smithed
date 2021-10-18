@@ -20,6 +20,30 @@ export async function getPack(pack: {added: number, owner: string}, id: string):
     return new Pack()
 }
 
+async function queryPacks() {
+    const snapshot = await firebaseApp.database().ref('packs').get()
+    const packDict: PackDict = snapshot.val()
+    let packs: PackEntry[] = []
+    let i = 0
+    for(let p in packDict) {
+        if(i % 20 === 0) {
+            userData.packs = linq.asEnumerable(packs)
+            remote.getCurrentWindow().webContents.send('update-displayed-packs')
+        }
+        i++
+        const pack = await getPack(packDict[p], p)
+        packs.push({
+            owner: packDict[p].owner,
+            added: packDict[p].added,
+            id: p,
+            data: pack
+        })
+    }
+
+    userData.packs = linq.asEnumerable(packs).OrderBy(p => p.added)
+    remote.getCurrentWindow().webContents.send('update-displayed-packs')
+}
+
 export async function collectUserData() {
     let newUserData = userData
 
@@ -33,28 +57,7 @@ export async function collectUserData() {
     newUserData.modsDict = await ( await firebaseApp.database().ref('meta/mods').get()).val()
     newUserData.versions = await ( await firebaseApp.database().ref('versions').get()).val()
 
-    firebaseApp.database().ref('packs').get().then(async (snapshot)=>{
-        const packDict: PackDict = snapshot.val()
-        let packs: PackEntry[] = []
-        let i = 0
-        for(let p in packDict) {
-            if(i % 20 === 0) {
-                userData.packs = linq.asEnumerable(packs)
-                remote.getCurrentWindow().webContents.send('update-displayed-packs')
-            }
-            i++
-            const pack = await getPack(packDict[p], p)
-            packs.push({
-                owner: packDict[p].owner,
-                added: packDict[p].added,
-                id: p,
-                data: pack
-            })
-        }
-
-        userData.packs = linq.asEnumerable(packs).OrderBy(p => p.added)
-        remote.getCurrentWindow().webContents.send('update-displayed-packs')
-    })
+    await queryPacks()
 
     if (newUserData.role === 'admin') {
         newUserData.discordWebhook = (await firebaseApp.database().ref('secret/webhook').get()).val()

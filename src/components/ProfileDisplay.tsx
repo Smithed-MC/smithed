@@ -1,9 +1,12 @@
 import React, { version } from 'react';
 import styled from 'styled-components';
-import { RowDiv } from '..';
+import { RowDiv, StyledButton, userData } from '..';
+import Browse from '../pages/Browse';
 import Home, {Profile} from '../pages/Home';
 import curPalette from '../Palette'
-import appSettings from '../Settings';
+import { saveProfiles } from '../ProfileHelper';
+import appSettings, { fs } from '../Settings';
+import ContextMenu from './ContextMenu';
 import Dropdown, { Option } from './Dropdown';
 
 const { ipcRenderer } = window.require('electron');
@@ -14,7 +17,8 @@ interface ProfileDisplayProps {
 }
 
 interface ProfileDisplayState {
-    mouseOver:boolean
+    mouseOver:boolean,
+    editMenu: boolean
 }
 
 const ProfileDisplayDiv = styled.div`
@@ -61,7 +65,7 @@ class ProfileDisplay extends React.Component {
     constructor(props: ProfileDisplayProps) {
         super(props)
         this.props = props
-        this.state = {mouseOver: false}
+        this.state = {mouseOver: false, editMenu: false}
 
         ipcRenderer.on('invalid-launcher', ()=> {
             alert('Unable to find your Minecraft Launcher, please fix it in \'Settings\'')
@@ -95,15 +99,37 @@ class ProfileDisplay extends React.Component {
                         <RowDiv style={{width:'100%', height:'100%', gap:4, alignItems:'center',marginTop:-4}}>
                             <ProfilePlayButton onClick={async (e)=>{
                                 console.log(e)
+                                
                                 if(Home.instance.state.activeProfile === '')
                                     ipcRenderer.send('start-launcher', this.props.profile, appSettings.launcher)
 
                                 Home.instance.renderMyProfiles()
-                            }} disabled={Home.instance.state.activeProfile !== ''}>
+                            }} disabled={Home.instance.state.activeProfile !== ''} onMouseDownCapture={(e)=>{
+                                if(e.button == 2) 
+                                    ContextMenu.openMenu("edit-profile", e.clientX, e.clientY)
+                            }}>
                                 {this.props.active ? 'RUNNING' : 'PLAY'}
                             </ProfilePlayButton>
                         </RowDiv>}
                 </div>
+
+                <ContextMenu id="edit-profile" style={{backgroundColor:curPalette.lightBackground, border: `4px solid ${curPalette.lightAccent}`, borderRadius:8, padding: 8, gap: 4, width: 128, flexDirection:'column'}} offsetX={74} offsetY={40}>
+                    <StyledButton style={{backgroundColor: curPalette.darkBackground}}>Edit</StyledButton>
+                    <StyledButton style={{backgroundColor: curPalette.darkBackground, color:'red'}} onClick={() => {
+                        const idx = userData.profiles.indexOf(this.props.profile)
+                        const p = userData.profiles.splice(idx, 1)[0]
+
+                        saveProfiles(userData.profiles)
+                        Home.instance.buildProfileDisplays()
+
+                        ContextMenu.closeMenu("edit-profile")
+
+                        fs.rmdirSync(p.directory, {
+                            recursive: true
+                        })
+
+                    }}>Delete</StyledButton>
+                </ContextMenu>
             </ProfileDisplayDiv>  
         );
     }

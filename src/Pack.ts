@@ -1,5 +1,6 @@
 import { firebaseApp, firebaseUser, userData } from "."
-import { fs } from "./Settings"
+import { Profile } from "./pages/Home"
+import { fs, pathModule, settingsFolder } from "./Settings"
 
 
 export class Meta {
@@ -10,6 +11,7 @@ export class Display {
     name: string = ''
     icon: string = ''
     description: string = ''
+    webPage: string = ''
 }
 
 export interface Dependency {
@@ -99,6 +101,8 @@ export class DataVersion {
     }
 }
 
+export const SafeDisplayName = /(\s+|\[|\]|{|}|\||\\|"|%|~|#|<|>|\?)/g
+
 export class PackHelper {
     static toFirebaseValid(pack: Pack): Pack {
         let tempVersions: {[key:string]: Version} = {}
@@ -106,6 +110,19 @@ export class PackHelper {
             tempVersions[v.replaceAll('.', '_')] = pack.versions[v]
         }
         return new Pack(pack.meta, pack.display, pack.id, tempVersions)
+    }
+
+    static displayNameToID(displayName: string): string {
+        return displayName.toLowerCase().replaceAll(' ', '-').replaceAll(SafeDisplayName, '')
+    }
+
+    private static addToQueueIfNot(pack: Pack) {
+        const id = `${this.displayNameToID(userData.displayName)}:${pack.id}`
+        firebaseApp.database().ref(`queue/${id}`).get().then((snapshot) => {
+            const val = snapshot.val()
+            if(val == null)
+                PackHelper.addPackToQueue(pack)
+        })
     }
 
     static createOrUpdatePack(pack: Pack, addToQueue?: boolean, callback?: ()=>void) {
@@ -118,15 +135,30 @@ export class PackHelper {
             for(var i = 0; i < packs.length; i++) {
                 if(packs[i].id === pack.id) {
                     userPacks.child(i.toString()).set(pack)
+                    this.addToQueueIfNot(pack)
                     return;
                 }
             }
             userPacks.child((i).toString()).set(pack)
-            if(addToQueue)
-                PackHelper.addPackToQueue(pack)
+            this.addToQueueIfNot(pack)
 
             if(callback != undefined)
                 callback()
+        })
+    }
+
+    static resetMessages(pack: string) {
+        const userPacks = firebaseApp.database().ref(`users/${userData.uid}/packs`)
+        userPacks.get().then((snapshot) => {
+            const val = snapshot.val()
+            let packs: Pack[] = val != null ? val : []
+            
+            for(var i = 0; i < packs.length; i++) {
+                if(packs[i].id === pack) {
+                    userPacks.child(i.toString() + '/messages').set(null)
+                    return;
+                }
+            }
         })
     }
 
@@ -145,7 +177,7 @@ export class PackHelper {
     }
 
     static movePackFromQueue(pack: Pack | string, callback?: ()=>void) {
-        const id = typeof pack == 'string' ? pack : `${userData.displayName.toLowerCase()}:${pack.id}`
+        const id = typeof pack == 'string' ? pack : `${this.displayNameToID(userData.displayName)}:${pack.id}`
         const queueRef = firebaseApp.database().ref(`queue/${id}`)
         const packRef = firebaseApp.database().ref(`packs/${id}`)
 
@@ -162,6 +194,32 @@ export class PackHelper {
             }
         })
     }
+
+    static removePackFromQueue(id: string, owner: string, reason: string, callback?: ()=>void) {
+        const queueRef = firebaseApp.database().ref(`queue/${id}`)
+        const usersPacksRef = firebaseApp.database().ref(`users/${owner}/packs/`)
+
+        usersPacksRef.get().then((snapshot) => {
+            const packs: Pack[] = snapshot.val()
+
+            for(let i = 0; i < packs.length; i++) {
+                if(packs[i].id === id.split(':')[1]) {
+                    queueRef.set(null)
+                    usersPacksRef.child(`${i}/messages`).get().then((snapshot) => {
+                        let messages: string[] = snapshot.val()
+                        if(messages == null) messages = []
+                        messages.unshift(reason)
+
+                        usersPacksRef.child(`${i}/messages`).set(messages).then(() => {
+                            if(callback != null)
+                                callback()
+                        })
+                    })
+                }
+            }
+        })
+    }
+
     static hasVersion(pack: Pack, version: string): boolean {
         const versionData = new DataVersion(version)
 
@@ -179,6 +237,7 @@ export class PackHelper {
         const versionData = new DataVersion(version)
 
         for(let v in pack.versions) {
+            console.log(pack.versions[v])
             for(let s of pack.versions[v].supports) {
                 if(versionData.equal(new DataVersion(s))) {
                     return v
@@ -208,7 +267,7 @@ export class PackHelper {
     static resolveDependencies(pack: Pack, version: string): Dependency[] {
         let dependencies = pack.versions[version].dependencies
 
-        if(dependencies === null) return []
+        if(dependencies == null) return []
 
         dependencies.forEach(e => {
             dependencies.concat(this.resolveSubDependencies(e.id, e.version))

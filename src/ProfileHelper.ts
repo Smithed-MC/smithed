@@ -1,7 +1,7 @@
-import { firebaseApp } from ".";
+import { firebaseApp, setUserData, userData } from ".";
 import { dirExists } from "./FSWrapper";
 import { Profile } from "./pages/Home";
-import { fs, pathModule } from "./Settings";
+import { fs, pathModule, settingsFolder } from "./Settings";
 
 const download = window.require('download')
 const { exec } = window.require('child_process')
@@ -57,4 +57,12 @@ export async function setupProfile(profile: Profile, selectedMods: { [key: strin
 		// let companion = (await firebaseApp.database().ref(`meta/mods/smithed/${profile.version.replaceAll('.','_')}`).get()).val()
 		// await download(companion, pathModule.join(profile.directory, 'mods'), { filename: 'smithed_companion.jar' })
     }
+}
+
+export async function saveProfiles(profiles: Profile[]) {
+    fs.writeFileSync(pathModule.join(settingsFolder, 'profiles.json'), JSON.stringify(profiles, null, 2))
+    
+    let tempData = userData
+    tempData.profiles = profiles
+    setUserData(tempData)
 }

@@ -1,21 +1,26 @@
 import React from 'react';
 import styled from 'styled-components';
 import '../font.css'
-import { ColumnDiv, firebaseApp, Header2, TabButton, StyledInput, firebaseUser, userData } from '..';
+import { ColumnDiv, firebaseApp, Header2, TabButton, StyledInput, firebaseUser, userData, StyledLabel } from '..';
 import ProfileDisplay from '../components/ProfileDisplay';
 import curPalette from '../Palette';
 import Dropdown, {Option} from '../components/Dropdown';
 import Foldout from '../components/Foldout';
 import { fs, pathModule, settingsFolder } from '../Settings';
-import { setupProfile } from '../ProfileHelper';
+import { saveProfiles, setupProfile } from '../ProfileHelper';
 import RadioButton from '../components/RadioButton';
 import { Dependency } from '../Pack'
+import { RouteComponentProps, Switch, withRouter, Route } from 'react-router';
+import Browse from './Browse';
 const { ipcRenderer } = window.require('electron');
 
 
 interface HomeState {
     tab: number,
     activeProfile: string,
+    profileDisplays?: JSX.Element[],
+    mods?: JSX.Element,
+    error?: string
 }
 
 const CreateButton = styled.button`
@@ -48,11 +53,12 @@ class Home extends React.Component {
     profileCreationInfo: Profile = {name: '', version:''}
     selectedMods: {[key:string]: any} = {}
 
+    props: RouteComponentProps
     static instance: Home
-    constructor(props: any) {
+    constructor(props: RouteComponentProps) {
         super(props)
-    
-        this.state = {tab: 0, activeProfile:''}
+        this.props = props
+        this.state = {tab: 0, activeProfile: ''}
         
         Home.instance = this
 
@@ -61,10 +67,15 @@ class Home extends React.Component {
                 this.setState({activeProfile: profile})
             }
         })
+
+        ipcRenderer.on('user-data-changed', ()=>{
+            this.buildProfileDisplays()
+            this.renderMods()
+        })
     }
 
-    saveProfiles(profiles: Profile[]) {
-        fs.writeFileSync(pathModule.join(settingsFolder, 'profiles.json'), JSON.stringify(profiles, null, 2))
+    componentDidMount() {
+        this.buildProfileDisplays()
     }
 
     getSelectedStyle(tab: number) : React.CSSProperties {
@@ -78,10 +89,11 @@ class Home extends React.Component {
         }
     }
 
-    swapTab(tab: number) {
-        if(tab !== this.state.tab) {
-            this.setState({tab: tab, emailValid:null, passwordValid: null, password2Valid: null})
+    swapTab(url: string) {
+        if(url !== this.props.match.url) {
+            this.setState({emailValid:null, passwordValid: null, password2Valid: null})
             this.profileCreationInfo = {name: '', version: userData.versions[userData.versions.length - 1]}
+            this.props.history.push(url)
         }
     }
 
@@ -101,7 +113,7 @@ class Home extends React.Component {
                         onMouseDown={e=>setFilter(e, 'brightness(0.6)')}
                         onMouseUp={e=>setFilter(e, 'brightness(1)')}
                         onClick={()=>{
-                            this.swapTab(2)
+                            this.swapTab('/app/home/new_profile')
                         }}
                     >+</label>
                 </ColumnDiv>
@@ -109,7 +121,7 @@ class Home extends React.Component {
         )
     }
 
-    renderMyProfiles() {
+    buildProfileDisplays() {
         let profileDisplays: JSX.Element[] = []
 
         for(let i = 0; i < userData.profiles.length; i++) {
@@ -119,9 +131,13 @@ class Home extends React.Component {
             )
         }
 
+        this.setState({profileDisplays: profileDisplays})
+    }
+
+    renderMyProfiles() {
         return (
             <div style={{flexGrow:1, width:'99%',display:'inline-flex', overflowY:'auto', overflowX:'clip', flexWrap:'wrap', gap:8, padding:8, alignContent:'flex-start'}}>
-                {profileDisplays}
+                {this.state.profileDisplays}
                 {this.renderAddProfile()}
             </div>
         );
@@ -137,14 +153,16 @@ class Home extends React.Component {
             <div style={{width:'100%', height:'100%'}}>
                 <div style={{backgroundColor:curPalette.darkBackground, width:'100%',height:'30px',marginTop:1, display:'flex', justifyContent:'space-evenly'}}>
                     <TabButton style={this.getSelectedStyle(0)} 
-                        onClick={()=>{this.swapTab(0)}}
+                        onClick={()=>{this.swapTab('/app/home/')}}
                     >My Profiles</TabButton>
                     <TabButton style={this.getSelectedStyle(1)}
-                        onClick={()=>{this.swapTab(1)}}
+                        onClick={()=>{this.swapTab('/app/home/trending')}}
                     >Trending Profiles</TabButton>
                 </div>
-                {this.state.tab === 0 && this.renderMyProfiles()}
-                {this.state.tab === 1 && this.renderTrendingProfiles()}
+                <Switch>
+                    <Route path='/app/home/trending'>{this.renderTrendingProfiles()}</Route>
+                    <Route path='/app/home'>{this.renderMyProfiles()}</Route>
+                </Switch>
             </div>
         )
     }
@@ -158,13 +176,15 @@ class Home extends React.Component {
 
     renderMods() {
         const mods = ["carpet", "lithium", "sodium", "starlight"]
-        const verison = this.profileCreationInfo.version.replaceAll('.','_')
+        const version = this.profileCreationInfo.version.replaceAll('.','_')
+
+        if(version === '') return
 
         let options: JSX.Element[] = []
-        if(userData.modsDict != null) {
-            this.selectedMods = {fabric_api: userData.modsDict["fabric-api"][verison]}
+        if(userData.modsDict != undefined) {
+            this.selectedMods = {fabric_api: userData.modsDict["fabric-api"][version]}
             mods.map((val, i, arr) => {
-                const download = userData.modsDict[val][verison]
+                const download = userData.modsDict[val][version]
                 if(download != null) {
                     options.push(<RadioButton key={val} text={`Add ${val[0].toUpperCase() + val.substring(1)}`} onChange={(value)=>{
                         if(value) {
@@ -178,11 +198,11 @@ class Home extends React.Component {
             })
         }
 
-        return (
+        this.setState({mods: (
             <ColumnDiv style={{justifyContent:'left'}}>
                 {options}
             </ColumnDiv>
-        )
+        )})
     }
     renderNewProfile() {
         return(
@@ -192,13 +212,22 @@ class Home extends React.Component {
                     let v = (e.target as HTMLInputElement).value
                     this.profileCreationInfo.name = v
                 }}/>
-                <Dropdown placeholder="Pick a version" onChange={(v)=>{this.profileCreationInfo.version = v}} style={{width:'15.8%'}}>
+                <Dropdown placeholder="Pick a version" onChange={(v)=>{this.profileCreationInfo.version = v; this.renderMods()}} style={{width:'15.8%'}}>
                     {this.renderVersions(userData.versions)}
                 </Dropdown>
-                <CreateButton onClick={async () => {
+                <CreateButton onClick={async (e) => {
                     if(firebaseUser === null) return;
+                    if(this.profileCreationInfo.version === '') {
+                        this.setState({error: "No version selected!"})
+                        return;
+                    }
 
                     let p = userData.profiles
+
+                    if(p.findIndex(profile => profile.name === this.profileCreationInfo.name) != -1) { 
+                        this.setState({error: "Profile of that name exists!"})
+                        return;
+                    }
 
                     let newProfile = {
                         name: this.profileCreationInfo.name,
@@ -210,12 +239,15 @@ class Home extends React.Component {
                     await setupProfile(newProfile, this.selectedMods)
                     p.push(newProfile)
                     
-                    this.saveProfiles(p)
-                    this.setState({profiles: p})
-                    this.swapTab(0)
+                    saveProfiles(p)
+                    this.buildProfileDisplays()
+                    
+                    this.props.history.push(`/app/browse?selected=${newProfile.name}`)
+                    Browse.instance.update()
                 }}>Create</CreateButton>
+                {this.state.error != '' && <StyledLabel style={{color:'red'}}>{this.state.error}</StyledLabel>}
                 <Foldout text='Advanced Settings' style={{width:'15%'}}>
-                    {this.renderMods()}
+                    {this.state.mods}
                 </Foldout>
             </ColumnDiv>
         )
@@ -225,8 +257,10 @@ class Home extends React.Component {
 
         return (
             <ColumnDiv style={{flexGrow:1}}>
-                {this.state.tab !== 2 && this.renderMain()}
-                {this.state.tab === 2 && this.renderNewProfile()}
+                <Switch>
+                    <Route path='/app/home/new_profile'>{this.renderNewProfile()}</Route>
+                    <Route path='/app/home'>{this.renderMain()}</Route>
+                </Switch>
             </ColumnDiv>
         );
     }

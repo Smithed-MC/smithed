@@ -8,10 +8,10 @@ import Home from './pages/Home';
 import curPalette from './Palette';
 import Settings from './pages/Settings';
 import appSettings, { saveSettings } from './Settings';
-import Browse from './pages/Browse';
+import Browse, { BrowseWithQuery } from './pages/Browse';
 import Create from './pages/Create';
 import Queue from './pages/Queue';
-import {Route, Switch} from 'react-router'
+import {Route, Switch, withRouter} from 'react-router'
 import { HashRouter } from 'react-router-dom';
 import { Index } from '.';
 
@@ -48,13 +48,13 @@ class App extends React.Component {
       <AppContainer>
         <Sidebar onClick={(p: string) => {this.changePage(p)}}/>
         <Switch>
-          <Route path='/app/news' component={News}/>
-          <Route path='/app/home' component={Home}/>
-          <Route path='/app/browse' component={Browse}/>
+          <Route path='/app/home' component={withRouter(Home)}/>
+          <Route path='/app/browse' component={BrowseWithQuery}/>
           <Route path='/app/create' component={Create}/>
           <Route path='/app/settings' component={Settings}/>
           <Route path='/app/queue' component={Queue}/>
-
+          <Route path='/app/news' component={News}/>
+          <Route exact path='/app/' component={News}/>
         </Switch>
         {/* { this.state.page === 'news' ? <News/> : null}
         { this.state.page === 'home' ? <Home/> : null}

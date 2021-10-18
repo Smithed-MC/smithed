@@ -35,7 +35,8 @@ interface DropdownProps {
     optionsStyle?: React.CSSProperties,
     id?: string,
     disabled?: boolean,
-    noarrow?: boolean
+    noarrow?: boolean,
+    defaultValue?: string
 }
 
 class Dropdown extends React.Component {
@@ -57,7 +58,7 @@ class Dropdown extends React.Component {
         
         return (
             <DropdownWrapper style={this.props.style != null ? this.props.style : {}} id={this.props.id}>
-                <StyledSelect id="options" name="options" defaultValue="null" style={style} onChange={e=>{
+                <StyledSelect id="options" name="options" defaultValue={this.props.defaultValue != null ? this.props.defaultValue : "null"} style={style} onChange={e=>{
                     this.onChange(e)
                 }} disabled={this.props.disabled}>
                     {this.props.placeholder != null && <Option value='null' disabled hidden>{this.props.placeholder}</Option>}

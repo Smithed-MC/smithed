@@ -13,17 +13,16 @@ import Login from './pages/Login';
 import firebase from 'firebase/app';
 import 'firebase/auth';
 import 'firebase/database';
-import { fs, pathModule, remote, settingsFolder } from './Settings';
-import { fileExists } from './FSWrapper';
+import { remote } from './Settings';
 import { Profile } from './pages/Home';
 import { collectUserData } from './UserData';
 import { PackEntry } from './pages/Browse';
 import { Enumerable } from 'linq-es5/lib/enumerable';
 import { asEnumerable } from 'linq-es5';
 import Download from './pages/Download';
-import { UpdateCheckResult } from 'electron-updater';
-import { Route, RouteComponentProps, Router, Switch, useHistory, withRouter } from 'react-router';
+import { Route, RouteComponentProps, withRouter } from 'react-router';
 import { HashRouter } from 'react-router-dom';
+
 const { ipcRenderer } = window.require('electron');
 
 export const firebaseApp = firebase.initializeApp({
@@ -173,6 +172,16 @@ export const StyledInput = styled.input`
 `
 
 
+function ModifyiedA(props: any) {
+	return (
+		<a href={props.href} target="_blank" title={props.title}>{props.children}</a>
+	)
+}
+
+const StyledHR = styled.hr`
+background-color: ${curPalette.lightAccent};
+`
+
 export const MarkdownOptions = (wrapper?: React.ElementType<any>): MarkdownToJSX.Options => {
 	return {
 		wrapper: wrapper,
@@ -180,7 +189,9 @@ export const MarkdownOptions = (wrapper?: React.ElementType<any>): MarkdownToJSX
 		overrides: {
 			h1: Header1,
 			h2: Header2,
-			h3: Header3
+			h3: Header3,
+			a: ModifyiedA,
+			hr: StyledHR
 		}
 	}
 }
@@ -196,11 +207,21 @@ export class Index extends React.Component {
 	static instance: Index
 	state: IndexState
 	props: RouteComponentProps
+	returnPage: string = '/app'
 	constructor(props: RouteComponentProps) {
 		super(props)
 		this.props = props
 		this.state = { page: startPage, versionFound: ''}
 		Index.instance = this
+
+		ipcRenderer.on('go-to-page', (e: any, path: string) => {
+			console.log(path);
+			if(firebase.auth().currentUser != null) {
+				this.props.history.push(path);
+			} else {
+				this.returnPage = path;
+			}
+		})
 	}
 
 	static changePage(path: string) {
@@ -215,7 +236,8 @@ export class Index extends React.Component {
 					<Route path='/' render={({history})=>(
 						<Login onSuccess={() => {
 							collectUserData()
-							Index.changePage('/app')
+							Index.changePage(this.returnPage)
+							this.returnPage = '/app';
 						}} />
 					)}/>
 					<Route path='/app' component={App}/>
@@ -247,6 +269,16 @@ ipcRenderer.on('message', (e: any, message: string) => {
 })
 ipcRenderer.on('update-found', (e:any, version: string) => {
 	Index.instance.setState({page:'update',versionFound:version})
+})
+
+remote.app.on('web-contents-created', (event: any, contents: any) => {
+	contents.on('will-navigate', (event: any, navigationUrl: string) => {
+		event.preventDefault();
+		const parsedUrl = new URL(navigationUrl)
+		if(["https:","http:","smithed:"].includes(parsedUrl.protocol)) {
+			remote.shell.openExternal(navigationUrl)
+		}
+	})
 })
 
 // If you want to start measuring performance in your app, pass a function

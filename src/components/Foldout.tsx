@@ -1,11 +1,12 @@
 import React from 'react';
 import styled from 'styled-components';
 import curPalette from '../Palette'
-import { ColumnDiv, RowDiv } from '..';
+import { ColumnDiv, RowDiv, StyledLabel } from '..';
 
 export interface FoldoutProps {
     text: string,
     style?: React.CSSProperties,
+    headerStyle?: React.CSSProperties
     children?: any,
     defaultValue?: boolean
     disabled?: boolean
@@ -79,7 +80,7 @@ class Foldout extends React.Component {
         return (
             <FoldoutContainer style={this.props.style ? this.props.style : {}}>
                 <FoldoutHeader style={{alignItems:'center', gap:8}} onClick={this.onClick}>
-                    <label style={{color:curPalette.text, fontFamily:'Inconsolata', WebkitUserSelect:'none'}}>{this.props.text}</label>
+                    <StyledLabel style={this.props.headerStyle}>{this.props.text}</StyledLabel>
                     <div style={triangle}/>
                 </FoldoutHeader>
                 {this.state.open && this.renderChildren()}

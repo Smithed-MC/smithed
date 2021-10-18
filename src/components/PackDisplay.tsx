@@ -7,7 +7,8 @@ import Home, { Profile } from '../pages/Home';
 import curPalette from '../Palette'
 import {Header3} from '..'
 import { fs, pathModule, settingsFolder } from '../Settings';
-interface PackDisplayProps {
+import { RouteComponentProps, withRouter } from 'react-router';
+interface PackDisplayProps extends RouteComponentProps {
     packEntry: PackEntry
 }
 
@@ -20,6 +21,19 @@ const PackName = styled.label`
     text-align: left;
     width: 100%;
     font-size: 18px;
+    -webkit-user-select: none;
+    white-space: nowrap;
+    overflow: hidden;
+    display: table-cell;
+    text-overflow: ellipsis;
+
+    :hover {
+        filter: brightness(85%);
+        text-decoration: underline;
+    }
+    :active {
+        filter: brightness(75%);
+    }
 `
 const PackStats = styled.label`
     font-family: Inconsolata;
@@ -29,6 +43,7 @@ const PackStats = styled.label`
     font-size: 12px;
     white-space: nowrap;
     vertical-align: middle;
+    -webkit-user-select: none;
 `
 const PackDescription = styled.label`
     font-family: Inconsolata;
@@ -70,9 +85,6 @@ class PackDisplay extends React.Component {
         this.state = {}
     }
 
-    saveProfiles(profiles: Profile[]) {
-        fs.writeFileSync(pathModule.join(settingsFolder, 'profiles.json'), JSON.stringify(profiles, null, 2))
-    }
 
     profileContains(): boolean {
         if(Browse.instance.state.profile.packs != null) {
@@ -96,29 +108,19 @@ class PackDisplay extends React.Component {
         const contained = this.profileContains()
         return (
             <div style={{width:'85%'}}>
-                <RowDiv style={{backgroundColor:curPalette.darkBackground, width: '100%',padding:16, justifyContent:'left', gap:16, borderRadius:8}}>
+                <RowDiv style={{backgroundColor:curPalette.darkBackground, width: '100%', height:64, padding:16, justifyContent:'left', gap:16, borderRadius:8}}>
                     <img style={{width:64, height: 64, backgroundColor:curPalette.darkAccent, WebkitUserSelect:'none'}} src={display.icon}/>
                     <ColumnDiv style={{alignItems:'left',width:'100%', justifyContent:'space-evenly'}}>
-                        <RowDiv style={{alignItems:'left', width:'100%', justifyContent:'space-evenly'}}>
-                            <PackName>{display.name}</PackName>
+                        <RowDiv style={{alignItems:'left', width:'inherit', justifyContent:'space-between', gap:4}}>
+                            <div style={{display:'table',tableLayout:'fixed', width:'100%'}}>
+                                <PackName onClick={()=>{
+                                    const id = this.props.packEntry.id.split(':')
+                                    const link = `/app/browse/view/${id[0]}/${id[1]}`
+                                    this.props.history.push(link)
+                                }}>{display.name}</PackName>
+                            </div>
                             {!contained && <PackAddButton disabled={Browse.instance.state.profile.name === ''} onClick={()=>{
-                                const packVersion = PackHelper.getLatestVersionForVersion(this.props.packEntry.data, Browse.instance.state.profile.version)
-
-                                let temp: Dependency[] = []
-                                let packs = Browse.instance.state.profile.packs != null ? Browse.instance.state.profile.packs : []
-
-                                temp.push({id: this.props.packEntry.id, version: packVersion})
-                                temp.concat(PackHelper.resolveDependencies(this.props.packEntry.data, packVersion))
-
-                                temp.forEach(d => {
-                                    if(!packs.includes(d)) {
-                                        packs.push(d)
-                                    }
-                                })
-
-                                Browse.instance.state.profile.packs = packs
-                                
-                                this.saveProfiles(userData.profiles)
+                                Browse.addPackToProfile(this.props.packEntry)
                             }}>+</PackAddButton>}
                             {contained && <PackAddButton>-</PackAddButton>}
                         </RowDiv>
@@ -138,4 +140,4 @@ class PackDisplay extends React.Component {
     }
 }
 
-export default PackDisplay;
+export default withRouter(PackDisplay);

@@ -1,7 +1,7 @@
 import React from 'react';
 import styled from 'styled-components';
 import '../font.css'
-import { ColumnDiv, firebaseApp, StyledInput, RowDiv, userData, Index } from '..';
+import { ColumnDiv, firebaseApp, StyledInput, RowDiv, userData, Index, StyledLabel, StyledButton } from '..';
 import curPalette from '../Palette';
 import * as linq from 'linq-es5'
 import { DataVersion, Dependency, Display, Pack, PackHelper, Version } from '../Pack';
@@ -15,8 +15,8 @@ import { HashRouter } from 'react-router-dom';
 
 interface CreateState {
     page: number,
-    packs: Pack[],
-    pack: Pack,
+    packs: PackWithMessages[],
+    pack: PackWithMessages,
     [key: string]: any
 }
 
@@ -69,7 +69,12 @@ function InputField(props: any) {
     )
 }
 
+class PackWithMessages extends Pack {
+    messages: string[] = []
+}
 
+
+const mainFoldoutStyle = {width:'40%',backgroundColor:'transparent',border:`1px solid ${curPalette.subText}`}
 class Create extends React.Component {
     state: CreateState
     static instance: Create
@@ -82,7 +87,7 @@ class Create extends React.Component {
     constructor(props: RouteComponentProps) {
         super(props)
         this.props = props
-        this.state = {page: 0, packs:[], pack: new Pack(), new: true}
+        this.state = {page: 0, packs:[], pack: new PackWithMessages(), new: true}
         Create.instance = this
 
         // if(this.props.match.url === '/app/create/new_pack') {
@@ -96,8 +101,7 @@ class Create extends React.Component {
     }
     updatePacks() {
         firebaseApp.database().ref(`users/${userData.uid}/packs`).get().then(snapshot=>{
-            let packs: Pack[] = snapshot.val()
-            console.log(packs)
+            let packs: PackWithMessages[] = snapshot.val()
             this.setState({packs: packs})
         })
     }
@@ -292,7 +296,16 @@ class Create extends React.Component {
         return (
             <ColumnDiv style={{width:'100%', alignItems:'left', gap: 8}}>
                 <InputField text="Pack Id (ex. 'tcc')" defaultValue={this.state.pack.id} style={{width:'15%', marginBottom:3}} onChange={(v: string)=>{this.state.pack.id=v}} disabled={!this.state.new}/>
-                <GroupedFoldout group="mainGroup" text="Display" style={{width:'40%',backgroundColor:'transparent',border:`1px solid ${curPalette.subText}`}} defaultValue={false}>
+                {this.state.pack.messages != null && this.state.pack.messages.length > 0 && 
+                <GroupedFoldout group="mainGroup" text="Messages" style={mainFoldoutStyle} headerStyle={{color:'red'}} defaultValue={true}>
+                    <StyledLabel id="messages" style={{width:'100%'}}>{this.state.pack.messages.join('\n')}</StyledLabel>
+                    <StyledButton onClick={(e)=>{
+                        PackHelper.resetMessages(this.state.pack.id)
+                        const messages = document.getElementById('messages') as HTMLLabelElement
+                        messages.hidden = true
+                    }}>Clear</StyledButton>
+                </GroupedFoldout>}
+                <GroupedFoldout group="mainGroup" text="Display" style={mainFoldoutStyle} defaultValue={false}>
                     <ColumnDiv style={{width:'100%', alignItems:'', gap: 8}}>                    
                         <RadioButton text="Hidden?" defaultValue={this.state.pack.display === 'hidden'} onChange={(value)=>{
                             if(value) this.state.pack.display = 'hidden'
@@ -313,11 +326,15 @@ class Create extends React.Component {
                                     if(this.state.pack.display !== 'hidden') 
                                         this.state.pack.display.description = v
                                 }}/>
+                                <InputField text='Full View Markdown URL...' defaultValue={this.state.pack.display.webPage} onChange={(v: string)=>{
+                                    if(this.state.pack.display !== 'hidden') 
+                                        this.state.pack.display.webPage = v
+                                }}/>
                             </ColumnDiv>
                         }
                     </ColumnDiv>
                 </GroupedFoldout>
-                <GroupedFoldout group="mainGroup" text="Versions" style={{width:'40%',backgroundColor:'transparent',border:`1px solid ${curPalette.subText}`}} defaultValue={false}>
+                <GroupedFoldout group="mainGroup" text="Versions" style={mainFoldoutStyle} defaultValue={false}>
                     <ColumnDiv style={{width:'100%', alignItems:'', gap: 8}}>                    
                         <RowDiv style={{gap: 8}}>
                             <InputField text="Version Number..." onChange={(v: string)=>{this.newVersionNumber = v.replaceAll('.','_')}}/>
@@ -340,10 +357,12 @@ class Create extends React.Component {
                 {(this.state.error != null && this.state.error !== '') && <b style={{fontFamily:'Inconsolata', color:'red'}}>{this.state.error}</b>}
                 <RowDiv style={{gap:8,justifyContent:'space-evenly',width:'10%'}}>
                     <AddButton onClick={()=>{
+                        this.updatePacks()
                         this.props.history.push('/app/create')
                     }}>Cancel</AddButton>
                     <AddButton onClick={()=>{
                         const result = this.validatePack()
+                        this.updatePacks()
 
                         if(result === '') {
                             PackHelper.createOrUpdatePack(this.state.pack, true, () => {
