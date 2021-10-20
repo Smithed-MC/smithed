@@ -72,12 +72,15 @@ interface UserData {
 	packs: Enumerable<PackEntry>,
 	modsDict: { [key: string]: { [key: string]: string } }
 	versions: string[],
-	discordWebhook?: string
+	discordWebhook?: string,
+	ref?: firebase.database.Reference
 }
 
 export let userData: UserData = { uid: '', displayName: '', role: '', profiles: [], modsDict: {}, versions: [], packs: asEnumerable([]) }
 export function setUserData(data: UserData) {
 	userData = data
+	userData.ref = firebaseApp.database().ref(`/users/${userData.uid}`)
+
 	remote.getCurrentWindow().webContents.send('user-data-changed')
 }
 

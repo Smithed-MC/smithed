@@ -3,8 +3,9 @@ import '../font.css'
 import curPalette, { changePalette, registeredPalettes } from '../Palette';
 import Dropdown, {Option} from '../components/Dropdown';
 import appSettings, { saveSettings } from '../Settings';
-import { Header1, Header3, RowDiv, StyledInput } from '..';
+import { ColumnDiv, firebaseApp, firebaseUser, Header1, Header2, Header3, RowDiv, StyledInput, StyledLabel, userData } from '..';
 import styled from 'styled-components';
+import GroupedFoldout from '../components/GroupedFoldout';
 
 const SettingsButton = styled.button`
     height:32px;
@@ -28,8 +29,17 @@ class Settings extends React.Component {
     state : {[key: string]: any} = {}
     constructor(props: any) {
         super(props)
-        this.state = {launcherPath: appSettings.launcher}
+        this.state = {launcherPath: appSettings.launcher, donation: {kofi: '', patreon: '', other: ''}}
     }
+
+    componentDidMount() {
+        
+        userData.ref?.child('donation').get().then((snapshot) => {
+            this.setState({donation: snapshot.val()})
+            console.table(snapshot.val())
+        })
+    }
+
     renderPalettes() {
         let final = []
         for(let p in registeredPalettes) {
@@ -41,7 +51,7 @@ class Settings extends React.Component {
 
         return(
             <RowDiv style={{justifyContent:'bottom'}}>
-                <Header3 style={{marginTop:6}}>Palette:</Header3>
+                <StyledLabel style={{marginTop:6}}>Palette:</StyledLabel>
                 <Dropdown onChange={(p)=>{changePalette(p)}}>
                     {final}
                 </Dropdown>
@@ -50,9 +60,13 @@ class Settings extends React.Component {
     }
     render() {
 
+        const updateDonation = (path: string, value: string) => {
+            userData.ref?.child(`donation/${path}`).set(value)
+        }
+
         return (
             <div style={{flexGrow:1,display:'flex',flexDirection:'column',alignItems:'center'}}>
-                <Header1>SETTINGS</Header1>
+                <Header1>App Options</Header1>
                 {this.renderPalettes()}
                 <StyledInput placeholder="" type="file" id="launcherInput" hidden onChange={(e) => {
                         if(e.target.files != null && e.target.files.length !== 0) {
@@ -71,6 +85,15 @@ class Settings extends React.Component {
                         }
                     }}>Browse</SettingsButton>
                 </RowDiv>
+                <Header1>Account Options</Header1>
+                <GroupedFoldout text='Donations' group='Account Options' style={{width:'33%', backgroundColor:'transparent'}}>
+                    <StyledLabel>Kofi</StyledLabel>
+                    <StyledInput placeholder="Kofi Username..." defaultValue={this.state.donation["kofi"]} style={{width:'100%'}} onChange={(e) => updateDonation('kofi', e.target.value)}/>
+                    <StyledLabel>Patreon</StyledLabel>
+                    <StyledInput placeholder="Patreon Username..." defaultValue={this.state.donation["patreon"]} style={{width:'100%'}} onChange={(e) => updateDonation('patreon', e.target.value)}/>
+                    <StyledLabel>Other Link</StyledLabel>
+                    <StyledInput placeholder="Other Link..." defaultValue={this.state.donation["other"]} style={{width:'100%'}} onChange={(e) => updateDonation('other', e.target.value)}/>
+                </GroupedFoldout>
             </div>
         );
     }

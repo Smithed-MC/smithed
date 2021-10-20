@@ -7,6 +7,7 @@ import Markdown from 'markdown-to-jsx'
 import Browse from '../Browse'
 import Popup from 'reactjs-popup'
 import Dropdown, { Option } from '../../components/Dropdown'
+import { remote } from '../../Settings'
 const {ipcRenderer} = window.require('electron') 
 
 const ContentContainer = styled.div`
@@ -20,7 +21,6 @@ const ContentContainer = styled.div`
     overflow-y: scroll;
 `
 
-
 class Content extends React.Component {
     
     props: any
@@ -29,6 +29,37 @@ class Content extends React.Component {
         super(props)
 
         this.state = {content: null}
+    }
+
+    openUrl(url: string) {
+        remote.shell.openExternal(url)
+    }
+
+    componentDidMount() {
+        userData.ref?.child('donation').on('value', (snapshot) => {
+            this.setState({donation: snapshot.val()})
+        }) 
+    }
+
+    renderSupport() {
+        if(this.state.donation != null) {
+            return (
+                <ColumnDiv style={{backgroundColor: curPalette.darkBackground, padding: 8, borderRadius: 8, width: '90%'}}>
+                    <Header2 style={{marginBottom: 4, marginTop: -2}}>Support the Creator</Header2>
+                    <ColumnDiv style={{gap: 4, width: '40%'}}>
+                        {this.state.donation["kofi"] != null && this.state.donation["kofi"] != '' && <StyledButton style={{backgroundColor:'#00B9FE', width: '100%', borderRadius: 4}} onClick={()=>
+                            this.openUrl(`https://ko-fi.com/${this.state.donation['kofi']}`)
+                        }>Kofi</StyledButton>}
+                        {this.state.donation["patreon"] != null && this.state.donation["patreon"] != '' && <StyledButton style={{backgroundColor:'#F96854', width: '100%', borderRadius: 4}} onClick={()=>
+                            this.openUrl(`https://patreon.com/${this.state.donation['patreon']}`)
+                        }>Patreon</StyledButton>}
+                        {this.state.donation["other"] != null && this.state.donation["other"] != '' && <StyledButton style={{backgroundColor:'#7DEF6B', width: '100%', borderRadius: 4}} onClick={()=>
+                            this.openUrl(this.state.donation['other'])
+                        }>Other</StyledButton>}
+                    </ColumnDiv>
+                </ColumnDiv>
+            )
+        }
     }
 
     render() {
@@ -72,7 +103,9 @@ class Content extends React.Component {
             
             return (
                 <ContentContainer>
-                    <ColumnDiv style={{flex:'25%'}}></ColumnDiv>
+                    <ColumnDiv style={{flex:'25%'}}>
+                        {this.renderSupport()}
+                    </ColumnDiv>
                     <ColumnDiv style={{flex:'50%', gap:'8px'}}>
                         <RowDiv style={{width: '100%', gap: 8, justifyContent:'left'}}>
                             <img style={{width:64, height:64, border:`4px solid ${curPalette.darkAccent}`, borderRadius:8}} src={pack.data.display.icon}/>
@@ -84,7 +117,7 @@ class Content extends React.Component {
                         </Markdown>
                     </ColumnDiv>
                     <ColumnDiv style={{flex:'25%'}}>
-                        <ColumnDiv style={{backgroundColor:curPalette.darkBackground, width:'100%'}}>
+                        <ColumnDiv style={{backgroundColor:curPalette.darkBackground, padding: 8, borderRadius: 8, width: '90%'}}>
                             <Dropdown defaultValue={Browse.instance.state.profile.name}>
                                 {this.renderProfiles()}
                             </Dropdown>
