@@ -53,7 +53,7 @@ class Content extends React.Component {
                         {this.state.donation["patreon"] != null && this.state.donation["patreon"] != '' && <StyledButton style={{backgroundColor:'#F96854', width: '100%', borderRadius: 4}} onClick={()=>
                             this.openUrl(`https://patreon.com/${this.state.donation['patreon']}`)
                         }>Patreon</StyledButton>}
-                        {this.state.donation["other"] != null && this.state.donation["other"] != '' && <StyledButton style={{backgroundColor:'#7DEF6B', width: '100%', borderRadius: 4}} onClick={()=>
+                        {this.state.donation["other"] != null && this.state.donation["other"] != '' && <StyledButton style={{backgroundColor:'#7DEF6B   ', width: '100%', borderRadius: 4}} onClick={()=>
                             this.openUrl(this.state.donation['other'])
                         }>Other</StyledButton>}
                     </ColumnDiv>

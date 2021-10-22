@@ -58,9 +58,11 @@ export async function setFirebaseUser(user: firebase.User | null) {
 	firebaseUser = user
 	if (firebaseUser != null) {
 		const data = await (await (firebaseApp.database().ref(`users/${firebaseUser.uid}`).get())).val()
-		userData.displayName = data.displayName
-		userData.role = data.role
-		userData.uid = firebaseUser.uid
+		if(data != null) {
+			userData.displayName = data.displayName
+			userData.role = data.role
+			userData.uid = firebaseUser.uid
+		}
 	}
 }
 

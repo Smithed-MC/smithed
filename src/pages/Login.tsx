@@ -5,6 +5,7 @@ import { ColumnDiv, firebaseUser, RowDiv, setFirebaseUser, setIgnoreStateChange,
 import curPalette from '../Palette';
 import {firebaseApp} from '../index'
 import appSettings, { saveSettings } from '../Settings';
+import { PackHelper } from '../Pack';
 
 const emailRegex = new RegExp(/^(([^<>()\]\\.,;:\s@"]+(\.[^<>()\]\\.,;:\s@"]+)*)|(".+"))@(([0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/);
 const strongRegex = new RegExp(/^(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])(?=.*[!@#$%^&*-./:])(?=.{8,})/);
@@ -227,8 +228,11 @@ class Login extends React.Component {
 
                     let snapshot = await ref.get()
                     let users : {[key: string]: {displayName: string}} = snapshot.val()
+
+                    const chosenName = PackHelper.displayNameToID(this.displayName)
                     for(let u in users) {
-                        if(users[u].displayName === this.displayName) {
+                        const userName = PackHelper.displayNameToID(users[u].displayName)
+                        if(userName === chosenName) {
                             this.setState({displayNameValid2: false})
                             return;
                         }

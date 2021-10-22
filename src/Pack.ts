@@ -36,6 +36,7 @@ export class Version {
 export class Pack {
     public meta: Meta = new Meta()
     public display: Display | 'hidden' = new Display()
+    public messages: string[] = []
     public id: string = ''
     public versions: {[key:string]: Version} = {}
 
@@ -127,23 +128,37 @@ export class PackHelper {
 
     static createOrUpdatePack(pack: Pack, addToQueue?: boolean, callback?: ()=>void) {
         pack = this.toFirebaseValid(pack)
-        const userPacks = firebaseApp.database().ref(`users/${userData.uid}/packs`)
-        userPacks.get().then((snapshot) => {
-            const val = snapshot.val()
-            let packs: Pack[] = val != null ? val : []
-            
-            for(var i = 0; i < packs.length; i++) {
-                if(packs[i].id === pack.id) {
-                    userPacks.child(i.toString()).set(pack)
-                    this.addToQueueIfNot(pack)
-                    return;
-                }
-            }
-            userPacks.child((i).toString()).set(pack)
-            this.addToQueueIfNot(pack)
 
-            if(callback != undefined)
-                callback()
+        
+        const packs = firebaseApp.database().ref(`packs/${PackHelper.displayNameToID(userData.displayName)}:${pack.id}`)
+        
+        packs.get().then((snap) => {
+            if(userData.ref != null) {
+
+                const userPacks = userData.ref?.child(`packs`)
+
+                userPacks.get().then((snapshot) => {
+                    const val = snapshot.val()
+                    let packs: Pack[] = val != null ? val : []
+                    
+                    for(var i = 0; i < packs.length; i++) {
+                        if(packs[i].id === pack.id) {
+                            userPacks.child(i.toString()).set(pack)
+
+                            if(!snap.exists())
+                                this.addToQueueIfNot(pack)
+                            return;
+                        }
+                    }
+                    userPacks.child((i).toString()).set(pack)
+                    if(!snap.exists())
+
+                        this.addToQueueIfNot(pack)
+    
+                    if(callback != undefined)
+                        callback()
+                })
+            }
         })
     }
 
