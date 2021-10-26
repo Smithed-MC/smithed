@@ -243,7 +243,7 @@ class Login extends React.Component {
             </ColumnDiv>
         )
     }
-    renderPasswordField() {
+    renderPasswordField(onSubmit?: () => void) {
         return(
             <ColumnDiv style={{width:'100%', gap:4}}>
                 {(this.state.passwordValid === null || this.state.passwordValid === false) && <ErrorLabel>Password must contain 1 lowercase, 1 uppercase, 1 symbol, 1 number, and be at least 8 characters</ErrorLabel>}
@@ -252,6 +252,10 @@ class Login extends React.Component {
                     this.password = input.value
                     if(this.state.tab === 0)
                         this.validate()
+                }} onKeyPress={(e) => {
+                    if(e.key === 'Enter' && onSubmit != null) {
+                        onSubmit()
+                    }
                 }} placeholder='Password'/>
             </ColumnDiv>
         )
@@ -284,9 +288,9 @@ class Login extends React.Component {
         return (
             <ColumnDiv style={{width:'50%', gap:16, padding:24}}>
                 {this.renderEmailField()}
-                {this.renderPasswordField()}
+                {this.renderPasswordField(()=>this.signIn())}
                 {this.state.loginError != null && <ErrorLabel>{this.state.loginError}</ErrorLabel>}
-                <LoginButton onClick={()=>this.signIn()}>Login</LoginButton>
+                <LoginButton type="submit" onClick={()=>this.signIn()}>Login</LoginButton>
             </ColumnDiv>
         );
     }

@@ -1,7 +1,7 @@
 import React, { useRef, useState } from 'react'
 import styled from 'styled-components'
-import { Route, RouteComponentProps, Switch, useParams, withRouter } from 'react-router'
-import { ColumnDiv, firebaseApp, Header1, Header2, MarkdownOptions, RowDiv, StyledButton, StyledInput, StyledLabel, userData } from '../..'
+import { Route, RouteComponentProps, Switch, useParams, useRouteMatch, withRouter } from 'react-router'
+import { ColumnDiv, firebaseApp, Header1, Header2, mainEvents, MarkdownOptions, RowDiv, StyledButton, StyledInput, StyledLabel, userData } from '../..'
 import curPalette from '../../Palette'
 import Markdown from 'markdown-to-jsx'
 import Browse from '../Browse'
@@ -152,29 +152,22 @@ function ContentWithParams() {
     )
 }
 
-class PackView extends React.Component {
-    props: RouteComponentProps
-    constructor(props: RouteComponentProps) {
-        super(props)
-        this.props = props
+function PackView(props: RouteComponentProps) {
+    const matchPage = useRouteMatch("/app/browse/view/:owner/:id")
+    mainEvents.on('key-press', ({key}: {key: string}) => {
+        if(key == 'Escape' && matchPage) {
+            props.history.push('/app/browse')
+        }
+    })
 
-    }
-
-    componentDidMount() {
-        ipcRenderer.on('user-data-changed', () => {
-            this.forceUpdate()
-        })
-    }
-
-    render() {
-        return(
-            <Switch>
-                <Route path="/app/browse/view/:owner/:id">
-                    <ContentWithParams/>
-                </Route>
-            </Switch>
-        )
-    }
+    return(
+        <Switch>
+            <Route path="/app/browse/view/:owner/:id">
+                <ContentWithParams/>
+            </Route>
+        </Switch>
+    )
 }
+
 
 export default PackView

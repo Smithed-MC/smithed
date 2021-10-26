@@ -1,10 +1,11 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import styled from 'styled-components';
 import '../font.css'
-import { firebaseApp, Header1, Header2, Header3, MarkdownOptions } from '..';
+import { firebaseApp, Header1, Header2, Header3, mainEvents, MarkdownOptions } from '..';
 import Markdown from 'markdown-to-jsx';
 import curPalette from '../Palette';
 import NewsArrow from '../components/NewsArrow';
+import { matchPath, useLocation, useRouteMatch } from 'react-router';
 
 const NewsContainer = styled.div`
     display: flex;
@@ -62,6 +63,31 @@ interface Article{
     image: string
 }
 
+function InputListener(props: any) {
+    const location = useLocation();
+    const match = matchPath(location.pathname, {path: '/app/news', exact:true}) || matchPath(location.pathname, {path:'/app/', exact:true})
+    const listener = ({key}: {key: string}) => {
+        if(match) {
+            if(key == 'ArrowLeft' && props.previous != null) {
+                props.cycle(-1)
+            }
+            else if(key == 'ArrowRight' && props.next != null) {
+                props.cycle(1)
+            }
+        }
+    }
+    
+    useEffect(() => {
+        mainEvents.addListener('key-press', listener)
+
+        return () => {
+            mainEvents.removeListener('key-press', listener)
+        }
+    })
+
+    return (<span style={{display:'none'}}/>)
+}
+
 class News extends React.Component {
     articlesLocation
     state: {current: number, articles: Article[]}
@@ -76,6 +102,13 @@ class News extends React.Component {
         this.state = {current: 0, articles: []}
     }
 
+    cycleArticle = (direction: number) => {
+        let c = this.state.current + direction
+        if(c >= 0 && c < this.state.articles.length) {
+            this.setState({current: c})
+        }
+    }
+
     renderPrevious(prevArticle: Article | null) {
         if(prevArticle === null) {
             return(
@@ -85,12 +118,7 @@ class News extends React.Component {
         return(
             <NewsSection style={{flex:'25%', width:'25%', padding:'6px', marginLeft: 4}}>
                 <div style={{display:'flex',flexDirection:'row',alignItems:'center'}}>
-                    <NewsArrow onClick={()=>{
-                        let c = this.state.current - 1
-                        if(c >= 0) {
-                            this.setState({current: c})
-                        }
-                    }}/>
+                    <NewsArrow onClick={()=>this.cycleArticle(-1)}/>
                     <div style={{display:'flex',flexDirection:'column',alignItems:'center', marginTop:-75}}>
                         <Header2>Previous</Header2>
                         <NewsImg src={prevArticle.image}/>
@@ -112,12 +140,7 @@ class News extends React.Component {
                         <Header2>Next</Header2>
                         <NewsImg src={nextArticle.image}/>
                     </div>
-                    <NewsArrow transform='rotate(180deg)' onClick={()=>{
-                        let c = this.state.current + 1
-                        if(c < this.state.articles.length) {
-                            this.setState({current: c})
-                        }
-                    }}/>
+                    <NewsArrow transform='rotate(180deg)' onClick={()=>this.cycleArticle(1)}/>
                 </div>
             </NewsSection>
         )
@@ -131,6 +154,7 @@ class News extends React.Component {
 
         return (
             <div style={{flexGrow:1,display:'flex',flexDirection:'column',alignItems:'center',gap:'-10px'}}>
+                <InputListener previous={prevArticle} next={nextArticle} cycle={this.cycleArticle}/>
                 <Header1>{this.state.current === this.state.articles.length-1 ? 'Latest News' : 'Older News'}</Header1>
                 <NewsContainer>
                     {this.renderPrevious(prevArticle)}

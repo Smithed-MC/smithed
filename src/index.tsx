@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import ReactDOM from 'react-dom';
 import './index.css';
 
@@ -22,6 +22,7 @@ import { asEnumerable } from 'linq-es5';
 import Download from './pages/Download';
 import { Route, RouteComponentProps, withRouter } from 'react-router';
 import { HashRouter } from 'react-router-dom';
+import EventEmitter from 'events';
 
 const { ipcRenderer } = window.require('electron');
 
@@ -187,6 +188,11 @@ const StyledHR = styled.hr`
 background-color: ${curPalette.lightAccent};
 `
 
+const StyledSpan = styled.span`
+	color: ${curPalette.text};
+	font-family: Inconsolata;
+`
+
 export const MarkdownOptions = (wrapper?: React.ElementType<any>): MarkdownToJSX.Options => {
 	return {
 		wrapper: wrapper,
@@ -196,7 +202,8 @@ export const MarkdownOptions = (wrapper?: React.ElementType<any>): MarkdownToJSX
 			h2: Header2,
 			h3: Header3,
 			a: ModifyiedA,
-			hr: StyledHR
+			hr: StyledHR,
+			span: StyledSpan
 		}
 	}
 }
@@ -206,6 +213,8 @@ interface IndexState {
 	page: 'login' | 'app' | 'update',
 	versionFound: string
 }
+
+export const mainEvents = new EventEmitter()
 
 
 export class Index extends React.Component {
@@ -230,7 +239,13 @@ export class Index extends React.Component {
 	}
 
 	static changePage(path: string) {
-		this.instance.props.history.push(path)
+		this.instance.props.history.replace(path)
+	}
+	componentDidMount() {
+		document.addEventListener('keydown', event => {
+			if(!event.repeat)
+				mainEvents.emit('key-press', event)
+		});
 	}
 
 	render() {

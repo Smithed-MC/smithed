@@ -1,7 +1,7 @@
 import React from 'react';
 import styled from 'styled-components';
 import '../font.css'
-import { ColumnDiv, firebaseApp, Header1, Header2, Header3, TabButton, StyledInput, firebaseUser, RowDiv, userData, StyledButton, StyledLabel } from '..';
+import { ColumnDiv, firebaseApp, Header1, Header2, Header3, TabButton, StyledInput, firebaseUser, RowDiv, userData, StyledButton, StyledLabel, MarkdownOptions } from '..';
 import PackDisplay from '../components/PackDisplay';
 import { PackDict, PackEntry } from './Browse';
 import { Enumerable } from 'linq-es5/lib/enumerable';
@@ -12,6 +12,7 @@ import curPalette from '../Palette';
 import { Pack, PackHelper } from '../Pack';
 import Popup from 'reactjs-popup';
 import { remote } from '../Settings';
+import Markdown from 'markdown-to-jsx';
 const {Webhook} = window.require('simple-discord-webhooks');
 
 let reason = ''
@@ -147,10 +148,10 @@ class Queue extends React.Component {
                     </div>
                     <div style={{flex:'25%'}}></div>
                 </RowDiv>
-                
             </ColumnDiv>
         );
     }
 }
+
 
 export default Queue;

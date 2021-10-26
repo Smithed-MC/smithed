@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import logo from './logo.svg';
 import styled from 'styled-components';
 import NewsSvg from '../icons/news.svg'
@@ -7,11 +7,13 @@ import BrowseSvg from '../icons/browse.svg'
 import CreateSvg from '../icons/create.svg'
 import colorize from 'css-colorize'
 import curPalette from '../Palette';
+import { useHistory, useRouteMatch } from 'react-router';
+import { EventEmitter } from 'events';
 
 
 const filter = colorize.colorize(curPalette.lightAccent).filter.replace('filter: ','').replace(';','')
 
-const WhiteImage = styled.img`
+const ColoredSvg = styled.img`
     height: 32px;
     width: 32px;
     // filter: invert(47%) sepia(99%) saturate(5318%) hue-rotate(211deg) brightness(96%) contrast(91%);
@@ -33,31 +35,41 @@ interface SidebarOptionProps {
     style?: React.CSSProperties
 }
 
-function UpdateBrightness(e : EventTarget, b : number) {
-    const i = e as HTMLImageElement
-    i.style.filter = `${filter} brightness(${b-0.04})`
+
+interface GroupedSidebarOptionProps extends SidebarOptionProps {
+   page: string
 }
 
 
 function SidebarOption(props: SidebarOptionProps) {
   return (
     <div style={{height:32, width:32}}>
-        <WhiteImage src={props.img} title={props.hint} style={props.style} onClick={()=>{
+        <ColoredSvg src={props.img} title={props.hint} style={props.style} onClick={()=>{
             if(props.onClick != null)
                 props.onClick()
         }}/>
     </div>
   );
 }
-// onMouseOver={(e)=>{
-//     UpdateBrightness(e.target, 0.85)
-// }} onMouseLeave ={(e)=>{
-//     UpdateBrightness(e.target, 1)
-// }} onMouseDown = {(e) => {
-//     UpdateBrightness(e.target, 0.5)
-//     if(props.onClick != null)
-//         props.onClick()
-// }} onMouseUp = {(e) => {
-//     UpdateBrightness(e.target, 0.85)
-// }}
+
+export function PageBasedSidebarOption(props: GroupedSidebarOptionProps) {
+    const match = useRouteMatch(props.page)
+
+    let style = props.style;
+    if(match) {
+        if(style == null) style = {}
+        const filter = colorize.colorize(curPalette.text).filter.replace('filter: ','').replace(';','')
+        style.filter = filter
+    }
+ 
+    return (
+      <div style={{height:32, width:32}}>
+          <ColoredSvg src={props.img} title={props.hint} style={style} onClick={()=>{
+              if(props.onClick != null)
+                  props.onClick()
+          }}/>
+      </div>
+    );
+  }
+
 export default SidebarOption;
