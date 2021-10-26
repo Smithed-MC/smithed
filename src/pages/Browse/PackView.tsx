@@ -85,9 +85,10 @@ class Content extends React.Component {
 
             if(this.state.content == null) {
                 if(webPage != null && webPage !== '') {
-                    fetch(pack.data.display.webPage).then((resp) => {
+                    fetch(pack.data.display.webPage, {cache: "no-store"}).then((resp) => {
                         if(resp.status == 200) {
                             resp.text().then(v => {
+                                console.log(v)
                                 this.setState({content: v})
                             })    
                         } else {
