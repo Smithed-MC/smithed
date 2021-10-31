@@ -1,7 +1,7 @@
 import React from 'react';
 import styled from 'styled-components';
 import '../font.css'
-import { ColumnDiv, firebaseApp, StyledInput, RowDiv, userData, Index, StyledLabel, StyledButton } from '..';
+import { ColumnDiv, firebaseApp, StyledInput, RowDiv, userData, Index} from '..';
 import curPalette from '../Palette';
 import * as linq from 'linq-es5'
 import { DataVersion, Dependency, Display, Pack, PackHelper, Version } from '../Pack';
@@ -11,6 +11,7 @@ import RadioButton from '../components/RadioButton';
 import GroupedFoldout from '../components/GroupedFoldout';
 import { Route, RouteComponentProps, Switch, withRouter } from 'react-router';
 import { HashRouter } from 'react-router-dom';
+import { StyledButton, StyledLabel } from '../Shared';
 
 
 interface CreateState {
@@ -129,7 +130,7 @@ class Create extends React.Component {
         elements.push(<AddDiv onClick={()=>{
             this.swapToAddPage()
         }}>
-            <label style={{color:curPalette.text,fontSize:96,textAlign:'center',fontFamily:'Disket-Bold'}}>+</label>
+            <StyledLabel style={{color:curPalette.text,fontSize:96,textAlign:'center',fontFamily:'Disket-Bold'}}>+</StyledLabel>
         </AddDiv>)
         return elements
     }
@@ -159,7 +160,7 @@ class Create extends React.Component {
         for(let s of version.supports) {
             elements.push(<RowDiv style={{justifyContent:'left', width:'100%'}}>
                 <li style={{color:curPalette.text}}/>
-                <label style={{color:curPalette.text, fontFamily:'Inconsolata'}}>{s}</label>
+                <StyledLabel style={{color:curPalette.text, fontFamily:'Inconsolata'}}>{s}</StyledLabel>
             </RowDiv>)
         }
 
@@ -173,7 +174,7 @@ class Create extends React.Component {
                 elements.push(
                 <RowDiv style={{justifyContent:'center', width:'100%', gap:8}}>
                     <RowDiv style={{width:'40%', height:28,alignItems:'center', overflowX:'hidden'}}>
-                        <label style={{width:'100%', color:curPalette.text, fontFamily:'Inconsolata', textAlign:'right'}}>{version.dependencies[d].id}</label>
+                        <StyledLabel style={{width:'100%', color:curPalette.text, fontFamily:'Inconsolata', textAlign:'right'}}>{version.dependencies[d].id}</StyledLabel>
                     </RowDiv>
                     <InputField style={{width:'20%'}} text="Version Number" defaultValue={version.dependencies[d].version} onChange={(v: string) => {version.dependencies[d].version = v}}/>
                     <div style={{width:'40%'}}>

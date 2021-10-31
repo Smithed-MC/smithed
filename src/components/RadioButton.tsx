@@ -2,6 +2,7 @@ import React, { version } from 'react';
 import styled from 'styled-components';
 import { RowDiv } from '..';
 import curPalette from '../Palette'
+import { StyledLabel } from '../Shared';
 
 
 interface RadioButtonProps {
@@ -62,7 +63,7 @@ class RadioButton extends React.Component {
                 <Box>
                     {this.state.toggled && <div style={{width:12, height:12, backgroundColor:curPalette.lightAccent}}></div>}
                 </Box>
-                <label style={{color:curPalette.text,fontFamily:'Inconsolata', textAlign:'left', width:'100%', WebkitUserSelect:'none'}}>{this.props.text}</label>
+                <StyledLabel style={{color:curPalette.text,fontFamily:'Inconsolata', textAlign:'left', width:'100%', WebkitUserSelect:'none'}}>{this.props.text}</StyledLabel>
             </RadioButtonContainer>
         );
     }

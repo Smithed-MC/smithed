@@ -5,7 +5,6 @@ import { Dependency, Display, Pack, PackHelper } from '../Pack';
 import Browse, { PackEntry } from '../pages/Browse';
 import Home, { Profile } from '../pages/Home';
 import curPalette from '../Palette'
-import {Header3} from '..'
 import { fs, pathModule, settingsFolder } from '../Settings';
 import { RouteComponentProps, withRouter } from 'react-router';
 interface PackDisplayProps extends RouteComponentProps {

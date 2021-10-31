@@ -1,7 +1,7 @@
 import React from 'react';
 import styled from 'styled-components';
 import '../font.css'
-import { ColumnDiv, firebaseApp, Header2, TabButton, StyledInput, firebaseUser, userData, StyledLabel } from '..';
+import { ColumnDiv, firebaseApp, TabButton, StyledInput, firebaseUser, userData, Header2 } from '..';
 import ProfileDisplay from '../components/ProfileDisplay';
 import curPalette from '../Palette';
 import Dropdown, {Option} from '../components/Dropdown';
@@ -12,6 +12,8 @@ import RadioButton from '../components/RadioButton';
 import { Dependency } from '../Pack'
 import { RouteComponentProps, Switch, withRouter, Route } from 'react-router';
 import Browse from './Browse';
+import { StyledLabel, StyledButton } from '../Shared';
+
 const { ipcRenderer } = window.require('electron');
 
 
@@ -107,7 +109,7 @@ class Home extends React.Component {
         return (
             <ColumnDiv style={{width:200, height:300, justifyContent:'center'}}>
                 <ColumnDiv style={{width:150, height:150, backgroundColor:curPalette.darkBackground, justifyContent:'center'}}>
-                    <label style={{textAlign:'center', fontSize:196, fontFamily:'Disket', color:curPalette.text, WebkitUserSelect: 'none'}}
+                    <StyledLabel style={{textAlign:'center', fontSize:196, fontFamily:'Disket', color:curPalette.text, WebkitUserSelect: 'none'}}
                         onMouseOver={e=>setFilter(e, 'brightness(0.8)')}
                         onMouseLeave={e=>setFilter(e, 'brightness(1)')}
                         onMouseDown={e=>setFilter(e, 'brightness(0.6)')}
@@ -115,7 +117,7 @@ class Home extends React.Component {
                         onClick={()=>{
                             this.swapTab('/app/home/new_profile')
                         }}
-                    >+</label>
+                    >+</StyledLabel>
                 </ColumnDiv>
             </ColumnDiv>
         )

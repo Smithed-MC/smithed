@@ -1,7 +1,7 @@
 import React from 'react';
 import styled from 'styled-components';
 import '../font.css'
-import { ColumnDiv, firebaseApp, Header1, Header2, Header3, TabButton, StyledInput, firebaseUser, RowDiv, userData } from '..';
+import { ColumnDiv, firebaseApp, TabButton, StyledInput, firebaseUser, RowDiv, userData } from '..';
 import curPalette from '../Palette';
 import * as linq from 'linq-es5'
 import { Enumerable } from 'linq-es5/lib/enumerable';

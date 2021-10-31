@@ -4,6 +4,7 @@ import '../font.css';
 import styled, { css } from 'styled-components';
 import curPalette from '../Palette';
 import appSettings, { remote, saveSettings } from '../Settings';
+import { StyledLabel } from '../Shared';
 
 const fs = window.require('fs')
 const pathModule = window.require('path')
@@ -77,9 +78,9 @@ function maximizeWindow() {
 function WindowsContent() {
 	return (
 		<div style={{ display: 'flex', flexDirection: 'row', justifyContent: 'space-around' }}>
-			<label style={{ padding: '3px', fontSize: '14px', fontFamily: 'Disket-Bold', color: curPalette.titlebar, textAlign: 'left', WebkitUserSelect: 'none', verticalAlign: 'center' }}>
-				Smithed <label style={{color:curPalette.subText, fontSize:12}}>v{remote.app.getVersion()}</label>
-			</label>
+			<StyledLabel style={{ padding: '3px', fontSize: '14px', fontFamily: 'Disket-Bold', color: curPalette.titlebar, textAlign: 'left', WebkitUserSelect: 'none', verticalAlign: 'center' }}>
+				Smithed <StyledLabel style={{color:curPalette.subText, fontSize:12}}>v{remote.app.getVersion()}</StyledLabel>
+			</StyledLabel>
 			<li style={{ visibility: 'hidden', flexGrow: 1 }}></li>
 			<ActionButtonSpan>
 				<ActionButton style={{marginTop:-3}}
@@ -109,12 +110,12 @@ function MacOSContent() {
 					onClick={maximizeWindow}
 				/>
 			</ActionButtonSpan>
-			<label style={{ marginLeft:50, width:'100%', padding: '3px', fontSize: '14px', fontFamily: 'Disket-Bold', color: curPalette.titlebar, textAlign: 'center', verticalAlign: 'center' }}>
+			<StyledLabel style={{ marginLeft:50, width:'100%', padding: '3px', fontSize: '14px', fontFamily: 'Disket-Bold', color: curPalette.titlebar, textAlign: 'center', verticalAlign: 'center' }}>
 				Smithed
-			</label>
-			<label style={{color:curPalette.subText, fontSize:12, fontFamily: 'Disket-Bold', width:'100px', textAlign: 'right', alignSelf:'center', verticalAlign: 'center', WebkitUserSelect: 'none', marginRight: 6}}>
+			</StyledLabel>
+			<StyledLabel style={{color:curPalette.subText, fontSize:12, fontFamily: 'Disket-Bold', width:'100px', textAlign: 'right', alignSelf:'center', verticalAlign: 'center', WebkitUserSelect: 'none', marginRight: 6}}>
 				v{remote.app.getVersion()}
-			</label>
+			</StyledLabel>
 		</div>
 	)
 }

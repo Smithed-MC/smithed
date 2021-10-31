@@ -56,12 +56,6 @@ class App extends React.Component {
           <Route path='/app/news' component={News}/>
           <Route exact path='/app/' component={News}/>
         </Switch>
-        {/* { this.state.page === 'news' ? <News/> : null}
-        { this.state.page === 'home' ? <Home/> : null}
-        { this.state.page === 'browse' ? <Browse/> : null}
-        { this.state.page === 'create' ? <Create/> : null}
-        { this.state.page === 'settings' ? <Settings/> : null}
-        { this.state.page === 'queue' ? <Queue/> : null} */}
       </AppContainer>
     );
   }

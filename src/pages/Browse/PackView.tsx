@@ -1,13 +1,16 @@
 import React, { useRef, useState } from 'react'
 import styled from 'styled-components'
 import { Route, RouteComponentProps, Switch, useParams, useRouteMatch, withRouter } from 'react-router'
-import { ColumnDiv, firebaseApp, Header1, Header2, mainEvents, MarkdownOptions, RowDiv, StyledButton, StyledInput, StyledLabel, userData } from '../..'
+import { ColumnDiv, firebaseApp, Header1, Header2, mainEvents, MarkdownOptions, RowDiv, StyledInput, userData } from '../..'
 import curPalette from '../../Palette'
 import Markdown from 'markdown-to-jsx'
 import Browse from '../Browse'
 import Popup from 'reactjs-popup'
 import Dropdown, { Option } from '../../components/Dropdown'
 import { remote } from '../../Settings'
+import { StyledLabel, StyledButton } from '../../Shared';
+
+
 const {ipcRenderer} = window.require('electron') 
 
 const ContentContainer = styled.div`

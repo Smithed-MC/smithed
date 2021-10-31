@@ -1,6 +1,6 @@
 import React, { version } from 'react';
 import styled from 'styled-components';
-import { RowDiv, StyledButton, userData } from '..';
+import { RowDiv, userData } from '..';
 import Browse from '../pages/Browse';
 import Home, {Profile} from '../pages/Home';
 import curPalette from '../Palette'
@@ -8,6 +8,8 @@ import { saveProfiles } from '../ProfileHelper';
 import appSettings, { fs } from '../Settings';
 import ContextMenu from './ContextMenu';
 import Dropdown, { Option } from './Dropdown';
+import { StyledLabel, StyledButton } from '../Shared';
+
 
 const { ipcRenderer } = window.require('electron');
 const execa = window.require('execa')
@@ -80,7 +82,7 @@ class ProfileDisplay extends React.Component {
             <ProfileDisplayDiv onMouseEnter={() => this.setMouseOver(true)} onMouseLeave={() => this.setMouseOver(false)}>
                 <div style={{display: 'flex', flexDirection:'column', alignItems:'center'}}>
                     <img style={{width:192,height:192,backgroundColor:curPalette.darkAccent}} src={this.props.profile.img}/>
-                    <label style={{width:'40%',position:'relative',textAlign:'center', top:-180, left:45, backgroundColor:'rgba(0.140625,0.13671875,0.16796875,0.25)', color:curPalette.text, fontFamily:'Inconsolata', WebkitUserSelect: 'none'}}>{this.props.profile.version}</label>
+                    <StyledLabel style={{width:'40%',position:'relative',textAlign:'center', top:-180, left:45, backgroundColor:'rgba(0.140625,0.13671875,0.16796875,0.25)', color:curPalette.text, fontFamily:'Inconsolata', WebkitUserSelect: 'none'}}>{this.props.profile.version}</StyledLabel>
                 </div>
                 <div style={{width:'90%', flexGrow:1, display:'flex', flexDirection:'column', alignItems:'center'}}>
                     {!this.state.mouseOver && 
