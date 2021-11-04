@@ -79,7 +79,8 @@ class ProfileDisplay extends React.Component {
         return (
             <ProfileDisplayDiv onMouseEnter={() => this.setMouseOver(true)} onMouseLeave={() => this.setMouseOver(false)}>
                 <div style={{display: 'flex', flexDirection:'column', alignItems:'center'}}>
-                    <img style={{width:192,height:192,backgroundColor:curPalette.darkAccent}} src={this.props.profile.img} alt="Profile Icon"/>
+                    {this.props.profile.img !== undefined && <img style={{width:192,height:192,backgroundColor:curPalette.darkAccent}} src={this.props.profile.img} alt="Profile Icon"/>}
+                    {this.props.profile.img === undefined && <div style={{width:192,height:192,backgroundColor:curPalette.darkAccent}}/>}
                     <StyledLabel style={{width:'40%',position:'relative',textAlign:'center', top:-180, left:45, backgroundColor:'rgba(0.140625,0.13671875,0.16796875,0.25)', color:curPalette.text, fontFamily:'Inconsolata', WebkitUserSelect: 'none'}}>{this.props.profile.version}</StyledLabel>
                 </div>
                 <div style={{width:'90%', flexGrow:1, display:'flex', flexDirection:'column', alignItems:'center'}}>
