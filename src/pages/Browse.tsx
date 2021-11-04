@@ -1,185 +1,116 @@
-import React from 'react';
-import styled from 'styled-components';
+import { useCallback, useEffect, useState } from 'react';
 import '../font.css'
-import { ColumnDiv, firebaseApp, TabButton, StyledInput, firebaseUser, RowDiv, userData } from '..';
-import curPalette from '../Palette';
-import * as linq from 'linq-es5'
-import { Enumerable } from 'linq-es5/lib/enumerable';
+import { ColumnDiv, StyledInput, RowDiv, userData, Header2, mainEvents } from '..';
 import PackDisplay from '../components/PackDisplay';
-import { Dependency, Pack, PackHelper } from '../Pack';
+import { PackEntry, PackHelper } from '../Pack';
 import Dropdown, { Option } from '../components/Dropdown';
-import Home, { Profile } from './Home';
-import { Route, RouteComponentProps, Switch, useLocation, withRouter } from 'react-router';
+import { Profile } from './Home';
+import { Route, Switch, useLocation, withRouter } from 'react-router';
 import PackView from './Browse/PackView';
-import { fs, pathModule, settingsFolder } from '../Settings';
-import { URLSearchParams } from 'url';
+import { asEnumerable } from 'linq-es5';
+import TabButton from '../components/TabButton';
 
-export interface PackDict {
-    [key: string]: {
-        added: number,
-        owner: string
-    }
+
+
+export let selectedProfile: Profile = { name: '', version: '' }
+export function setSelectedProfile(name: string) {
+    selectedProfile = asEnumerable(userData.profiles).Where(p => p.name === name).FirstOrDefault()
+    mainEvents.emit('profile-changed')
 }
 
-export interface PackEntry {
-    added: number,
-    owner: string,
-    id: string,
-    data: Pack
+const getProfiles = () => {
+    let elements: JSX.Element[] = []
+    for (let p of userData.profiles)
+        elements.push(<Option value={p.name} />)
+    return elements;
 }
 
-interface BrowseState {
-    tab: number,
+function Browse(props: any) {
+    const [tab, setTab] = useState(0)
+    const [search, setSearch] = useState('')
+    const [packs, setPacks] = useState([] as JSX.Element[])
 
-    search: string,
-    profile: Profile
-}
-
-interface BrowseProps extends RouteComponentProps {
-    query: {[key: string]: any}
-}
-
-class Browse extends React.Component {
-    state: BrowseState
-    props: BrowseProps
-    static instance: Browse
-    constructor(props: BrowseProps) {
-        super(props)
-        this.props = props
-        this.state = { tab: 0, search: '', profile: { name: '', version: '' } }
-        Browse.instance = this        
-
-        const { ipcRenderer } = window.require('electron')
-        ipcRenderer.on('update-displayed-packs', (e: any) => {
-            this.renderPacks()
-        })
-    }
-
-    getSelectedStyle(tab: number): React.CSSProperties {
-        if (this.state.tab === tab) {
-            return {
-                marginTop: 4,
-                borderBottom: `4px solid ${curPalette.lightAccent}`
-            }
-        } else {
-            return {}
-        }
-    }
-
-    swapTab(tab: number) {
-        if (tab !== this.state.tab) {
-            this.setState({ tab: tab, emailValid: null, passwordValid: null, password2Valid: null })
-        }
-    }
-
-    renderTabs() {
+    const renderTabs = () => {
         return (
-            <div style={{ backgroundColor: curPalette.darkBackground, width: '100%', height: '30px', marginTop: 1, display: 'flex', justifyContent: 'space-evenly' }}>
-                <TabButton style={this.getSelectedStyle(0)}
-                    onClick={() => { this.swapTab(0) }}
-                >New</TabButton>
-                <TabButton style={this.getSelectedStyle(1)}
-                    onClick={() => { this.swapTab(1) }}
-                >Trending</TabButton>
-                <TabButton style={this.getSelectedStyle(2)}
-                    onClick={() => { this.swapTab(2) }}
-                >Featured</TabButton>
+            <div>
+                <TabButton group="browse-sorting" name="new">New</TabButton>
+                <TabButton group="browse-sorting" name="trending">Trending</TabButton>
+                <TabButton group="browse-sorting" name="updated">Updated</TabButton>
             </div>
         )
     }
 
-    renderPacks() {
-        let packDisplays: JSX.Element[] = []
-
-        let packs = userData.packs.Where(p => p.data.display !== 'hidden' ? this.state.search !== '' ? p.data.display.name.toLowerCase().includes(this.state.search) : true : true)
-
-        if (this.state.profile.version !== '') {
-            packs = packs.Where(p => {
-                if (p.data === null) return false
-                return PackHelper.hasVersion(p.data, this.state.profile.version)
-            })
+    const renderPacks = useCallback((sort: (p: PackEntry) => any) => {
+        if(selectedProfile.name === '') {
+            setPacks([<Header2>Select a profile to continue</Header2>])
+            return;
         }
 
-        const length = packs.Count()
+        let elements: JSX.Element[] = []
 
-        for (let i = 0; i < length && i < 20; i++) {
-            let pack = packs.ElementAt(i)
-            if (pack.data.display != 'hidden')
-                packDisplays.push(<PackDisplay key={i} packEntry={pack} />)
-        }
+        function validatePack(p: PackEntry): boolean {
+            const display = p.data.display;
+            if (display !== 'hidden') {
+                if (!PackHelper.hasVersion(p.data, selectedProfile.version))
+                    return false;
 
-        return packDisplays
-    }
-
-    getProfiles() {
-        const profiles = userData.profiles
-
-        let profileOptions: JSX.Element[] = []
-
-        profiles.forEach(p => {
-            profileOptions.push(<Option key={p.name} value={p.name} />)
-        })
-
-        return profileOptions
-    }
-
-
-
-    static saveProfiles(profiles: Profile[]) {
-        fs.writeFileSync(pathModule.join(settingsFolder, 'profiles.json'), JSON.stringify(profiles, null, 2))
-    }
-
-    static addPackToProfile(packEntry: PackEntry) {
-        const packVersion = PackHelper.getLatestVersionForVersion(packEntry.data, Browse.instance.state.profile.version)
-        console.log(packVersion)
-
-        let temp: Dependency[] = []
-        let packs = Browse.instance.state.profile.packs != null ? Browse.instance.state.profile.packs : []
-
-        temp.push({ id: packEntry.id, version: packVersion })
-        temp.concat(PackHelper.resolveDependencies(packEntry.data, packVersion))
-
-        temp.forEach(d => {
-            if (!packs.includes(d)) {
-                packs.push(d)
+                if (display.name.toLowerCase().includes(search))
+                    return true;
             }
-        })
-
-        Browse.instance.state.profile.packs = packs
-
-        Browse.saveProfiles(userData.profiles)
-    }
-
-    update() {
-        if(this.props.query["selected"] != undefined) {
-            this.setState({profile: userData.profiles.find(p => p.name === this.props.query["selected"])})
+            return false;
         }
-    }
 
-    renderMain() {
+        const packs = userData.packs.Where(validatePack).OrderBy(sort)
+
+        if (packs.Count() === 0) {
+            setPacks([<Header2>No packs found!</Header2>])
+        } else {
+
+            packs.ToArray().forEach((p) => {
+                elements.push(<PackDisplay packEntry={p} />)
+            })
+
+            setPacks(elements)
+        }
+    }, [search])
+
+    
+    const updatePacks = useCallback(() => {
+        renderPacks(p => -p.added)
+    }, [renderPacks])
+
+    useEffect(() => {
+        updatePacks()
+        const onProfileChange = () => updatePacks()
+        mainEvents.addListener('profile-changed', onProfileChange)
+
+        return () => {
+            mainEvents.removeListener('profile-changed', onProfileChange)
+        }
+    }, [updatePacks])
+
+    useEffect(() => {
+        updatePacks()
+    }, [search, updatePacks])
+
+    function renderMain() {
+        // TODO: Implement basic trending algorith and add back tabs
         return (
             <ColumnDiv style={{ flexGrow: 1, width: '100%' }}>
-                {this.renderTabs()}
+                {renderTabs()}
                 <RowDiv style={{ width: '100%', height: '100%', marginTop: 16 }}>
                     <ColumnDiv style={{ flex: '25%' }}>
-                        <Dropdown style={{ width: '78.5%' }} defaultValue={this.props.query["selected"]} onChange={(v) => {
-                            userData.profiles.forEach(p => {
-                                if (p.name === v) {
-                                    this.setState({ profile: p })
-                                    return
-                                }
-                            })
-                        }} placeholder='Select a profile'>
-                            {this.getProfiles()}
+                        <Dropdown style={{ width: '78.5%' }} defaultValue={selectedProfile.name !== '' ? selectedProfile.name : undefined} onChange={(v) => setSelectedProfile(v)} placeholder='Select a profile'>
+                            {getProfiles()}
                         </Dropdown>
                         <StyledInput style={{ width: '75%' }} placeholder="Search..." onChange={(e) => {
                             let v = e.target.value
-                            this.setState({ search: v.toLowerCase() })
+                            setSearch(v)
                         }} />
                     </ColumnDiv>
                     <div style={{ flex: '50%' }}>
                         <ColumnDiv style={{ display: 'inline-flex', gap: 8, overflowY: 'auto', overflowX: 'visible', width: '100%', height: '100%', }}>
-                            {this.renderPacks()}
+                            {packs}
                         </ColumnDiv>
                     </div>
                     <div style={{ flex: '25%' }}></div>
@@ -189,24 +120,24 @@ class Browse extends React.Component {
         );
     }
 
-    render() {
-        return (
-            <Switch>
-                <Route path="/app/browse/view/*">
-                    {withRouter(PackView)}
-                </Route>
-                <Route path="/app/browse">
-                    {this.renderMain()}
-                </Route>
-            </Switch>
-        )
-    }
+
+    return (
+        <Switch>
+            <Route path="/app/browse/view/*">
+                {withRouter(PackView)}
+            </Route>
+            <Route path="/app/browse">
+                {renderMain()}
+            </Route>
+        </Switch>
+    )
+
 }
 
 const useQuery = () => {
     const search = useLocation().search
-    
-    let query: {[key: string]: any} = {}
+
+    let query: { [key: string]: any } = {}
     search.split('?').forEach(v => {
         const data = v.split('=')
         query[data[0]] = data[1]
@@ -220,7 +151,7 @@ const BrowseRouter = withRouter(Browse)
 export function BrowseWithQuery() {
     let query = useQuery();
     return (
-        <BrowseRouter query={query}/>
+        <BrowseRouter query={query} />
     );
 }
 

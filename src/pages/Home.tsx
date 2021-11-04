@@ -1,18 +1,18 @@
 import React from 'react';
 import styled from 'styled-components';
 import '../font.css'
-import { ColumnDiv, firebaseApp, TabButton, StyledInput, firebaseUser, userData, Header2 } from '..';
+import { ColumnDiv, firebaseApp, StyledInput, firebaseUser, userData, Header2 } from '..';
 import ProfileDisplay from '../components/ProfileDisplay';
 import curPalette from '../Palette';
 import Dropdown, {Option} from '../components/Dropdown';
 import Foldout from '../components/Foldout';
-import { fs, pathModule, settingsFolder } from '../Settings';
+import { pathModule, settingsFolder } from '../Settings';
 import { saveProfiles, setupProfile } from '../ProfileHelper';
 import RadioButton from '../components/RadioButton';
 import { Dependency } from '../Pack'
-import { RouteComponentProps, Switch, withRouter, Route } from 'react-router';
-import Browse from './Browse';
-import { StyledLabel, StyledButton } from '../Shared';
+import { RouteComponentProps, Switch, Route } from 'react-router';
+import { StyledLabel } from '../Shared';
+import TabButton from '../components/TabButton';
 
 const { ipcRenderer } = window.require('electron');
 
@@ -154,12 +154,12 @@ class Home extends React.Component {
         return(
             <div style={{width:'100%', height:'100%'}}>
                 <div style={{backgroundColor:curPalette.darkBackground, width:'100%',height:'30px',marginTop:1, display:'flex', justifyContent:'space-evenly'}}>
-                    <TabButton style={this.getSelectedStyle(0)} 
-                        onClick={()=>{this.swapTab('/app/home/')}}
+                    <TabButton group="home-tab" name="my-profiles" 
+                        onChange={(n: string)=>{this.swapTab('/app/home/')}}
                     >My Profiles</TabButton>
-                    <TabButton style={this.getSelectedStyle(1)}
-                        onClick={()=>{this.swapTab('/app/home/trending')}}
-                    >Trending Profiles</TabButton>
+                    <TabButton group="home-tab" name="trending" 
+                        onChange={(n: string)=>{this.swapTab('/app/home/trending')}}
+                    >Trending</TabButton>
                 </div>
                 <Switch>
                     <Route path='/app/home/trending'>{this.renderTrendingProfiles()}</Route>
@@ -183,7 +183,7 @@ class Home extends React.Component {
         if(version === '') return
 
         let options: JSX.Element[] = []
-        if(userData.modsDict != undefined) {
+        if(userData.modsDict !== undefined) {
             this.selectedMods = {fabric_api: userData.modsDict["fabric-api"][version]}
             mods.map((val, i, arr) => {
                 const download = userData.modsDict[val][version]
@@ -226,7 +226,7 @@ class Home extends React.Component {
 
                     let p = userData.profiles
 
-                    if(p.findIndex(profile => profile.name === this.profileCreationInfo.name) != -1) { 
+                    if(p.findIndex(profile => profile.name === this.profileCreationInfo.name) !== -1) { 
                         this.setState({error: "Profile of that name exists!"})
                         return;
                     }
@@ -245,9 +245,9 @@ class Home extends React.Component {
                     this.buildProfileDisplays()
                     
                     this.props.history.push(`/app/browse?selected=${newProfile.name}`)
-                    Browse.instance.update()
+                    // Browse.instance.update()
                 }}>Create</CreateButton>
-                {this.state.error != '' && <StyledLabel style={{color:'red'}}>{this.state.error}</StyledLabel>}
+                {this.state.error !== '' && <StyledLabel style={{color:'red'}}>{this.state.error}</StyledLabel>}
                 <Foldout text='Advanced Settings' style={{width:'15%'}}>
                     {this.state.mods}
                 </Foldout>

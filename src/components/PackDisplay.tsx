@@ -1,12 +1,11 @@
-import React, { version } from 'react';
+import React from 'react';
 import styled from 'styled-components';
-import { ColumnDiv, firebaseApp, RowDiv, userData } from '..';
-import { Dependency, Display, Pack, PackHelper } from '../Pack';
-import Browse, { PackEntry } from '../pages/Browse';
-import Home, { Profile } from '../pages/Home';
+import { ColumnDiv, RowDiv } from '..';
+import { Display, PackEntry } from '../Pack';
 import curPalette from '../Palette'
-import { fs, pathModule, settingsFolder } from '../Settings';
 import { RouteComponentProps, withRouter } from 'react-router';
+import { selectedProfile } from '../pages/Browse';
+
 interface PackDisplayProps extends RouteComponentProps {
     packEntry: PackEntry
 }
@@ -50,9 +49,10 @@ const PackDescription = styled.label`
     text-align: left;
     width: 100%;
     font-size: 16px;
-    white-space: nowrap;
-    text-overflow: ellipsis;
-    overflow-x: clip;
+    display: -webkit-box;
+    -webkit-box-orient: vertical;
+    -webkit-line-clamp: 1;
+    overflow: hidden;
 `
 
 const PackAddButton = styled.button`
@@ -86,13 +86,16 @@ class PackDisplay extends React.Component {
 
 
     profileContains(): boolean {
-        if(Browse.instance.state.profile.packs != null) {
-            for(let p of Browse.instance.state.profile.packs) {
-                console.log(`${p.id} | ${this.props.packEntry.id}`)
-                if(p.id === this.props.packEntry.id) 
-                    return true
-            }
-        }
+
+        // TODO: Redo pack to profile logic
+
+        // if(Browse.instance.state.profile.packs != null) {
+        //     for(let p of Browse.instance.state.profile.packs) {
+        //         console.log(`${p.id} | ${this.props.packEntry.id}`)
+        //         if(p.id === this.props.packEntry.id) 
+        //             return true
+        //     }
+        // }
         return false
     }
 
@@ -108,7 +111,7 @@ class PackDisplay extends React.Component {
         return (
             <div style={{width:'85%'}}>
                 <RowDiv style={{backgroundColor:curPalette.darkBackground, width: '100%', height:64, padding:16, justifyContent:'left', gap:16, borderRadius:8}}>
-                    <img style={{width:64, height: 64, backgroundColor:curPalette.darkAccent, WebkitUserSelect:'none'}} src={display.icon}/>
+                    <img style={{width:64, height: 64, backgroundColor:curPalette.darkAccent, WebkitUserSelect:'none'}} src={display.icon} alt="Pack Icon"/>
                     <ColumnDiv style={{alignItems:'left',width:'100%', justifyContent:'space-evenly'}}>
                         <RowDiv style={{alignItems:'left', width:'inherit', justifyContent:'space-between', gap:4}}>
                             <div style={{display:'table',tableLayout:'fixed', width:'100%'}}>
@@ -118,8 +121,8 @@ class PackDisplay extends React.Component {
                                     this.props.history.push(link)
                                 }}>{display.name}</PackName>
                             </div>
-                            {!contained && <PackAddButton disabled={Browse.instance.state.profile.name === ''} onClick={()=>{
-                                Browse.addPackToProfile(this.props.packEntry)
+                            {!contained && <PackAddButton disabled={selectedProfile.name === ''} onClick={()=>{
+                                // Browse.addPackToProfile(this.props.packEntry)
                             }}>+</PackAddButton>}
                             {contained && <PackAddButton>-</PackAddButton>}
                         </RowDiv>
@@ -130,7 +133,7 @@ class PackDisplay extends React.Component {
                             <li style={{flexGrow:1, width:'100%', visibility:'hidden'}}/>
                         </RowDiv>
                         <div style={{width:'100%'}}>
-                            <PackDescription>{display.description.length < 70 ? display.description : display.description.substring(0, 70) + '...'}</PackDescription>
+                            <PackDescription>{display.description}</PackDescription>
                         </div>
                     </ColumnDiv>
                 </RowDiv>

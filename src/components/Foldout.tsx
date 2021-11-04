@@ -1,7 +1,7 @@
 import React from 'react';
 import styled from 'styled-components';
 import curPalette from '../Palette'
-import { ColumnDiv, RowDiv } from '..';
+import { ColumnDiv } from '..';
 import { StyledLabel } from '../Shared';
 
 export interface FoldoutProps {

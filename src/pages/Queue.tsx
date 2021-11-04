@@ -1,18 +1,14 @@
 import React from 'react';
-import styled from 'styled-components';
 import '../font.css'
-import { ColumnDiv, firebaseApp, TabButton, StyledInput, firebaseUser, RowDiv, userData, MarkdownOptions } from '..';
-import PackDisplay from '../components/PackDisplay';
-import { PackDict, PackEntry } from './Browse';
+import { ColumnDiv, firebaseApp, StyledInput, RowDiv, userData } from '..';
 import { Enumerable } from 'linq-es5/lib/enumerable';
 import * as linq from 'linq-es5'
 import { getPack } from '../UserData';
 import GroupedFoldout from '../components/GroupedFoldout';
 import curPalette from '../Palette';
-import { Pack, PackHelper } from '../Pack';
+import { PackDict, PackEntry, PackHelper } from '../Pack';
 import Popup from 'reactjs-popup';
 import { remote } from '../Settings';
-import Markdown from 'markdown-to-jsx';
 import { StyledLabel, StyledButton } from '../Shared';
 const {Webhook} = window.require('simple-discord-webhooks');
 
@@ -62,7 +58,7 @@ function QueueEntry(props: any) {
                         <ColumnDiv style={{backgroundColor:curPalette.lightBackground, padding:16, border: `4px solid ${curPalette.darkAccent}`, borderRadius: 8}}>
                             <StyledInput placeholder="Reason for rejection..." style={{width:'384px'}} defaultValue={reason} onChange={(e) => {reason = e.target.value}}/>
                             <StyledButton onClick={()=> {
-                                if(reason != '') {
+                                if(reason !== '') {
                                     PackHelper.removePackFromQueue(props.id, props.owner, reason)
                                 }
                             }}>Confirm</StyledButton>

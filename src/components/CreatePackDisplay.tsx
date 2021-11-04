@@ -15,52 +15,6 @@ interface CreatePackDisplayProps {
 interface CreatePackDisplayState {
 }
 
-const PackName = styled.label`
-    font-family: Disket-Bold;
-    color: ${curPalette.text};
-    text-align: left;
-    width: 100%;
-    font-size: 18px;
-`
-const PackStats = styled.label`
-    font-family: Inconsolata;
-    color: ${curPalette.subText};
-    text-align: left;
-    width: auto;
-    font-size: 12px;
-    white-space: nowrap;
-    vertical-align: middle;
-`
-const PackDescription = styled.label`
-    font-family: Inconsolata;
-    color: ${curPalette.text};
-    text-align: left;
-    width: 100%;
-    font-size: 16px;
-    white-space: nowrap;
-    text-overflow: ellipsis;
-    overflow-x: clip;
-`
-
-const PackAddButton = styled.button`
-    border: none;
-    color: ${curPalette.text};
-    background-color: ${curPalette.lightAccent};
-    font-family: Disket-Bold;
-    font-size: 20px;
-    -webkit-user-select: none;
-    -webkit-user-drag: none;
-    :hover {
-        filter: brightness(85%);
-    }
-    :active {
-        filter: brightness(75%);
-    }
-    :disabled {
-        filter: brightness(50%);
-    }
-`
-
 const filter = colorize.colorize(curPalette.lightAccent).filter.replace('filter: ','').replace(';','')
 
 

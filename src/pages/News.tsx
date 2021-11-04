@@ -5,7 +5,7 @@ import { firebaseApp, Header1, Header2, Header3, mainEvents, MarkdownOptions } f
 import Markdown from 'markdown-to-jsx';
 import curPalette from '../Palette';
 import NewsArrow from '../components/NewsArrow';
-import { matchPath, useLocation, useRouteMatch } from 'react-router';
+import { matchPath, useLocation } from 'react-router';
 
 const NewsContainer = styled.div`
     display: flex;
@@ -68,10 +68,10 @@ function InputListener(props: any) {
     const match = matchPath(location.pathname, {path: '/app/news', exact:true}) || matchPath(location.pathname, {path:'/app/', exact:true})
     const listener = ({key}: {key: string}) => {
         if(match) {
-            if(key == 'ArrowLeft' && props.previous != null) {
+            if(key === 'ArrowLeft' && props.previous != null) {
                 props.cycle(-1)
             }
-            else if(key == 'ArrowRight' && props.next != null) {
+            else if(key === 'ArrowRight' && props.next != null) {
                 props.cycle(1)
             }
         }

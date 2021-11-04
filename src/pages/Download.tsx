@@ -1,7 +1,7 @@
 import React from 'react';
 import styled from 'styled-components';
 import '../font.css'
-import { ColumnDiv, firebaseUser, Header1, Header2, RowDiv, setFirebaseUser, setIgnoreStateChange, TabButton } from '..';
+import { ColumnDiv, Header1, Header2, RowDiv } from '..';
 import curPalette from '../Palette';
 import { remote } from '../Settings';
 

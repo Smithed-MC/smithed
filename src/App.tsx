@@ -1,5 +1,4 @@
-import React, {useState} from 'react';
-import logo from './logo.svg';
+import React from 'react';
 import './App.css';
 import styled from 'styled-components';
 import Sidebar from './components/Sidebar';
@@ -7,12 +6,11 @@ import News from './pages/News';
 import Home from './pages/Home';
 import curPalette from './Palette';
 import Settings from './pages/Settings';
-import appSettings, { saveSettings } from './Settings';
-import Browse, { BrowseWithQuery } from './pages/Browse';
+import appSettings from './Settings';
+import { BrowseWithQuery } from './pages/Browse';
 import Create from './pages/Create';
 import Queue from './pages/Queue';
 import {Route, Switch, withRouter} from 'react-router'
-import { HashRouter } from 'react-router-dom';
 import { Index } from '.';
 
 const AppContainer = styled.div`

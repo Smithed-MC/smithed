@@ -1,7 +1,7 @@
 import React from 'react';
 import styled from 'styled-components';
 import '../font.css'
-import { ColumnDiv, firebaseApp, StyledInput, RowDiv, userData, Index} from '..';
+import { ColumnDiv, firebaseApp, StyledInput, RowDiv, userData} from '..';
 import curPalette from '../Palette';
 import * as linq from 'linq-es5'
 import { DataVersion, Dependency, Display, Pack, PackHelper, Version } from '../Pack';
@@ -10,7 +10,6 @@ import CreatePackDisplay from '../components/CreatePackDisplay';
 import RadioButton from '../components/RadioButton';
 import GroupedFoldout from '../components/GroupedFoldout';
 import { Route, RouteComponentProps, Switch, withRouter } from 'react-router';
-import { HashRouter } from 'react-router-dom';
 import { StyledButton, StyledLabel } from '../Shared';
 
 

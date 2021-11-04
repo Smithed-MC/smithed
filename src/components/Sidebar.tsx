@@ -1,5 +1,4 @@
 import React, { useEffect } from 'react';
-import logo from './logo.svg';
 import styled from 'styled-components';
 import NewsSvg from '../icons/news.svg'
 import HomeSvg from '../icons/home.svg'
@@ -10,10 +9,9 @@ import SettingsSvg from '../icons/settings.svg'
 import SidebarOption, {PageBasedSidebarOption} from './SidebarOption';
 import SignOutSvg from '../icons/sign_out.svg'
 import QueueSvg from '../icons/queue.svg'
-import * as app from '../App';
 import curPalette from '../Palette';
 import { firebaseApp, Index, mainEvents, setFirebaseUser, userData } from '..';
-import { matchPath, useHistory, useLocation, useRouteMatch } from 'react-router';
+import { matchPath, useHistory, useLocation } from 'react-router';
 
 const SidebarContainer = styled.div`
     display: flex;
@@ -52,15 +50,15 @@ function TabNavigator(props: any) {
     if(key.match(/[0-9]/)) {
       const tab = Number.parseInt(key)
       
-      if(match.url !== pages[tab - 1] && (tab != 5 || userData.role == 'admin'))
+      if(match.url !== pages[tab - 1] && (tab !== 5 || userData.role === 'admin'))
         history.push(pages[tab - 1])
-    } else if(key == 'ArrowUp' || key == 'ArrowDown') {
+    } else if(key === 'ArrowUp' || key === 'ArrowDown') {
 
       const tab = pages.indexOf(match.url)
 
-      if(tab != -1 && key == 'ArrowUp') {
+      if(tab !== -1 && key === 'ArrowUp') {
         history.push(pages[tab - 1 >= 0 ? tab - 1 : pages.length - 1])
-      } else if(tab != -1 && key == 'ArrowDown') {
+      } else if(tab !== -1 && key === 'ArrowDown') {
         history.push(pages[tab + 1 < pages.length ? tab + 1 : 0])
       }
     }

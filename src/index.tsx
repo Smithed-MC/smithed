@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import React from 'react';
 import ReactDOM from 'react-dom';
 import './index.css';
 
@@ -8,7 +8,7 @@ import Titlebar from './components/Titlebar';
 import styled from 'styled-components';
 import reportWebVitals from './reportWebVitals';
 import { MarkdownToJSX } from 'markdown-to-jsx';
-import curPalette, { changePalette } from './Palette';
+import curPalette from './Palette';
 import Login from './pages/Login';
 import firebase from 'firebase/app';
 import 'firebase/auth';
@@ -16,13 +16,13 @@ import 'firebase/database';
 import { remote } from './Settings';
 import { Profile } from './pages/Home';
 import { collectUserData } from './UserData';
-import { PackEntry } from './pages/Browse';
 import { Enumerable } from 'linq-es5/lib/enumerable';
 import { asEnumerable } from 'linq-es5';
 import Download from './pages/Download';
 import { Route, RouteComponentProps, withRouter } from 'react-router';
 import { HashRouter } from 'react-router-dom';
 import EventEmitter from 'events';
+import { PackEntry } from './Pack';
 
 const { ipcRenderer } = window.require('electron');
 
@@ -88,22 +88,6 @@ export function setUserData(data: UserData) {
 }
 
 
-export const TabButton = styled.button`
-  font-family: Disket-Bold;
-  color: ${curPalette.text};
-  background: none;
-  border: none;
-  font-size: 16px;
-  -webkit-user-select: none;
-  
-  :hover {
-    filter: brightness(85%);
-  }
-  :active {
-    filter: brightness(75%);
-  }
-`
-
 export const Header1 = styled.h1`
   font-family: Disket-Bold;
   color: ${curPalette.text}; 
@@ -157,7 +141,7 @@ export const StyledInput = styled.input`
 
 function ModifyiedA(props: any) {
 	return (
-		<a href={props.href} target="_blank" title={props.title}>{props.children}</a>
+		<a style={{color:curPalette.lightAccent}} href={props.href} target="_blank" rel="noreferrer" title={props.title}>{props.children}</a>
 	)
 }
 

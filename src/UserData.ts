@@ -1,9 +1,7 @@
 import { firebaseApp, setUserData, userData } from '.'
 import { fileExists } from './FSWrapper'
-import Profile from './pages/Home'
 import { fs, pathModule, remote, settingsFolder } from './Settings'
-import { PackEntry, PackDict } from './pages/Browse'
-import { Pack } from './Pack'
+import { Pack, PackDict, PackEntry } from './Pack'
 import * as linq from 'linq-es5'
 
 export async function getPack(pack: {added: number, owner: string}, id: string): Promise<Pack> {

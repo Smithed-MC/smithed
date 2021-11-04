@@ -1,14 +1,8 @@
-import React, { useState } from 'react';
-import logo from './logo.svg';
+import React from 'react';
 import styled from 'styled-components';
-import NewsSvg from '../icons/news.svg'
-import HomeSvg from '../icons/home.svg'
-import BrowseSvg from '../icons/browse.svg'
-import CreateSvg from '../icons/create.svg'
 import colorize from 'css-colorize'
 import curPalette from '../Palette';
-import { useHistory, useRouteMatch } from 'react-router';
-import { EventEmitter } from 'events';
+import { useRouteMatch } from 'react-router';
 
 
 const filter = colorize.colorize(curPalette.lightAccent).filter.replace('filter: ','').replace(';','')

@@ -1,4 +1,4 @@
-import React, { version } from 'react';
+import React from 'react';
 import styled from 'styled-components';
 import curPalette from '../Palette'
 

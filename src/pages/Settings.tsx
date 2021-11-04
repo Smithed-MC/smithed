@@ -3,10 +3,10 @@ import '../font.css'
 import curPalette, { changePalette, registeredPalettes } from '../Palette';
 import Dropdown, {Option} from '../components/Dropdown';
 import appSettings, { saveSettings } from '../Settings';
-import { ColumnDiv, firebaseApp, firebaseUser, Header1, RowDiv, StyledInput, userData } from '..';
+import { Header1, RowDiv, StyledInput, userData } from '..';
 import styled from 'styled-components';
 import GroupedFoldout from '../components/GroupedFoldout';
-import { StyledLabel, StyledButton } from '../Shared';
+import { StyledLabel } from '../Shared';
 
 const SettingsButton = styled.button`
     height:32px;

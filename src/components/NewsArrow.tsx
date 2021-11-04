@@ -1,5 +1,3 @@
-import React from 'react';
-import logo from './logo.svg';
 import styled from 'styled-components';
 import LeftArrow from '../icons/left_arrow.svg'
 

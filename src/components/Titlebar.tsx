@@ -1,13 +1,10 @@
-import React from 'react';
-import ReactDOM from 'react-dom';
 import '../font.css';
-import styled, { css } from 'styled-components';
+import styled from 'styled-components';
 import curPalette from '../Palette';
-import appSettings, { remote, saveSettings } from '../Settings';
+import { remote, saveSettings } from '../Settings';
 import { StyledLabel } from '../Shared';
 
-const fs = window.require('fs')
-const pathModule = window.require('path')
+
 const remoteModule = window.require('@electron/remote')
 const TopbarContainer = styled.div`
   -webkit-app-region: drag;

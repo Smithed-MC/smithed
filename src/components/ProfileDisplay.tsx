@@ -1,7 +1,6 @@
-import React, { version } from 'react';
+import React from 'react';
 import styled from 'styled-components';
 import { RowDiv, userData } from '..';
-import Browse from '../pages/Browse';
 import Home, {Profile} from '../pages/Home';
 import curPalette from '../Palette'
 import { saveProfiles } from '../ProfileHelper';
@@ -12,7 +11,6 @@ import { StyledLabel, StyledButton } from '../Shared';
 
 
 const { ipcRenderer } = window.require('electron');
-const execa = window.require('execa')
 interface ProfileDisplayProps {
     profile: Profile,
     active: boolean
@@ -81,7 +79,7 @@ class ProfileDisplay extends React.Component {
         return (
             <ProfileDisplayDiv onMouseEnter={() => this.setMouseOver(true)} onMouseLeave={() => this.setMouseOver(false)}>
                 <div style={{display: 'flex', flexDirection:'column', alignItems:'center'}}>
-                    <img style={{width:192,height:192,backgroundColor:curPalette.darkAccent}} src={this.props.profile.img}/>
+                    <img style={{width:192,height:192,backgroundColor:curPalette.darkAccent}} src={this.props.profile.img} alt="Profile Icon"/>
                     <StyledLabel style={{width:'40%',position:'relative',textAlign:'center', top:-180, left:45, backgroundColor:'rgba(0.140625,0.13671875,0.16796875,0.25)', color:curPalette.text, fontFamily:'Inconsolata', WebkitUserSelect: 'none'}}>{this.props.profile.version}</StyledLabel>
                 </div>
                 <div style={{width:'90%', flexGrow:1, display:'flex', flexDirection:'column', alignItems:'center'}}>
@@ -107,7 +105,7 @@ class ProfileDisplay extends React.Component {
 
                                 Home.instance.renderMyProfiles()
                             }} disabled={Home.instance.state.activeProfile !== ''} onMouseDownCapture={(e)=>{
-                                if(e.button == 2) 
+                                if(e.button === 2) 
                                     ContextMenu.openMenu("edit-profile", e.clientX, e.clientY)
                             }}>
                                 {this.props.active ? 'RUNNING' : 'PLAY'}

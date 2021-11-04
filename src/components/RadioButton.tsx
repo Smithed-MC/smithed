@@ -1,6 +1,5 @@
-import React, { version } from 'react';
+import React from 'react';
 import styled from 'styled-components';
-import { RowDiv } from '..';
 import curPalette from '../Palette'
 import { StyledLabel } from '../Shared';
 

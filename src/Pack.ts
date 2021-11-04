@@ -1,6 +1,5 @@
-import { firebaseApp, firebaseUser, userData } from "."
-import { Profile } from "./pages/Home"
-import { fs, pathModule, settingsFolder } from "./Settings"
+import { firebaseApp, userData } from "."
+import { fs } from "./Settings"
 
 
 export class Meta {
@@ -18,6 +17,21 @@ export interface Dependency {
     id: string
     version: string
 }
+
+export interface PackDict {
+    [key: string]: {
+        added: number,
+        owner: string
+    }
+}
+
+export interface PackEntry {
+    added: number,
+    owner: string,
+    id: string,
+    data: Pack
+}
+
 
 export class Version {
     breaking: boolean = true
@@ -95,7 +109,7 @@ export class DataVersion {
 
     parse(s: string) {
         try {
-            let dv = new DataVersion(s)
+            // let dv = new DataVersion(s)
         } catch {
 
         }
@@ -155,7 +169,7 @@ export class PackHelper {
 
                         this.addToQueueIfNot(pack)
     
-                    if(callback != undefined)
+                    if(callback !== undefined)
                         callback()
                 })
             }

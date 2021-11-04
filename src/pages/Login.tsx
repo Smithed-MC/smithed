@@ -1,12 +1,13 @@
 import React from 'react';
 import styled from 'styled-components';
 import '../font.css'
-import { ColumnDiv, firebaseUser, RowDiv, setFirebaseUser, setIgnoreStateChange, TabButton } from '..';
+import { ColumnDiv, firebaseUser, RowDiv, setFirebaseUser, setIgnoreStateChange } from '..';
 import curPalette from '../Palette';
 import {firebaseApp} from '../index'
 import appSettings, { saveSettings } from '../Settings';
 import { PackHelper } from '../Pack';
 import { ButtonLabel } from '../Shared';
+import TabButton from '../components/TabButton';
 
 const emailRegex = new RegExp(/^(([^<>()\]\\.,;:\s@"]+(\.[^<>()\]\\.,;:\s@"]+)*)|(".+"))@(([0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/);
 const strongRegex = new RegExp(/^(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])(?=.*[!@#$%^&*-./:])(?=.{8,})/);
@@ -181,7 +182,8 @@ class Login extends React.Component {
         })
     }
     
-    swapTab(tab: number) {
+    swapTab(name: string) {
+        const tab = name === 'signin' ? 1 : 0
         if(tab !== this.state.tab) {
             this.setState({tab: tab, emailValid:true, passwordValid: true, password2Valid: true, loginError: null})
             this.email = ''
@@ -189,16 +191,7 @@ class Login extends React.Component {
             this.password2 = ''
         }
     }
-    getSelectedStyle(tab: number) : React.CSSProperties {
-        if(this.state.tab === tab) {
-            return {
-                marginTop: 4,
-                borderBottom: `4px solid ${curPalette.lightAccent}`
-            }
-        } else {
-            return {}
-        }
-    }
+
     renderEmailField() {
         return(
             <ColumnDiv style={{width:'100%', gap:4}}>
@@ -295,7 +288,7 @@ class Login extends React.Component {
                 {this.state.loginError != null && <ErrorLabel>{this.state.loginError}</ErrorLabel>}
                 <LoginButton type="submit" onClick={()=>this.signIn()}>Login</LoginButton>
                 <ButtonLabel style={{fontStyle:'italic'}} onClick={() => {
-                    if(this.email != '' && this.email.match(this.email)) {
+                    if(this.email !== '' && this.email.match(this.email)) {
                         firebaseApp.auth().sendPasswordResetEmail(this.email).then(() => {
                         }).catch((r) => {
                             console.log(r)
@@ -309,8 +302,8 @@ class Login extends React.Component {
         return(
             <ColumnDiv style={{width:'100%'}}>
                 <RowDiv style={{backgroundColor:curPalette.darkBackground, width:'100%', height:'30px',justifyContent:'center',gap:36}}>
-                    <TabButton style={this.getSelectedStyle(1)} onClick={()=>this.swapTab(1)}>Sign In</TabButton>
-                    <TabButton style={this.getSelectedStyle(0)} onClick={()=>this.swapTab(0)}>Sign Up</TabButton>
+                    <TabButton group="login-page" name="signin" onChange={(n:string)=>this.swapTab(n)}>Sign In</TabButton>
+                    <TabButton group="login-page" name="signup" onChange={(n:string)=>this.swapTab(n)}>Sign Up</TabButton>
                 </RowDiv>
                 {this.state.tab === 0 && this.renderSignUp()}
                 {this.state.tab === 1 && this.renderSignIn()}

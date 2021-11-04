@@ -12,9 +12,9 @@ interface Settings {
 
 let platform = window.process.platform
 let appSettings = {palette: 'defaultDark', leftOffPage: 'news', lastEmail:'', launcher: (
-    platform == 'win32' ? 'C:\\Program Files (x86)\\Minecraft Launcher\\MinecraftLauncher.exe' : 
-    platform == 'linux' ? '/opt/minecraft-launcher/minecraft-launcher' :
-    platform == 'darwin'? '/Applications/Minecraft.app' : 'unknown'
+    platform === 'win32' ? 'C:\\Program Files (x86)\\Minecraft Launcher\\MinecraftLauncher.exe' : 
+    platform === 'linux' ? '/opt/minecraft-launcher/minecraft-launcher' :
+    platform === 'darwin'? '/Applications/Minecraft.app' : 'unknown'
 )}
 
 export const settingsFolder = pathModule.join(remote.app.getPath('appData'), 'smithed')

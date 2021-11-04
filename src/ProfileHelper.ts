@@ -1,5 +1,6 @@
 import { firebaseApp, setUserData, userData } from ".";
 import { dirExists } from "./FSWrapper";
+import { PackHelper, PackEntry } from "./Pack";
 import { Profile } from "./pages/Home";
 import { fs, pathModule, settingsFolder } from "./Settings";
 
@@ -56,6 +57,18 @@ export async function setupProfile(profile: Profile, selectedMods: { [key: strin
 
 		// let companion = (await firebaseApp.database().ref(`meta/mods/smithed/${profile.version.replaceAll('.','_')}`).get()).val()
 		// await download(companion, pathModule.join(profile.directory, 'mods'), { filename: 'smithed_companion.jar' })
+    }
+}
+
+export function addPackToProfile(profile: Profile, packEntry: PackEntry) {
+    const packVersion = PackHelper.getLatestVersionForVersion(packEntry.data, profile.version)
+
+    if(packVersion != null) {
+        let packs = profile.packs != null ? profile.packs : []
+
+        profile.packs = packs
+
+        saveProfiles(userData.profiles)
     }
 }
 

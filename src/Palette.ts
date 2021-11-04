@@ -1,7 +1,4 @@
-import ReactDOM from 'react-dom';
-import React from 'react';
 import appSettings, { reloadSettings } from './Settings';
-import { Index } from '.';
 
 class Palette {
     darkAccent : string
@@ -68,8 +65,6 @@ export let registeredPalettes : {[key:string]: Palette} = {
     creeperMagnet: creeperMagnet
 }
 
-
-const remote = window.require('@electron/remote')
 
 export function changePalette(name: string) {
     curPalette = registeredPalettes[name]
