@@ -47,12 +47,13 @@ export interface Profile {
     img?: string,
     packs?: Dependency[],
     directory?: string,
-    author?: string
+    author?: string,
+    setup?: boolean
 }
 
 class Home extends React.Component {
     state : HomeState
-    profileCreationInfo: Profile = {name: '', version:''}
+    profileCreationInfo: Profile = {name: '', version:'', setup:false}
     selectedMods: {[key:string]: any} = {}
 
     props: RouteComponentProps
@@ -184,7 +185,7 @@ class Home extends React.Component {
 
         let options: JSX.Element[] = []
         if(userData.modsDict !== undefined) {
-            this.selectedMods = {fabric_api: userData.modsDict["fabric-api"][version]}
+            this.selectedMods = {fabric_api: userData.modsDict["fabric-api"][version], smithed: userData.modsDict["smithed"][version]}
             mods.map((val, i, arr) => {
                 const download = userData.modsDict[val][version]
                 if(download != null) {

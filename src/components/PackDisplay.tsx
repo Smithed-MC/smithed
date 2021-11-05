@@ -5,6 +5,7 @@ import { Display, PackEntry } from '../Pack';
 import curPalette from '../Palette'
 import { RouteComponentProps, withRouter } from 'react-router';
 import { selectedProfile } from '../pages/Browse';
+import { addPackToProfile, removePackToProfile as removePackFromProfile } from '../ProfileHelper';
 
 interface PackDisplayProps extends RouteComponentProps {
     packEntry: PackEntry
@@ -87,15 +88,14 @@ class PackDisplay extends React.Component {
 
     profileContains(): boolean {
 
-        // TODO: Redo pack to profile logic
+        //TODO: Redo pack to profile logic
 
-        // if(Browse.instance.state.profile.packs != null) {
-        //     for(let p of Browse.instance.state.profile.packs) {
-        //         console.log(`${p.id} | ${this.props.packEntry.id}`)
-        //         if(p.id === this.props.packEntry.id) 
-        //             return true
-        //     }
-        // }
+        if(selectedProfile.packs != null) {
+            for(let p of selectedProfile.packs) {
+                if(p.id === this.props.packEntry.id) 
+                    return true
+            }
+        }
         return false
     }
 
@@ -122,9 +122,11 @@ class PackDisplay extends React.Component {
                                 }}>{display.name}</PackName>
                             </div>
                             {!contained && <PackAddButton disabled={selectedProfile.name === ''} onClick={()=>{
-                                // Browse.addPackToProfile(this.props.packEntry)
+                                addPackToProfile(selectedProfile, this.props.packEntry)
                             }}>+</PackAddButton>}
-                            {contained && <PackAddButton>-</PackAddButton>}
+                            {contained && <PackAddButton onClick={()=>{
+                                removePackFromProfile(selectedProfile, this.props.packEntry);
+                            }}>-</PackAddButton>}
                         </RowDiv>
                         <RowDiv style={{justifySelf:'left', gap:32, width:'100%'}}>
                             <PackStats>{'100M Downloads'}</PackStats>

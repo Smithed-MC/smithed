@@ -4054,6 +4054,13 @@
   dependencies:
     "source-map" "~0.6.0"
 
+"clean-semver@^2.1.0":
+  "integrity" "sha512-a5sIRLwP078fc3/AEDfSxD8GmMBJlxYCUnRfXjldyy9RjwXxNVuK9hLwDar4sceJhZp6G+66ukNZsVFIqN28jg=="
+  "resolved" "https://registry.npmjs.org/clean-semver/-/clean-semver-2.1.0.tgz"
+  "version" "2.1.0"
+  dependencies:
+    "semver" "^7.3.2"
+
 "clean-stack@^2.0.0":
   "integrity" "sha512-4diC9HaTE+KRAMWhDhrGOECgWZxoevMc5TlkObMqNSsVU62PYzXZ/SMTjzyGAFF1YusgxGcSWTEXBhp0CPwQ1A=="
   "resolved" "https://registry.npmjs.org/clean-stack/-/clean-stack-2.2.0.tgz"
@@ -8449,6 +8456,13 @@
   dependencies:
     "lodash" "^4.17.5"
     "webpack-sources" "^1.1.0"
+
+"latest-semver@^4.0.0":
+  "integrity" "sha512-flUamL125jFTL9xLuEI/hvzdMhBGCUOwqT3Y2km3fyDiiEFaEnlfwiuxUvQ7BhHdwXWLrqXTytX3UNNd095kxA=="
+  "resolved" "https://registry.npmjs.org/latest-semver/-/latest-semver-4.0.0.tgz"
+  "version" "4.0.0"
+  dependencies:
+    "to-semver" "^4.0.0"
 
 "lazy-val@^1.0.4":
   "integrity" "sha512-0/BnGCCfyUMkBpeDgWihanIAF9JmZhHBgUhEqzvf+adhNGLoP6TaiI5oF8oyb3I45P+PcnrqihSf01M0l0G5+Q=="
@@ -12870,6 +12884,14 @@
     "extend-shallow" "^3.0.2"
     "regex-not" "^1.0.2"
     "safe-regex" "^1.1.0"
+
+"to-semver@^4.0.0":
+  "integrity" "sha512-qARDZe0teB+/7EXkXE2cWnQddhLzunD72n+LGvSOHvti21kk9YHUSOjJpWDTLJ44MP7VNWFzo5n10PUwr2r3zA=="
+  "resolved" "https://registry.npmjs.org/to-semver/-/to-semver-4.0.0.tgz"
+  "version" "4.0.0"
+  dependencies:
+    "clean-semver" "^2.1.0"
+    "semver" "^7.3.5"
 
 "toidentifier@1.0.0":
   "integrity" "sha512-yaOH/Pk/VEhBWWTlhI+qXxDFXlejDGcQipMlyxda9nthulaxLZUNcUqFxokp0vcYnvteJln5FNQDRrxj3YcbVw=="

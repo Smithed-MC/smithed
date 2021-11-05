@@ -8,6 +8,7 @@ import appSettings, { fs } from '../Settings';
 import ContextMenu from './ContextMenu';
 import Dropdown, { Option } from './Dropdown';
 import { StyledLabel, StyledButton } from '../Shared';
+import { downloadAndMerge } from '../Installer';
 
 
 const { ipcRenderer } = window.require('electron');
@@ -101,9 +102,13 @@ class ProfileDisplay extends React.Component {
                             <ProfilePlayButton onClick={async (e)=>{
                                 console.log(e)
                                 
-                                if(Home.instance.state.activeProfile === '')
+                                if(Home.instance.state.activeProfile === '') {
+                                    if(this.props.profile.setup === undefined || !this.props.profile.setup) {
+                                        if(this.props.profile.packs !== undefined)
+                                            await downloadAndMerge(this.props.profile)
+                                    }
                                     ipcRenderer.send('start-launcher', this.props.profile, appSettings.launcher)
-
+                                }
                                 Home.instance.renderMyProfiles()
                             }} disabled={Home.instance.state.activeProfile !== ''} onMouseDownCapture={(e)=>{
                                 if(e.button === 2) 
