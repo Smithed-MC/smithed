@@ -36,7 +36,13 @@ class Settings extends React.Component {
     componentDidMount() {
         
         userData.ref?.child('donation').get().then((snapshot) => {
-            this.setState({donation: snapshot.val()})
+            const donations = snapshot.val() != null ? snapshot.val() : {kofi:'',patreon:'',other:''}
+
+            if(donations["kofi"] == null) donations["kofi"] = ""
+            if(donations["patreon"] == null) donations["patreon"] = ""
+            if(donations["other"] == null) donations["other"] = ""
+
+            this.setState({donation: donations})
             console.table(snapshot.val())
         })
     }
