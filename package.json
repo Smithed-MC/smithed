@@ -1,6 +1,6 @@
 {
   "name": "smithed",
-  "version": "0.1.5",
+  "version": "0.2.0",
   "private": true,
   "main": "public/electron.js",
   "homepage": "./",
