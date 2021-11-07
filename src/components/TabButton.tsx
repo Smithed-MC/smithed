@@ -34,7 +34,7 @@ interface TabButtonProps {
 const events = new EventEmitter()
 
 function TabButton(props: TabButtonProps) {
-    const [selected, setSelected] = useState(false)
+    const [selected, setSelected] = useState(props.defaultValue)
 
     useEffect(() => {
         const onClick = (group: string) => {

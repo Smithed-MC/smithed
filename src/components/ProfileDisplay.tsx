@@ -1,7 +1,7 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import styled from 'styled-components';
 import { RowDiv, userData } from '..';
-import Home, {Profile} from '../pages/Home';
+import Home, { Profile } from '../pages/Home';
 import curPalette from '../Palette'
 import { saveProfiles } from '../ProfileHelper';
 import appSettings, { fs } from '../Settings';
@@ -9,6 +9,8 @@ import ContextMenu from './ContextMenu';
 import Dropdown, { Option } from './Dropdown';
 import { StyledLabel, StyledButton } from '../Shared';
 import { downloadAndMerge } from '../Installer';
+import { useHistory } from 'react-router';
+import { setSelectedProfile } from '../pages/Browse';
 
 
 const { ipcRenderer } = window.require('electron');
@@ -18,7 +20,7 @@ interface ProfileDisplayProps {
 }
 
 interface ProfileDisplayState {
-    mouseOver:boolean,
+    mouseOver: boolean,
     editMenu: boolean
 }
 
@@ -60,85 +62,83 @@ const ProfileNameLabel = styled.label`
     -webkit-user-select: none;
 `
 
-class ProfileDisplay extends React.Component {
-    props: ProfileDisplayProps
-    state: ProfileDisplayState
-    constructor(props: ProfileDisplayProps) {
-        super(props)
-        this.props = props
-        this.state = {mouseOver: false, editMenu: false}
-
-        ipcRenderer.on('invalid-launcher', ()=> {
+function ProfileDisplay(props: ProfileDisplayProps) {
+    const [mouseOver, setMouseOver] = useState(false)
+    const history = useHistory();
+    useEffect(() => {
+        ipcRenderer.on('invalid-launcher', () => {
             alert('Unable to find your Minecraft Launcher, please fix it in \'Settings\'')
         })
-    }
-    setMouseOver(value: boolean) {
-        this.setState({mouseOver: value})
-    }
+    }, [])
 
-    render() {
-        return (
-            <ProfileDisplayDiv onMouseEnter={() => this.setMouseOver(true)} onMouseLeave={() => this.setMouseOver(false)}>
-                <div style={{display: 'flex', flexDirection:'column', alignItems:'center'}}>
-                    {this.props.profile.img !== undefined && <img style={{width:192,height:192,backgroundColor:curPalette.darkAccent}} src={this.props.profile.img} alt="Profile Icon"/>}
-                    {this.props.profile.img === undefined && <div style={{width:192,height:192,backgroundColor:curPalette.darkAccent}}/>}
-                    <StyledLabel style={{width:'40%',position:'relative',textAlign:'center', top:-180, left:45, backgroundColor:'rgba(0.140625,0.13671875,0.16796875,0.25)', color:curPalette.text, fontFamily:'Inconsolata', WebkitUserSelect: 'none'}}>{this.props.profile.version}</StyledLabel>
-                </div>
-                <div style={{width:'90%', flexGrow:1, display:'flex', flexDirection:'column', alignItems:'center'}}>
-                    {!this.state.mouseOver && 
-                        <ProfileNameLabel>
-                            <b>{this.props.profile.name}</b>
-                        </ProfileNameLabel>}
-                    {!this.state.mouseOver &&
-                        <ProfileNameLabel style={{color:curPalette.subText, fontSize:18}}>
-                            {`by ${this.props.profile.author}`}
-                        </ProfileNameLabel>}
 
-                    <Dropdown style={{display:'none'}} id="context-menu">
-                        <Option value="Edit"/>
-                    </Dropdown>
-                    {this.state.mouseOver && 
-                        <RowDiv style={{width:'100%', height:'100%', gap:4, alignItems:'center',marginTop:-4}}>
-                            <ProfilePlayButton onClick={async (e)=>{
-                                console.log(e)
-                                
-                                if(Home.instance.state.activeProfile === '') {
-                                    if(this.props.profile.setup === undefined || !this.props.profile.setup) {
-                                        if(this.props.profile.packs !== undefined)
-                                            await downloadAndMerge(this.props.profile)
-                                    }
-                                    ipcRenderer.send('start-launcher', this.props.profile, appSettings.launcher)
+
+
+    return (
+        <ProfileDisplayDiv onMouseEnter={() => setMouseOver(true)} onMouseLeave={() => setMouseOver(false)}>
+            <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
+                {props.profile.img !== undefined && <img style={{ width: 192, height: 192, backgroundColor: curPalette.darkAccent }} src={props.profile.img} alt="Profile Icon" />}
+                {props.profile.img === undefined && <div style={{ width: 192, height: 192, backgroundColor: curPalette.darkAccent }} />}
+                <StyledLabel style={{ width: '40%', position: 'relative', textAlign: 'center', top: -180, left: 45, backgroundColor: 'rgba(0.140625,0.13671875,0.16796875,0.25)', color: curPalette.text, fontFamily: 'Inconsolata', WebkitUserSelect: 'none' }}>{props.profile.version}</StyledLabel>
+            </div>
+            <div style={{ width: '90%', flexGrow: 1, display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
+                {!mouseOver &&
+                    <ProfileNameLabel>
+                        <b>{props.profile.name}</b>
+                    </ProfileNameLabel>}
+                {!mouseOver &&
+                    <ProfileNameLabel style={{ color: curPalette.subText, fontSize: 18 }}>
+                        {`by ${props.profile.author}`}
+                    </ProfileNameLabel>}
+
+                <Dropdown style={{ display: 'none' }} id="context-menu">
+                    <Option value="Edit" />
+                </Dropdown>
+                {mouseOver &&
+                    <RowDiv style={{ width: '100%', height: '100%', gap: 4, alignItems: 'center', marginTop: -4 }}>
+                        <ProfilePlayButton onClick={async (e) => {
+                            console.log(e)
+
+                            if (Home.instance.state.activeProfile === '') {
+                                if (props.profile.setup === undefined || !props.profile.setup) {
+                                    if (props.profile.packs !== undefined)
+                                        await downloadAndMerge(props.profile)
                                 }
-                                Home.instance.renderMyProfiles()
-                            }} disabled={Home.instance.state.activeProfile !== ''} onMouseDownCapture={(e)=>{
-                                if(e.button === 2) 
-                                    ContextMenu.openMenu("edit-profile", e.clientX, e.clientY)
-                            }}>
-                                {this.props.active ? 'RUNNING' : 'PLAY'}
-                            </ProfilePlayButton>
-                        </RowDiv>}
-                </div>
+                                ipcRenderer.send('start-launcher', props.profile, appSettings.launcher)
+                            }
+                            Home.instance.renderMyProfiles()
+                        }} disabled={Home.instance.state.activeProfile !== ''} onMouseDownCapture={(e) => {
+                            if (e.button === 2)
+                                ContextMenu.openMenu("edit-profile", e.clientX, e.clientY)
+                        }}>
+                            {props.active ? 'RUNNING' : 'PLAY'}
+                        </ProfilePlayButton>
+                    </RowDiv>}
+            </div>
 
-                <ContextMenu id="edit-profile" style={{backgroundColor:curPalette.lightBackground, border: `4px solid ${curPalette.lightAccent}`, borderRadius:8, padding: 8, gap: 4, width: 128, flexDirection:'column'}} offsetX={74} offsetY={40}>
-                    <StyledButton style={{backgroundColor: curPalette.darkBackground}}>Edit</StyledButton>
-                    <StyledButton style={{backgroundColor: curPalette.darkBackground, color:'red'}} onClick={() => {
-                        const idx = userData.profiles.indexOf(this.props.profile)
-                        const p = userData.profiles.splice(idx, 1)[0]
+            <ContextMenu id="edit-profile" style={{ backgroundColor: curPalette.lightBackground, border: `4px solid ${curPalette.lightAccent}`, borderRadius: 8, padding: 8, gap: 4, width: 128, flexDirection: 'column' }} offsetX={74} offsetY={40}>
+                <StyledButton style={{ backgroundColor: curPalette.darkBackground }} onClick={() => {
+                    setSelectedProfile(props.profile.name)
+                    history.push('/app/browse/')
+                }}>Edit</StyledButton>
+                <StyledButton style={{ backgroundColor: curPalette.darkBackground, color: 'red' }} onClick={() => {
+                    const idx = userData.profiles.indexOf(props.profile)
+                    const p = userData.profiles.splice(idx, 1)[0]
 
-                        saveProfiles(userData.profiles)
-                        Home.instance.buildProfileDisplays()
+                    saveProfiles(userData.profiles)
+                    Home.instance.buildProfileDisplays()
 
-                        ContextMenu.closeMenu("edit-profile")
+                    ContextMenu.closeMenu("edit-profile")
 
-                        fs.rmdirSync(p.directory, {
-                            recursive: true
-                        })
+                    fs.rmdirSync(p.directory, {
+                        recursive: true
+                    })
 
-                    }}>Delete</StyledButton>
-                </ContextMenu>
-            </ProfileDisplayDiv>  
-        );
-    }
+                }}>Delete</StyledButton>
+            </ContextMenu>
+        </ProfileDisplayDiv>
+    );
+
 }
 
 export default ProfileDisplay;

@@ -21,12 +21,14 @@ export interface Dependency {
 export interface PackDict {
     [key: string]: {
         added: number,
-        owner: string
+        owner: string,
+        updated?: number
     }
 }
 
 export interface PackEntry {
     added: number,
+    updated?: number,
     owner: string,
     id: string,
     data: Pack
@@ -144,9 +146,9 @@ export class PackHelper {
         pack = this.toFirebaseValid(pack)
 
         
-        const packs = firebaseApp.database().ref(`packs/${PackHelper.displayNameToID(userData.displayName)}:${pack.id}`)
+        const packsRef = firebaseApp.database().ref(`packs/${PackHelper.displayNameToID(userData.displayName)}:${pack.id}`)
         
-        packs.get().then((snap) => {
+        packsRef.get().then((snap) => {
             if(userData.ref != null) {
 
                 const userPacks = userData.ref?.child(`packs`)
@@ -158,15 +160,18 @@ export class PackHelper {
                     for(var i = 0; i < packs.length; i++) {
                         if(packs[i].id === pack.id) {
                             userPacks.child(i.toString()).set(pack)
-
+                            
+                            if(packs[i].versions !== pack.versions)
+                                packsRef.child('updated').set(Date.now())
+                                
                             if(!snap.exists())
                                 this.addToQueueIfNot(pack)
                             return;
                         }
                     }
+
                     userPacks.child((i).toString()).set(pack)
                     if(!snap.exists())
-
                         this.addToQueueIfNot(pack)
     
                     if(callback !== undefined)

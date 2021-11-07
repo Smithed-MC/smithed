@@ -33,6 +33,7 @@ async function queryPacks() {
         packs.push({
             owner: packDict[p].owner,
             added: packDict[p].added,
+            updated: packDict[p].updated,
             id: p,
             data: pack
         })

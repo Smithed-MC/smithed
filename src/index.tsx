@@ -10,7 +10,7 @@ import reportWebVitals from './reportWebVitals';
 import { MarkdownToJSX } from 'markdown-to-jsx';
 import curPalette from './Palette';
 import Login from './pages/Login';
-import firebase from 'firebase/app';
+import firebase from 'firebase';
 import 'firebase/auth';
 import 'firebase/database';
 import { remote } from './Settings';
@@ -23,6 +23,8 @@ import { Route, RouteComponentProps, withRouter } from 'react-router';
 import { HashRouter } from 'react-router-dom';
 import EventEmitter from 'events';
 import { PackEntry } from './Pack';
+
+
 
 const { ipcRenderer } = window.require('electron');
 

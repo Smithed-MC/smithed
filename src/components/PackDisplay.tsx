@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import styled from 'styled-components';
 import { ColumnDiv, RowDiv } from '..';
 import { Display, PackEntry } from '../Pack';
@@ -76,72 +76,68 @@ const PackAddButton = styled.button`
 `
 
 
-class PackDisplay extends React.Component {
-    props: PackDisplayProps
-    state: PackDisplayState
-    constructor(props: PackDisplayProps) {
-        super(props)
-        this.props = props
-        this.state = {}
-    }
-
-
-    profileContains(): boolean {
-
-        //TODO: Redo pack to profile logic
-
+function PackDisplay(props: PackDisplayProps) {
+    const profileContains: ()=>boolean = () => {
         if(selectedProfile.packs != null) {
             for(let p of selectedProfile.packs) {
-                if(p.id === this.props.packEntry.id) 
+                if(p.id === props.packEntry.id) 
                     return true
             }
         }
         return false
     }
+    const [contained, setContained] = useState(profileContains())
 
-    render() {
-        const dateAdded = new Date(this.props.packEntry.added)
-        const timeDiff = Math.floor(Math.abs(dateAdded.getTime() - Date.now()) / (1000 * 3600 * 24))
+    useEffect(()=>{
+        setContained(profileContains())
+    })
 
-        const display: Display | 'hidden' = this.props.packEntry.data.display
 
-        if(display === 'hidden') return
+    const dateAdded = new Date(props.packEntry.updated !== undefined ? props.packEntry.updated : props.packEntry.added)
+    const timeDiff = Math.floor(Math.abs(dateAdded.getTime() - Date.now()) / (1000 * 3600 * 24))
 
-        const contained = this.profileContains()
-        return (
-            <div style={{width:'85%'}}>
-                <RowDiv style={{backgroundColor:curPalette.darkBackground, width: '100%', height:64, padding:16, justifyContent:'left', gap:16, borderRadius:8}}>
-                    <img style={{width:64, height: 64, backgroundColor:curPalette.darkAccent, WebkitUserSelect:'none'}} src={display.icon} alt="Pack Icon"/>
-                    <ColumnDiv style={{alignItems:'left',width:'100%', justifyContent:'space-evenly'}}>
-                        <RowDiv style={{alignItems:'left', width:'inherit', justifyContent:'space-between', gap:4}}>
-                            <div style={{display:'table',tableLayout:'fixed', width:'100%'}}>
-                                <PackName onClick={()=>{
-                                    const id = this.props.packEntry.id.split(':')
-                                    const link = `/app/browse/view/${id[0]}/${id[1]}`
-                                    this.props.history.push(link)
-                                }}>{display.name}</PackName>
-                            </div>
-                            {!contained && <PackAddButton disabled={selectedProfile.name === ''} onClick={()=>{
-                                addPackToProfile(selectedProfile, this.props.packEntry)
-                            }}>+</PackAddButton>}
-                            {contained && <PackAddButton onClick={()=>{
-                                removePackFromProfile(selectedProfile, this.props.packEntry);
-                            }}>-</PackAddButton>}
-                        </RowDiv>
-                        <RowDiv style={{justifySelf:'left', gap:32, width:'100%'}}>
-                            <PackStats>{'100M Downloads'}</PackStats>
-                            <PackStats>{`Updated ${timeDiff} day${timeDiff !== 1 ? 's' : ''} ago`}</PackStats>
-                            <PackStats>{`Added ${dateAdded.toLocaleDateString()}`}</PackStats>
-                            <li style={{flexGrow:1, width:'100%', visibility:'hidden'}}/>
-                        </RowDiv>
-                        <div style={{width:'100%'}}>
-                            <PackDescription>{display.description}</PackDescription>
+    const display: Display | 'hidden' = props.packEntry.data.display
+
+    if(display === 'hidden') return (<div></div>)
+
+
+
+    return (
+        <div style={{width:'85%'}}>
+            <RowDiv style={{backgroundColor:curPalette.darkBackground, width: '100%', height:64, padding:16, justifyContent:'left', gap:16, borderRadius:8}}>
+                <img style={{width:64, height: 64, WebkitUserSelect:'none'}} src={display.icon} alt="Pack Icon"/>
+                <ColumnDiv style={{alignItems:'left',width:'100%', justifyContent:'space-evenly'}}>
+                    <RowDiv style={{alignItems:'left', width:'inherit', justifyContent:'space-between', gap:4}}>
+                        <div style={{display:'table',tableLayout:'fixed', width:'100%'}}>
+                            <PackName onClick={()=>{
+                                const id = props.packEntry.id.split(':')
+                                const link = `/app/browse/view/${id[0]}/${id[1]}`
+                                props.history.push(link)
+                            }}>{display.name}</PackName>
                         </div>
-                    </ColumnDiv>
-                </RowDiv>
-            </div>
-        );
-    }
+                        {!contained && <PackAddButton disabled={selectedProfile.name === ''} onClick={()=>{
+                            setContained(true)
+                            addPackToProfile(selectedProfile, props.packEntry)
+                        }}>+</PackAddButton>}
+                        {contained && <PackAddButton style={{backgroundColor:curPalette.badAccent}} onClick={()=>{
+                            setContained(false)
+                            removePackFromProfile(selectedProfile, props.packEntry);
+                        }}>-</PackAddButton>}
+                    </RowDiv>
+                    <RowDiv style={{justifySelf:'left', gap:32, width:'100%'}}>
+                        <PackStats>{'100M Downloads'}</PackStats>
+                        <PackStats>{`Updated ${timeDiff} day${timeDiff !== 1 ? 's' : ''} ago`}</PackStats>
+                        <PackStats>{`Added ${dateAdded.toLocaleDateString()}`}</PackStats>
+                        <li style={{flexGrow:1, width:'100%', visibility:'hidden'}}/>
+                    </RowDiv>
+                    <div style={{width:'100%'}}>
+                        <PackDescription>{display.description}</PackDescription>
+                    </div>
+                </ColumnDiv>
+            </RowDiv>
+        </div>
+    );
+    
 }
 
 export default withRouter(PackDisplay);

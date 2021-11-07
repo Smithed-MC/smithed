@@ -9,6 +9,7 @@ import { Route, Switch, useLocation, withRouter } from 'react-router';
 import PackView from './Browse/PackView';
 import { asEnumerable } from 'linq-es5';
 import TabButton from '../components/TabButton';
+import curPalette from '../Palette';
 
 
 
@@ -25,17 +26,33 @@ const getProfiles = () => {
     return elements;
 }
 
+
 function Browse(props: any) {
     const [tab, setTab] = useState(0)
     const [search, setSearch] = useState('')
     const [packs, setPacks] = useState([] as JSX.Element[])
+    
+    let sort = (p: PackEntry) => -p.added
 
     const renderTabs = () => {
         return (
-            <div>
-                <TabButton group="browse-sorting" name="new">New</TabButton>
-                <TabButton group="browse-sorting" name="trending">Trending</TabButton>
-                <TabButton group="browse-sorting" name="updated">Updated</TabButton>
+            <div style={{backgroundColor: curPalette.darkBackground, paddingLeft:16, paddingRight: 16, borderRadius: 8, justifyContent:'center', display:'flex', gap: 16, marginTop: 8}}>
+                <TabButton onChange={()=>{
+                    sort = (p: PackEntry) => -p.added
+                    renderPacks(sort)
+                }} defaultValue={true} group="browse-sorting" name="new">New</TabButton>
+                <TabButton onChange={()=>{
+                    
+                }} group="browse-sorting" name="trending">Trending</TabButton>
+                <TabButton onChange={()=>{
+                    sort = (p: PackEntry) => {
+                        if(p.updated !== undefined)
+                            return -p.updated
+                        else
+                            return -p.added
+                    }
+                    renderPacks(sort)
+                }} group="browse-sorting" name="updated">Updated</TabButton>
             </div>
         )
     }
@@ -76,7 +93,7 @@ function Browse(props: any) {
 
     
     const updatePacks = useCallback(() => {
-        renderPacks(p => -p.added)
+        renderPacks(sort)
     }, [renderPacks])
 
     useEffect(() => {
@@ -134,26 +151,6 @@ function Browse(props: any) {
 
 }
 
-const useQuery = () => {
-    const search = useLocation().search
-
-    let query: { [key: string]: any } = {}
-    search.split('?').forEach(v => {
-        const data = v.split('=')
-        query[data[0]] = data[1]
-    })
-
-    return query
-}
-
-const BrowseRouter = withRouter(Browse)
-
-export function BrowseWithQuery() {
-    let query = useQuery();
-    return (
-        <BrowseRouter query={query} />
-    );
-}
 
 
 export default Browse;

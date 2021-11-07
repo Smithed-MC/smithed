@@ -13,6 +13,7 @@ import { Dependency } from '../Pack'
 import { RouteComponentProps, Switch, Route } from 'react-router';
 import { StyledLabel } from '../Shared';
 import TabButton from '../components/TabButton';
+import { setSelectedProfile } from './Browse';
 
 const { ipcRenderer } = window.require('electron');
 
@@ -245,7 +246,8 @@ class Home extends React.Component {
                     saveProfiles(p)
                     this.buildProfileDisplays()
                     
-                    this.props.history.push(`/app/browse?selected=${newProfile.name}`)
+                    setSelectedProfile(newProfile.name)
+                    this.props.history.push(`/app/browse`)
                     // Browse.instance.update()
                 }}>Create</CreateButton>
                 {this.state.error !== '' && <StyledLabel style={{color:'red'}}>{this.state.error}</StyledLabel>}

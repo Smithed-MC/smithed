@@ -7,7 +7,7 @@ import Home from './pages/Home';
 import curPalette from './Palette';
 import Settings from './pages/Settings';
 import appSettings from './Settings';
-import { BrowseWithQuery } from './pages/Browse';
+import Browse from './pages/Browse';
 import Create from './pages/Create';
 import Queue from './pages/Queue';
 import {Route, Switch, withRouter} from 'react-router'
@@ -47,7 +47,7 @@ class App extends React.Component {
         <Sidebar onClick={(p: string) => {this.changePage(p)}}/>
         <Switch>
           <Route path='/app/home' component={withRouter(Home)}/>
-          <Route path='/app/browse' component={BrowseWithQuery}/>
+          <Route path='/app/browse' component={Browse}/>
           <Route path='/app/create' component={Create}/>
           <Route path='/app/settings' component={Settings}/>
           <Route path='/app/queue' component={Queue}/>
