@@ -64,6 +64,7 @@ const ProfileNameLabel = styled.label`
 
 function ProfileDisplay(props: ProfileDisplayProps) {
     const [mouseOver, setMouseOver] = useState(false)
+    const [downloading, setDownloading] = useState(false)
     const history = useHistory();
     useEffect(() => {
         ipcRenderer.on('invalid-launcher', () => {
@@ -101,13 +102,16 @@ function ProfileDisplay(props: ProfileDisplayProps) {
 
                             if (Home.instance.state.activeProfile === '') {
                                 if (props.profile.setup === undefined || !props.profile.setup) {
-                                    if (props.profile.packs !== undefined)
+                                    if (props.profile.packs !== undefined) {
+                                        setDownloading(true)
                                         await downloadAndMerge(props.profile)
+                                        setDownloading(false)
+                                    }
                                 }
                                 ipcRenderer.send('start-launcher', props.profile, appSettings.launcher)
                             }
                             Home.instance.renderMyProfiles()
-                        }} disabled={Home.instance.state.activeProfile !== ''} onMouseDownCapture={(e) => {
+                        }} disabled={Home.instance.state.activeProfile !== '' || downloading} onMouseDownCapture={(e) => {
                             if (e.button === 2)
                                 ContextMenu.openMenu("edit-profile", e.clientX, e.clientY)
                         }}>

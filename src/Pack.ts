@@ -29,6 +29,7 @@ export interface PackDict {
 export interface PackEntry {
     added: number,
     updated?: number,
+    downloads?: number,
     owner: string,
     id: string,
     data: Pack

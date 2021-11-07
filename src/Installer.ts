@@ -2,7 +2,7 @@ import { WeldDatapackBuilder } from "./weld/datapack";
 import DefaultResourcepackBuilder from "slimeball/out/resourcepack";
 import JSZip from "jszip";
 import { PackBuilder } from "slimeball/out/util";
-import { firebaseApp } from ".";
+import { firebaseApp, userData } from ".";
 import { fs, pathModule } from "./Settings";
 import { Dependency } from "./Pack";
 import latestSemver from "latest-semver";
@@ -11,6 +11,13 @@ import { Profile } from "./pages/Home";
 let datapacks: [string, Buffer][] = []
 let resourcepacks: [string, Buffer][] = []
 
+async function incrementDownloadCount(id: string) {
+    const resp = await fetch('https://worldtimeapi.org/api/timezone/Etc/UTC')
+    const data = await resp.json()
+    const date = new Date(data["unixtime"] * 1000)
+
+    firebaseApp.database().ref(`packs/${id}/downloads/${date.toLocaleDateString().replaceAll('/', '-')}/${userData.uid}`).set(userData.uid)
+}
 
 async function getPackData(uid: string, id: string) {
     const ownerPacks = (await firebaseApp.database().ref(`users/${uid}/packs`).get()).val() as any[]
@@ -89,6 +96,7 @@ async function downloadPack(entry: any, id: string, version?: string) {
 
 async function startDownload(owner: string, id: string, version?: string) {
     const dbEntry = (await firebaseApp.database().ref(`packs/${owner}:${id}`).get()).val()
+    incrementDownloadCount(owner + ':' + id)
 
     if(dbEntry != null) {
         await downloadPack(dbEntry, id, version)

@@ -75,6 +75,11 @@ const PackAddButton = styled.button`
     }
 `
 
+const formatDownloads = (count: number) => {
+    if(count < 1000) return `${count}`
+    else if(count < 1000000) return `${Math.floor(count / 1000)}K`
+    else return `${Math.floor(count / 1000000)}M`
+}
 
 function PackDisplay(props: PackDisplayProps) {
     const profileContains: ()=>boolean = () => {
@@ -125,7 +130,7 @@ function PackDisplay(props: PackDisplayProps) {
                         }}>-</PackAddButton>}
                     </RowDiv>
                     <RowDiv style={{justifySelf:'left', gap:32, width:'100%'}}>
-                        <PackStats>{'100M Downloads'}</PackStats>
+                        <PackStats>{`${formatDownloads(props.packEntry.downloads !== undefined ? props.packEntry.downloads : 0)} Download${props.packEntry.downloads !== 1 ? 's' : ''}`}</PackStats>
                         <PackStats>{`Updated ${timeDiff} day${timeDiff !== 1 ? 's' : ''} ago`}</PackStats>
                         <PackStats>{`Added ${dateAdded.toLocaleDateString()}`}</PackStats>
                         <li style={{flexGrow:1, width:'100%', visibility:'hidden'}}/>

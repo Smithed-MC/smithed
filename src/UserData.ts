@@ -18,6 +18,16 @@ export async function getPack(pack: {added: number, owner: string}, id: string):
     return new Pack()
 }
 
+async function getDownloadCount(id: string): Promise<number> {
+    const downloads = await firebaseApp.database().ref(`packs/${id}/downloads`).get()
+
+    let total = 0
+    downloads.forEach((c) => {
+        total += c.numChildren()
+    })
+    return total;
+}
+
 async function queryPacks() {
     const snapshot = await firebaseApp.database().ref('packs').get()
     const packDict: PackDict = snapshot.val()
@@ -34,6 +44,7 @@ async function queryPacks() {
             owner: packDict[p].owner,
             added: packDict[p].added,
             updated: packDict[p].updated,
+            downloads: await getDownloadCount(p),
             id: p,
             data: pack
         })

@@ -290,6 +290,7 @@ class Login extends React.Component {
                 <ButtonLabel style={{fontStyle:'italic'}} onClick={() => {
                     if(this.email !== '' && this.email.match(this.email)) {
                         firebaseApp.auth().sendPasswordResetEmail(this.email).then(() => {
+                            alert(`Sent reset email to ${this.email}`)
                         }).catch((r) => {
                             console.log(r)
                         })
@@ -302,7 +303,7 @@ class Login extends React.Component {
         return(
             <ColumnDiv style={{width:'100%'}}>
                 <RowDiv style={{backgroundColor:curPalette.darkBackground, width:'100%', height:'30px',justifyContent:'center',gap:36}}>
-                    <TabButton group="login-page" name="signin" onChange={(n:string)=>this.swapTab(n)}>Sign In</TabButton>
+                    <TabButton group="login-page" name="signin" defaultValue={true} onChange={(n:string)=>this.swapTab(n)}>Sign In</TabButton>
                     <TabButton group="login-page" name="signup" onChange={(n:string)=>this.swapTab(n)}>Sign Up</TabButton>
                 </RowDiv>
                 {this.state.tab === 0 && this.renderSignUp()}

@@ -42,8 +42,9 @@ function Browse(props: any) {
                     renderPacks(sort)
                 }} defaultValue={true} group="browse-sorting" name="new">New</TabButton>
                 <TabButton onChange={()=>{
-                    
-                }} group="browse-sorting" name="trending">Trending</TabButton>
+                    sort = (p: PackEntry) => p.downloads !== undefined ? -p.downloads : 0
+                    renderPacks(sort)
+                }} group="browse-sorting" name="trending">Downloads</TabButton>
                 <TabButton onChange={()=>{
                     sort = (p: PackEntry) => {
                         if(p.updated !== undefined)
