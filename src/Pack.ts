@@ -7,6 +7,7 @@ export class Meta {
 }
 
 export class Display {
+    hidden: boolean = false
     name: string = ''
     icon: string = ''
     description: string = ''
@@ -52,13 +53,13 @@ export class Version {
 
 export class Pack {
     public meta: Meta = new Meta()
-    public display: Display | 'hidden' = new Display()
+    public display: Display = new Display()
     public messages: string[] = []
     public id: string = ''
     public versions: {[key:string]: Version} = {}
 
 
-    constructor(meta?: Meta, display?: Display | 'hidden', id?: string, versions?: {[key: string]: Version}) {
+    constructor(meta?: Meta, display?: Display, id?: string, versions?: {[key: string]: Version}) {
         if(meta != null)
             this.meta = meta
         if(display != null)

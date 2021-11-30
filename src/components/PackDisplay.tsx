@@ -101,10 +101,7 @@ function PackDisplay(props: PackDisplayProps) {
     const dateAdded = new Date(props.packEntry.updated !== undefined ? props.packEntry.updated : props.packEntry.added)
     const timeDiff = Math.floor(Math.abs(dateAdded.getTime() - Date.now()) / (1000 * 3600 * 24))
 
-    const display: Display | 'hidden' = props.packEntry.data.display
-
-    if(display === 'hidden') return (<div></div>)
-
+    const display: Display = props.packEntry.data.display
 
 
     return (

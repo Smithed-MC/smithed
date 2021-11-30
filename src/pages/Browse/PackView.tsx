@@ -72,7 +72,7 @@ function Content(props: any) {
     }
 
     function getContent(pack: PackEntry) {
-        if (pack.data !== undefined && pack.data.display !== 'hidden') {
+        if (pack.data !== undefined) {
             const webPage = pack.data.display.webPage
 
             if (webPage != null && webPage !== '') {
@@ -110,7 +110,7 @@ function Content(props: any) {
     }
 
 
-    if (pack !== undefined && pack.data !== undefined && pack.data.display !== 'hidden') {
+    if (pack !== undefined && pack.data !== undefined) {
         // TODO: Setup cross page profile selection
         return (
             <ContentContainer>

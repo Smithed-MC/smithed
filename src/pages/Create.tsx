@@ -107,7 +107,7 @@ class Create extends React.Component {
     }
 
     swapToAddPage(pack?: Pack) {
-        this.setState({new: pack ? false : true, pack: pack ? pack : new Pack(), displayHidden: this.state.pack.display === 'hidden'}, () => {
+        this.setState({new: pack ? false : true, pack: pack ? pack : new Pack()}, () => {
             this.props.history.push('/app/create/new_pack')
             this.renderVersions()
         })
@@ -268,14 +268,12 @@ class Create extends React.Component {
 
     validatePack(): string {
         const pack = this.state.pack
-        if(pack.display !== 'hidden') {
-            if(pack.display.name === '')
-                return 'Pack is not hidden, you must specify a name'
-            if(pack.display.icon === '')
-                return 'Pack is not hidden, you must specify an icon'
-            if(pack.display.description === '')
-                return 'Pack is not hidden, you must specify a description'
-        }
+
+        if(pack.display.name === '')
+            return 'You must specify a name'
+        if(pack.display.description === '')
+            return 'You must specify a description'
+        
         if(pack.id.length < 3)
             return 'Pack Id must be atleast 3 characters'
         if(pack.versions == null || pack.versions === {})
@@ -307,31 +305,24 @@ class Create extends React.Component {
                 </GroupedFoldout>}
                 <GroupedFoldout group="mainGroup" text="Display" style={mainFoldoutStyle} defaultValue={false}>
                     <ColumnDiv style={{width:'100%', alignItems:'', gap: 8}}>                    
-                        <RadioButton text="Hidden?" defaultValue={this.state.pack.display === 'hidden'} onChange={(value)=>{
-                            if(value) this.state.pack.display = 'hidden'
-                            else this.state.pack.display = new Display()
-
-                            this.setState({displayHidden: value})
+                        <RadioButton text="Hidden?" defaultValue={this.state.pack.display.hidden} onChange={(value)=>{
+                            this.state.pack.display.hidden = value
                         }}/>
-                        {!this.state.displayHidden && this.state.pack.display !== 'hidden' && <ColumnDiv style={{width:'100%', gap:8}}>
-                                <InputField text='Name...' defaultValue={this.state.pack.display.name} onChange={(v: string)=>{
-                                    if(this.state.pack.display !== 'hidden') 
-                                        this.state.pack.display.name = v
-                                }}/>
-                                <InputField text='Icon URL...' defaultValue={this.state.pack.display.icon} onChange={(v: string)=>{
-                                    if(this.state.pack.display !== 'hidden') 
-                                        this.state.pack.display.icon = v
-                                }}/>
-                                <InputField text='Description...' defaultValue={this.state.pack.display.description} onChange={(v: string)=>{
-                                    if(this.state.pack.display !== 'hidden') 
-                                        this.state.pack.display.description = v
-                                }}/>
-                                <InputField text='Full View Markdown URL...' defaultValue={this.state.pack.display.webPage} onChange={(v: string)=>{
-                                    if(this.state.pack.display !== 'hidden') 
-                                        this.state.pack.display.webPage = v
-                                }}/>
-                            </ColumnDiv>
-                        }
+                        <ColumnDiv style={{width:'100%', gap:8}}>
+                            <InputField text='* Name...' defaultValue={this.state.pack.display.name} onChange={(v: string)=>{
+                                    this.state.pack.display.name = v
+                            }}/>
+                            <InputField text='Icon URL...' defaultValue={this.state.pack.display.icon} onChange={(v: string)=>{
+                                    this.state.pack.display.icon = v
+                            }}/>
+                            <InputField text='* Description...' defaultValue={this.state.pack.display.description} onChange={(v: string)=>{
+                                    this.state.pack.display.description = v
+                            }}/>
+                            <InputField text='Full View Markdown URL...' defaultValue={this.state.pack.display.webPage} onChange={(v: string)=>{
+                                    this.state.pack.display.webPage = v
+                            }}/>
+                        </ColumnDiv>
+                        
                     </ColumnDiv>
                 </GroupedFoldout>
                 <GroupedFoldout group="mainGroup" text="Versions" style={mainFoldoutStyle} defaultValue={false}>

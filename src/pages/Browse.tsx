@@ -68,7 +68,7 @@ function Browse(props: any) {
 
         function validatePack(p: PackEntry): boolean {
             const display = p.data.display;
-            if (display !== 'hidden') {
+            if (!display.hidden) {
                 if (!PackHelper.hasVersion(p.data, selectedProfile.version))
                     return false;
 

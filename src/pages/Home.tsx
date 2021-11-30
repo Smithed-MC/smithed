@@ -156,11 +156,11 @@ class Home extends React.Component {
         return(
             <div style={{width:'100%', height:'100%'}}>
                 <div style={{backgroundColor:curPalette.darkBackground, width:'100%',height:'30px',marginTop:1, display:'flex', justifyContent:'space-evenly'}}>
-                    <TabButton group="home-tab" name="my-profiles" 
-                        onChange={(n: string)=>{this.swapTab('/app/home/')}}
+                    <TabButton group="home-tab" name="my-profiles" defaultValue={true}
+                        // onChange={(n: string)=>{this.swapTab('/app/home/')}}
                     >My Profiles</TabButton>
                     <TabButton group="home-tab" name="trending" 
-                        onChange={(n: string)=>{this.swapTab('/app/home/trending')}}
+                        // onChange={(n: string)=>{this.swapTab('/app/home/trending')}}
                     >Trending</TabButton>
                 </div>
                 <Switch>
