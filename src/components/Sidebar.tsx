@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import styled from 'styled-components';
 import NewsSvg from '../icons/news.svg'
 import HomeSvg from '../icons/home.svg'
@@ -77,47 +77,30 @@ function TabNavigator(props: any) {
   )
 }
 
-class Sidebar extends React.Component {
-  props: SidebarProps
-  state: {[key: string]: any}
-  constructor(props: SidebarProps) {
-    super(props)
-    this.props = props
-    this.state = {sidebar: (<div></div>)}
-    const { ipcRenderer } = window.require('electron')
-
-    ipcRenderer.on('user-data-changed', () => {
-      this.renderSidebar()
-    })
-  }
-
-  componentDidMount() {
-    this.renderSidebar()
-  }
-
-  renderSidebar() {
-    let sidebar = (
+function Sidebar(props: SidebarProps) {
+  const [sidebar, setSidebar] = useState((<div></div>));
+  const history = useHistory();
+  useEffect(() => {
+    setSidebar((
       <SidebarContainer>
           <TabNavigator/>
-          <PageBasedSidebarOption page='/app/news/' img={NewsSvg} hint='News' onClick={() => {this.props.onClick('news')}}/>
-          <PageBasedSidebarOption page='/app/home/' img={HomeSvg} hint='Home' onClick={() => {this.props.onClick('home')}}/>
-          <PageBasedSidebarOption page='/app/browse/' img={BrowseSvg} hint='Browse' onClick={() => {this.props.onClick('browse')}}/>
-          <PageBasedSidebarOption page='/app/create/' img={CreateSvg} hint='Create' onClick={() => {this.props.onClick('create')}}/>
-          {userData.role === 'admin' && <PageBasedSidebarOption page='/app/queue/' img={QueueSvg} hint='Queue' onClick={() => {this.props.onClick('queue')}}/>}
+          <PageBasedSidebarOption page='/app/news/' img={NewsSvg} hint='News' onClick={() => {props.onClick('news')}}/>
+          <PageBasedSidebarOption page='/app/home/' img={HomeSvg} hint='Home' onClick={() => {props.onClick('home')}}/>
+          <PageBasedSidebarOption page='/app/browse/' img={BrowseSvg} hint='Browse' onClick={() => {props.onClick('browse')}}/>
+          <PageBasedSidebarOption page='/app/create/' img={CreateSvg} hint='Create' onClick={() => {props.onClick('create')}}/>
+          {userData.role === 'admin' && <PageBasedSidebarOption page='/app/queue/' img={QueueSvg} hint='Queue' onClick={() => {props.onClick('queue')}}/>}
           <li style={{visibility: 'hidden', flexGrow: 1}}/>
           <SidebarOption img={DiscordSvg} hint='Join the Discord' style={{height:44, width:44, marginLeft:-6, marginTop:-5}} onClick={()=>{
-            window.require("electron").shell.openExternal('https://discord.gg/tDxtDHv2fS')
+            window.require("electron").shell.openExternal('https://smithed.dev/discord')
           }}/>
-          <PageBasedSidebarOption page='/app/settings/' img={SettingsSvg} hint='Settings' onClick={() => {this.props.onClick('settings')}}/>
-          <SidebarOption img={SignOutSvg} hint='Sign Out' onClick={() => {firebaseApp.auth().signOut(); setFirebaseUser(null); Index.changePage(`/`)}}/>
+          <PageBasedSidebarOption page='/app/settings/' img={SettingsSvg} hint='Settings' onClick={() => {props.onClick('settings')}}/>
+          <SidebarOption img={SignOutSvg} hint='Sign Out' onClick={() => {firebaseApp.auth().signOut(); setFirebaseUser(null); history.push(`/`)}}/>
       </SidebarContainer>
-    );
-    this.setState({sidebar: sidebar})
-  }
+    ));
+  }, [setSidebar, userData])
 
-  render() {
-    return this.state.sidebar
-  }
+  
+  return sidebar
 }
 
 export default Sidebar;

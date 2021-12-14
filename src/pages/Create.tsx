@@ -11,6 +11,7 @@ import RadioButton from '../components/RadioButton';
 import GroupedFoldout from '../components/GroupedFoldout';
 import { Route, RouteComponentProps, Switch, withRouter } from 'react-router';
 import { StyledButton, StyledLabel } from '../Shared';
+import Popup from 'reactjs-popup';
 
 
 interface CreateState {
@@ -347,6 +348,25 @@ class Create extends React.Component {
                 </GroupedFoldout>
                 {(this.state.error != null && this.state.error !== '') && <b style={{fontFamily:'Inconsolata', color:'red'}}>{this.state.error}</b>}
                 <RowDiv style={{gap:8,justifyContent:'space-evenly',width:'10%'}}>
+
+                    <Popup trigger={
+                        <AddButton style={{backgroundColor:curPalette.badAccent}} hidden={this.state.pack.id === ''}>
+                            Delete
+                        </AddButton>}>
+                        
+                        <ColumnDiv style={{backgroundColor:curPalette.darkBackground, padding: 8, borderRadius: 4, border:`2px solid ${curPalette.lightAccent}`}}>
+                            <StyledLabel>Are you sure you want to delete <b>{this.state.pack.id}</b>?</StyledLabel>
+                            <AddButton style={{backgroundColor:curPalette.badAccent}} onClick={() => {
+                                PackHelper.deletePack(this.state.pack, () => {
+                                    this.updatePacks()
+                                    this.props.history.push('/app/create')
+                                })
+                                console.log('ran')
+                            }}>
+                                Yes
+                            </AddButton>
+                        </ColumnDiv>
+                    </Popup>
                     <AddButton onClick={()=>{
                         this.updatePacks()
                         this.props.history.push('/app/create')

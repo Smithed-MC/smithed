@@ -10,7 +10,7 @@ import appSettings from './Settings';
 import Browse from './pages/Browse';
 import Create from './pages/Create';
 import Queue from './pages/Queue';
-import {Route, Switch, withRouter} from 'react-router'
+import { Route, Switch, useHistory, withRouter } from 'react-router'
 import { Index } from '.';
 
 const AppContainer = styled.div`
@@ -27,36 +27,25 @@ interface AppState {
   page: string
 }
 
-class App extends React.Component {
-  state : AppState
-  props: any
-  constructor(props: any) {
-    super(props)
-    this.state = {page:appSettings.leftOffPage}
-  }
+function App(props: any) {
+  const history = useHistory()
 
-  changePage(p: string) {
-    Index.changePage(`/app/${p}`)
-    // this.setState({page: p})
-    // appSettings.leftOffPage = p
-  } 
 
-  render() {
-    return (
-      <AppContainer>
-        <Sidebar onClick={(p: string) => {this.changePage(p)}}/>
-        <Switch>
-          <Route path='/app/home' component={withRouter(Home)}/>
-          <Route path='/app/browse' component={Browse}/>
-          <Route path='/app/create' component={Create}/>
-          <Route path='/app/settings' component={Settings}/>
-          <Route path='/app/queue' component={Queue}/>
-          <Route path='/app/news' component={News}/>
-          <Route exact path='/app/' component={News}/>
-        </Switch>
-      </AppContainer>
-    );
-  }
+  return (
+    <AppContainer>
+      <Sidebar onClick={(p: string) => { history.push(`/app/${p}`) }} />
+      <Switch>
+        <Route path='/app/home' component={withRouter(Home)} />
+        <Route path='/app/browse' component={Browse} />
+        <Route path='/app/create' component={Create} />
+        <Route path='/app/settings' component={Settings} />
+        <Route path='/app/queue' component={Queue} />
+        <Route path='/app/news' component={News} />
+        <Route exact path='/app/' component={News} />
+      </Switch>
+    </AppContainer>
+  );
+
 }
 
 

@@ -95,7 +95,7 @@ function PackDisplay(props: PackDisplayProps) {
 
     useEffect(()=>{
         setContained(profileContains())
-    })
+    }, [])
 
 
     const dateAdded = new Date(props.packEntry.updated !== undefined ? props.packEntry.updated : props.packEntry.added)

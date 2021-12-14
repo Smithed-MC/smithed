@@ -157,7 +157,10 @@ modelPart_hat:true
 
 
 export async function setupProfile(profile: Profile, selectedMods: { [key: string]: any }) {
-    if (profile.directory != null && !dirExists(profile.directory)) {
+    if (profile.directory != null) {
+        if (dirExists(profile.directory))
+            fs.rmdirSync(profile.directory, { recursive: true })
+
         fs.mkdirSync(profile.directory)
         fs.mkdirSync(pathModule.join(profile.directory, 'datapacks'))
         fs.mkdirSync(pathModule.join(profile.directory, 'resourcepacks'))
@@ -166,28 +169,34 @@ export async function setupProfile(profile: Profile, selectedMods: { [key: strin
         fs.writeFileSync(pathModule.join(profile.directory, 'launcher_profiles.json'), JSON.stringify(launcherProfile))
         fs.writeFileSync(pathModule.join(profile.directory, 'options.txt'), options)
 
-        let url = (await firebaseApp.database().ref('meta/fabric-installer').get()).val()
+        const installer = firebaseApp.database().ref('meta/fabric-installer');
+        installer.get().then((snap) => {
+            let url = snap.val();
 
-        await download(url, pathModule.join(profile.directory, 'temp'), { filename: 'installer.jar' })
+            download(url, pathModule.join(profile.directory, 'temp'), { filename: 'installer.jar' }).then(() => {
+                let cmd = `java -jar "${pathModule.join(profile.directory, 'temp')}/installer.jar" client -mcversion ${profile.version} -downloadMinecraft -dir "${profile.directory}"`
+                exec(cmd, async (error: any, stdout: string, stderr: any) => {
+                    fs.rmdirSync(pathModule.join(profile.directory, 'temp'), { recursive: true })
+                })
 
-        let cmd = `java -jar "${pathModule.join(profile.directory, 'temp')}/installer.jar" client -mcversion ${profile.version} -downloadMinecraft -dir "${profile.directory}"`
-        await exec(cmd, (error: any, stdout: string, stderr: any) => {
-            fs.rmdirSync(pathModule.join(profile.directory, 'temp'), { recursive: true })
+                for (let m in selectedMods) {
+                    if (selectedMods[m] != null)
+                        download(selectedMods[m], pathModule.join(profile.directory, 'mods'), { filename: m + '.jar' })
+                }
+            })
+
         })
-        for (let m in selectedMods) {
-            if (selectedMods[m] != null)
-                await download(selectedMods[m], pathModule.join(profile.directory, 'mods'), { filename: m + '.jar' })
-        }
-
-		// let companion = (await firebaseApp.database().ref(`meta/mods/smithed/${profile.version.replaceAll('.','_')}`).get()).val()
-		// await download(companion, pathModule.join(profile.directory, 'mods'), { filename: 'smithed_companion.jar' })
     }
+
+    // let companion = (await firebaseApp.database().ref(`meta/mods/smithed/${profile.version.replaceAll('.','_')}`).get()).val()
+    // await download(companion, pathModule.join(profile.directory, 'mods'), { filename: 'smithed_companion.jar' })
 }
 
+
 export function profileContainsPack(profile: Profile, id: string) {
-    if(profile.packs !== undefined) {
-        for(let p of profile.packs) {
-            if(p.id === id) return true;       
+    if (profile.packs !== undefined) {
+        for (let p of profile.packs) {
+            if (p.id === id) return true;
         }
     }
     return false;
@@ -195,11 +204,11 @@ export function profileContainsPack(profile: Profile, id: string) {
 
 export function addPackToProfile(profile: Profile, packEntry: PackEntry) {
     const packVersion = PackHelper.getLatestVersionForVersion(packEntry.data, profile.version)
-    
-    if(packVersion != null) {
+
+    if (packVersion != null) {
         let packs = profile.packs != null ? profile.packs : []
-  
-        packs.push({id:packEntry.id, version: packVersion.replaceAll('_', '.')}) 
+
+        packs.push({ id: packEntry.id, version: packVersion.replaceAll('_', '.') })
 
         profile.packs = packs
         profile.setup = false;
@@ -210,9 +219,9 @@ export function addPackToProfile(profile: Profile, packEntry: PackEntry) {
 export function removePackToProfile(profile: Profile, packEntry: PackEntry) {
     let packs = profile.packs != null ? profile.packs : []
 
-    for(let p of packs) {
-        if(p.id === packEntry.id) {
-            packs = packs.splice(packs.indexOf(p), 1);
+    for (let p of packs) {
+        if (p.id === packEntry.id) {
+            packs.splice(packs.indexOf(p), 1);
             break;
         }
     }
@@ -225,7 +234,7 @@ export function removePackToProfile(profile: Profile, packEntry: PackEntry) {
 
 export async function saveProfiles(profiles: Profile[]) {
     fs.writeFileSync(pathModule.join(settingsFolder, 'profiles.json'), JSON.stringify(profiles, null, 2))
-    
+
     let tempData = userData
     tempData.profiles = profiles
     setUserData(tempData)

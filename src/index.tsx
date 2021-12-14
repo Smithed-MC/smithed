@@ -201,14 +201,17 @@ export class Index extends React.Component {
 		})
 	}
 
-	static changePage(path: string) {
-		this.instance.props.history.replace(path)
-	}
+
 	componentDidMount() {
 		document.addEventListener('keydown', event => {
 			if(!event.repeat)
 				mainEvents.emit('key-press', event)
 		});
+	}
+
+	goToDownload(version: string){ 
+		this.setState({versionFound: version})
+		this.props.history.push('/update')
 	}
 
 	render() {
@@ -219,7 +222,7 @@ export class Index extends React.Component {
 					<Route path='/' render={({history})=>(
 						<Login onSuccess={() => {
 							collectUserData()
-							Index.changePage(this.returnPage)
+							this.props.history.push(this.returnPage)
 							this.returnPage = '/app';
 						}} />
 					)}/>
@@ -251,7 +254,7 @@ ipcRenderer.on('message', (e: any, message: string) => {
 	console.log(message)
 })
 ipcRenderer.on('update-found', (e:any, version: string) => {
-	Index.instance.setState({page:'update',versionFound:version})
+	Index.instance.goToDownload(version)
 })
 
 remote.app.on('web-contents-created', (event: any, contents: any) => {

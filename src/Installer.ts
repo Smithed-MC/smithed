@@ -56,9 +56,19 @@ async function getVersionData(pack: any, version?: string): Promise<any> {
     return versionData
 }
 
-async function fetchFile(url: string): Promise<Buffer> {
-    const buffer = (await (await fetch(`https://api.allorigins.win/raw?url=${encodeURIComponent(url)}`)).arrayBuffer())
-    return buffer as Buffer;
+async function fetchFile(url: string): Promise<Buffer|null> {
+    try {
+        const resp = await fetch(`https://api.allorigins.win/raw?url=${encodeURIComponent(url)}`)
+        if(resp.ok) {
+            const buffer = await resp.arrayBuffer()
+            return buffer as Buffer;
+        } else {
+            throw `Error while downloading pack! ${resp.json()}`
+        }
+    } catch (e: any) {
+        console.log(e)
+        return null;
+    }
 }
 
 async function downloadPack(entry: any, id: string, version?: string) {
@@ -73,11 +83,13 @@ async function downloadPack(entry: any, id: string, version?: string) {
 
             if(datapack !== undefined && datapack !== '') {
                 const zip = await fetchFile(datapack)
-                datapacks.push([id, zip])
+                if(zip != null)
+                    datapacks.push([id, zip])
             } 
             if(resourcepack !== undefined && resourcepack !== '') {
                 const zip = await fetchFile(resourcepack)
-                resourcepacks.push([id, zip])
+                if(zip != null)
+                    resourcepacks.push([id, zip])
             } 
         }
 
@@ -124,8 +136,11 @@ export async function downloadAndMerge(profile: Profile) {
 
     if(datapacks.length > 0) {
         const jarLink = (await firebaseApp.database().ref(`meta/vanilla/${profile.version.replaceAll('.','_')}`).get()).val()
-        const dpb = new WeldDatapackBuilder(await JSZip.loadAsync(await fetchFile(jarLink)))
-        await generateFinal(dpb, datapacks, 'datapacks.zip', profile.directory + '/datapacks')
+        const jar = await fetchFile(jarLink);
+        if(jar != null) {
+            const dpb = new WeldDatapackBuilder(await JSZip.loadAsync(jar))
+            await generateFinal(dpb, datapacks, 'datapacks.zip', profile.directory + '/datapacks')
+        }
     }
     if(resourcepacks.length > 0) {
         const rpb = new DefaultResourcepackBuilder();

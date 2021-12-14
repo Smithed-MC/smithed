@@ -92,16 +92,18 @@ function createWindow() {
 		e.preventDefault();
 		require('electron').shell.openExternal(url);
 	});
-
+	
 	if (!isDev) {
 		win.on('ready-to-show', () => {
-
+			win.webContents.send('update-found', u.updateInfo.version)
+			
 			autoUpdater.checkForUpdates().then((u) => {
 				sendMessage('checking for update')
 				updateInfo = u.updateInfo
 				const r = cmp(app.getVersion().replace('-', '.'), u.updateInfo.version.replace('-', '.'))
-				if (r === -1)
-					win.webContents.send('update-found', u.updateInfo.version)
+				if (r === -1) {
+					console.log('update found')
+				}
 			}).catch((e) => {
 				sendMessage(e)
 			})

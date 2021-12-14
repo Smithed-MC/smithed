@@ -236,18 +236,20 @@ class Home extends React.Component {
                     let newProfile = {
                         name: this.profileCreationInfo.name,
                         version: this.profileCreationInfo.version,
-                        author: (await firebaseApp.database().ref(`users/${firebaseUser.uid}/displayName`).get()).val(),
+                        author: userData.displayName,
                         directory: pathModule.join(settingsFolder, `Instances/${this.profileCreationInfo.name}`)
                     }
 
-                    await setupProfile(newProfile, this.selectedMods)
-                    p.push(newProfile)
+                    setupProfile(newProfile, this.selectedMods).then(() => {
+                        p.push(newProfile)
                     
-                    saveProfiles(p)
-                    this.buildProfileDisplays()
-                    
-                    setSelectedProfile(newProfile.name)
-                    this.props.history.push(`/app/browse`)
+                        saveProfiles(p)
+                        this.buildProfileDisplays()
+                        
+                        setSelectedProfile(newProfile.name)
+                        this.props.history.push(`/app/browse`)
+                    })
+
                     // Browse.instance.update()
                 }}>Create</CreateButton>
                 {this.state.error !== '' && <StyledLabel style={{color:'red'}}>{this.state.error}</StyledLabel>}

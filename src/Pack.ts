@@ -144,6 +144,34 @@ export class PackHelper {
         })
     }
 
+    static deletePack(pack: Pack, callback?: ()=>void) {
+        pack = this.toFirebaseValid(pack)
+        const packsRef = firebaseApp.database().ref(`packs/${PackHelper.displayNameToID(userData.displayName)}:${pack.id}`)
+
+        packsRef.get().then((snap) => {
+            if(snap.exists()) {
+                packsRef.remove();
+            }
+            else {
+                const queueRef = firebaseApp.database().ref(`queue/${PackHelper.displayNameToID(userData.displayName)}:${pack.id}`)
+                queueRef.remove();
+            }
+
+            const userPacks = firebaseApp.database().ref(`users/${userData.uid}/packs`)
+
+            userPacks.get().then((snap => {
+                const packs: Pack[] = snap.val();
+                
+                packs.splice(packs.findIndex(p => p.id === pack.id), 1)
+
+                userPacks.set(packs).then(() => {
+                    if(callback != null)
+                        callback();
+                })
+            }))
+        })
+    }
+
     static createOrUpdatePack(pack: Pack, addToQueue?: boolean, callback?: ()=>void) {
         pack = this.toFirebaseValid(pack)
 
