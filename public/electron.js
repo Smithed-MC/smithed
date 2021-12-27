@@ -95,14 +95,16 @@ function createWindow() {
 	
 	if (!isDev) {
 		win.on('ready-to-show', () => {
-			win.webContents.send('update-found', u.updateInfo.version)
 			
 			autoUpdater.checkForUpdates().then((u) => {
-				sendMessage('checking for update')
-				updateInfo = u.updateInfo
-				const r = cmp(app.getVersion().replace('-', '.'), u.updateInfo.version.replace('-', '.'))
-				if (r === -1) {
-					console.log('update found')
+				if(u !== undefined) {
+					sendMessage('checking for update')
+					updateInfo = u.updateInfo
+					const r = cmp(app.getVersion().replace('-', '.'), u.updateInfo.version.replace('-', '.'))
+					if (r === -1) {
+						console.log('update found')
+						win.webContents.send('update-found', u.updateInfo.version)
+					}
 				}
 			}).catch((e) => {
 				sendMessage(e)

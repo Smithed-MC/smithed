@@ -289,9 +289,7 @@ export class PackHelper {
 
         for(let v in pack.versions) {
             for(let s of pack.versions[v].supports) {
-                if(versionData.equal(new DataVersion(s))) {
-                    return true
-                }
+                if(pack.versions[v].supports.includes(version)) return true;
             }
         }
         return false

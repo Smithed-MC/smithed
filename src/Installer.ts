@@ -12,7 +12,7 @@ let datapacks: [string, Buffer][] = []
 let resourcepacks: [string, Buffer][] = []
 
 async function incrementDownloadCount(id: string) {
-    const resp = await fetch('https://worldtimeapi.org/api/timezone/Etc/UTC')
+    const resp = await fetch('http://worldtimeapi.org/api/timezone/America/New_York')
     const data = await resp.json()
     const date = new Date(data["unixtime"] * 1000)
 
@@ -43,8 +43,8 @@ async function getLatestVersionNumber(pack: any): Promise<string|undefined> {
 }
 async function getVersionData(pack: any, version?: string): Promise<any> {
     var versionData
-    if(version != null && version !== '' && pack.versions[version] != null) {
-        versionData = pack.versions[version]
+    if(version != null && version !== '' && pack.versions[version.replaceAll('.','_')] != null) {
+        versionData = pack.versions[version.replaceAll('.', '_')]
     } else {
         version = await getLatestVersionNumber(pack)
         if(version !== undefined) {
@@ -76,13 +76,13 @@ async function downloadPack(entry: any, id: string, version?: string) {
     
 
     const versionData = await getVersionData(pack, version)
-
     if(versionData != null) {
         if(versionData["downloads"] != null) {
             const {datapack, resourcepack}: {datapack: string, resourcepack: string} = versionData["downloads"]
 
             if(datapack !== undefined && datapack !== '') {
                 const zip = await fetchFile(datapack)
+                console.log('ran')
                 if(zip != null)
                     datapacks.push([id, zip])
             } 
@@ -102,7 +102,6 @@ async function downloadPack(entry: any, id: string, version?: string) {
             }
         }
     }
-    console.log('done')
 }
 
 
@@ -138,6 +137,7 @@ export async function downloadAndMerge(profile: Profile) {
         const jarLink = (await firebaseApp.database().ref(`meta/vanilla/${profile.version.replaceAll('.','_')}`).get()).val()
         const jar = await fetchFile(jarLink);
         if(jar != null) {
+            console.log(jar);
             const dpb = new WeldDatapackBuilder(await JSZip.loadAsync(jar))
             await generateFinal(dpb, datapacks, 'datapacks.zip', profile.directory + '/datapacks')
         }
