@@ -102,8 +102,16 @@ class Create extends React.Component {
     }
     updatePacks() {
         firebaseApp.database().ref(`users/${userData.uid}/packs`).get().then(snapshot=>{
-            let packs: PackWithMessages[] = snapshot.val()
-            this.setState({packs: packs})
+            let databasePack: any[] = snapshot.val()
+            try {
+                let packs: PackWithMessages[] = []
+                for(let p = 0; p < databasePack.length; p++) 
+                    packs.push(PackHelper.updatePackData(databasePack[p]) as PackWithMessages)
+
+                this.setState({packs: packs})
+            } catch {
+                console.log('failed to load packs')
+            }
         })
     }
 
@@ -200,9 +208,10 @@ class Create extends React.Component {
 
     renderVersions() {
         let elements: JSX.Element[] = []
+
         for(let v in this.state.pack.versions) {
             let version = this.state.pack.versions[v]
-            elements.push(<GroupedFoldout group="version" text={v.replaceAll('_','.')} key={v} style={{width:'98%', backgroundColor:'transparent',border:`1px solid ${curPalette.subText}`}} defaultValue={false}>
+            elements.push(<GroupedFoldout group="version" text={version.name} key={v} style={{width:'98%', backgroundColor:'transparent',border:`1px solid ${curPalette.subText}`}} defaultValue={false}>
                 <RadioButton defaultValue={version.breaking} text="Breaking?" onChange={(v)=>{
                     version.breaking = v
                     this.renderVersions()
@@ -277,10 +286,10 @@ class Create extends React.Component {
         
         if(pack.id.length < 3)
             return 'Pack Id must be atleast 3 characters'
-        if(pack.versions == null || pack.versions === {})
+        if(pack.versions == null || pack.versions.length === 0)
             return 'No versions have been specified'
         else {
-            for(let v in pack.versions) {
+            for(let v = 0; v < pack.versions.length; v++) {
                 if(pack.versions[v].downloads === {} || pack.versions[v].downloads === null)
                     return `No downloads have been added to version ${v}`
                 if(pack.versions[v].supports.length === 0)
@@ -336,9 +345,9 @@ class Create extends React.Component {
                                 this.newVersionNumber = this.newVersionNumber.replaceAll('.','_')
 
                                 if(this.state.pack.versions == null)
-                                    this.state.pack.versions = {}
-                                if(this.state.pack.versions[this.newVersionNumber] == null) {
-                                    this.state.pack.versions[this.newVersionNumber] = new Version()
+                                    this.state.pack.versions = []
+                                if(this.state.pack.versions.find((v) => v.name === this.newVersionNumber) == null) {
+                                    this.state.pack.versions.push(new Version(this.newVersionNumber))
                                     this.renderVersions()
                                 }
                             }}>Add</AddButton>

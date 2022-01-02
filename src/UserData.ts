@@ -1,18 +1,19 @@
 import { firebaseApp, setUserData, userData } from '.'
 import { fileExists } from './FSWrapper'
 import { fs, pathModule, remote, settingsFolder } from './Settings'
-import { Pack, PackDict, PackEntry } from './Pack'
+import { Pack, PackDict, PackEntry, PackHelper, Version } from './Pack'
 import * as linq from 'linq-es5'
 
 export async function getPack(pack: {added: number, owner: string}, id: string): Promise<Pack> {
     const userPacksRef = firebaseApp.database().ref(`users/${pack.owner}/packs`)
     const snapshot = await userPacksRef.get()
-    const packs: Pack[] = snapshot.val()
+    const packs: {[key: string]: any}[] = snapshot.val()
 
     if(packs != null) {
         for(let i = 0; i < packs.length; i++) {
-            if(packs[i].id === id.split(':')[1])
-                return packs[i]
+            if(packs[i].id === id.split(':')[1]) {
+                return PackHelper.updatePackData(packs[i])
+            }
         }
     }
     return new Pack()

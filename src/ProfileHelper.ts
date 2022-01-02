@@ -208,7 +208,7 @@ export function addPackToProfile(profile: Profile, packEntry: PackEntry) {
     if (packVersion != null) {
         let packs = profile.packs != null ? profile.packs : []
 
-        packs.push({ id: packEntry.id, version: packVersion.replaceAll('_', '.') })
+        packs.push({ id: packEntry.id, version: packVersion })
 
         profile.packs = packs
         profile.setup = false;

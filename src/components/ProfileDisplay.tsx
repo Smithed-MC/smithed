@@ -102,6 +102,7 @@ function ProfileDisplay(props: ProfileDisplayProps) {
 
                             if (Home.instance.state.activeProfile === '') {
                                 if (props.profile.setup === undefined || !props.profile.setup) {
+                                    console.log('ran')
                                     if (props.profile.packs !== undefined) {
                                         setDownloading(true)
                                         await downloadAndMerge(props.profile)

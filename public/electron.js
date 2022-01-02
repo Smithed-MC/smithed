@@ -256,7 +256,6 @@ if(platform === 'win32') {
 
 	if (!gotTheLock) {
 		app.exit()
-		return;
 	} else {
 		app.on('second-instance', (event, commandLine, workingDirectory) => {
 			// Someone tried to run a second instance, we should focus our window.
