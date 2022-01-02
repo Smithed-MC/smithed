@@ -357,7 +357,7 @@ export class PackHelper {
             for(let v in versions) {
                 let version = versions[v];
 
-                version.name = v;
+                version.name = v.replaceAll('_', '.');
                 newVersions.push(version);
             }
             pack.versions = newVersions;

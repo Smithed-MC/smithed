@@ -209,14 +209,28 @@ class Create extends React.Component {
     renderVersions() {
         let elements: JSX.Element[] = []
 
-        for(let v in this.state.pack.versions) {
+        for(let v = 0; v < this.state.pack.versions.length; v++) {
             let version = this.state.pack.versions[v]
             elements.push(<GroupedFoldout group="version" text={version.name} key={v} style={{width:'98%', backgroundColor:'transparent',border:`1px solid ${curPalette.subText}`}} defaultValue={false}>
+                <RowDiv style={{gap: 8, paddingBottom: 8}}>
+                    <StyledButton style={{width:'32px'}} hidden={!(v > 0)} onClick={() => {
+                        let otherVersion = this.state.pack.versions[v-1]
+                        this.state.pack.versions[v] = otherVersion
+                        this.state.pack.versions[v-1] = version
+                        this.renderVersions();
+                    }}>⬆</StyledButton>
+                    <StyledButton style={{width:'32px'}} hidden={!(v < this.state.pack.versions.length - 1)} onClick={() => {
+                        let otherVersion = this.state.pack.versions[v+1]
+                        this.state.pack.versions[v] = otherVersion
+                        this.state.pack.versions[v+1] = version
+                        this.renderVersions();
+                    }}>⬇</StyledButton>
+                </RowDiv>
                 <RadioButton defaultValue={version.breaking} text="Breaking?" onChange={(v)=>{
                     version.breaking = v
                     this.renderVersions()
                 }}/>
-                <GroupedFoldout group={v} text="Downloads" defaultValue={false} style={{width:'95%', backgroundColor:'transparent'}}>         
+                <GroupedFoldout group={v.toString()} text="Downloads" defaultValue={false} style={{width:'95%', backgroundColor:'transparent'}}>         
                     <Dropdown placeholder="Add a download" onChange={(e)=> {
                         if(version.downloads == null)
                             version.downloads = {}
@@ -230,7 +244,7 @@ class Create extends React.Component {
                     </Dropdown>
                     {this.renderDownloads(version)}
                 </GroupedFoldout>
-                <GroupedFoldout group={v} text="Supports" defaultValue={false} style={{width:'95%', backgroundColor:'transparent'}}>         
+                <GroupedFoldout group={v.toString()} text="Supports" defaultValue={false} style={{width:'95%', backgroundColor:'transparent'}}>         
                     <ColumnDiv style={{alignItems:'left', width:'10%'}}>
                         {this.renderSupports(version)}
                     </ColumnDiv>
@@ -252,7 +266,7 @@ class Create extends React.Component {
                         {this.renderSupportsOptions()}
                     </Dropdown>
                 </GroupedFoldout>
-                <GroupedFoldout group={v} text="Dependencies" defaultValue={false} style={{width:'95%', backgroundColor:'transparent'}}>         
+                <GroupedFoldout group={v.toString()} text="Dependencies" defaultValue={false} style={{width:'95%', backgroundColor:'transparent'}}>         
                     <ColumnDiv style={{alignItems:'left', width:'100%'}}>
                         {this.renderDependencies(version)}
                     </ColumnDiv>
@@ -338,11 +352,11 @@ class Create extends React.Component {
                 <GroupedFoldout group="mainGroup" text="Versions" style={mainFoldoutStyle} defaultValue={false}>
                     <ColumnDiv style={{width:'100%', alignItems:'', gap: 8}}>                    
                         <RowDiv style={{gap: 8}}>
-                            <InputField text="Version Number..." onChange={(v: string)=>{this.newVersionNumber = v.replaceAll('.','_')}}/>
+                            <InputField text="Version Number..." onChange={(v: string)=>{this.newVersionNumber = v}}/>
                             <AddButton style={{fontFamily:'Disket-Bold',}} onClick={()=>{
 
                                 if(this.newVersionNumber === '') return
-                                this.newVersionNumber = this.newVersionNumber.replaceAll('.','_')
+                                this.newVersionNumber = this.newVersionNumber
 
                                 if(this.state.pack.versions == null)
                                     this.state.pack.versions = []
