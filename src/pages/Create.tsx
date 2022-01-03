@@ -1,7 +1,7 @@
 import React from 'react';
 import styled from 'styled-components';
 import '../font.css'
-import { ColumnDiv, firebaseApp, StyledInput, RowDiv, userData} from '..';
+import { ColumnDiv, firebaseApp, StyledInput, RowDiv, userData } from '..';
 import curPalette from '../Palette';
 import * as linq from 'linq-es5'
 import { DataVersion, Dependency, Display, Pack, PackHelper, Version } from '../Pack';
@@ -63,10 +63,10 @@ const AddButton = styled.button`
 
 
 function InputField(props: any) {
-    return (                    
-        <StyledInput placeholder={props.text} style={props.style ? props.style : {width:'75%'}} title={props.text} defaultValue={props.defaultValue !== '' ? props.defaultValue : null} disabled={props.disabled} onChange={(e)=>{
+    return (
+        <StyledInput placeholder={props.text} style={props.style ? props.style : { width: '75%' }} title={props.text} defaultValue={props.defaultValue !== '' ? props.defaultValue : null} disabled={props.disabled} onChange={(e) => {
             props.onChange(e.target.value)
-        }}/>
+        }} />
     )
 }
 
@@ -75,20 +75,20 @@ class PackWithMessages extends Pack {
 }
 
 
-const mainFoldoutStyle = {width:'40%',backgroundColor:'transparent',border:`1px solid ${curPalette.subText}`}
+const mainFoldoutStyle = { width: '40%', backgroundColor: 'transparent', border: `1px solid ${curPalette.subText}` }
 class Create extends React.Component {
     state: CreateState
     static instance: Create
     selectedPack: number = -1
     newVersionNumber: string = ''
-    
-    newDependency: Dependency = {id:'', version:''}
+
+    newDependency: Dependency = { id: '', version: '' }
 
     props: RouteComponentProps
     constructor(props: RouteComponentProps) {
         super(props)
         this.props = props
-        this.state = {page: 0, packs:[], pack: new PackWithMessages(), new: true}
+        this.state = { page: 0, packs: [], pack: new PackWithMessages(), new: true }
         Create.instance = this
 
         // if(this.props.match.url === '/app/create/new_pack') {
@@ -101,14 +101,14 @@ class Create extends React.Component {
         this.updatePacks()
     }
     updatePacks() {
-        firebaseApp.database().ref(`users/${userData.uid}/packs`).get().then(snapshot=>{
+        firebaseApp.database().ref(`users/${userData.uid}/packs`).get().then(snapshot => {
             let databasePack: any[] = snapshot.val()
             try {
                 let packs: PackWithMessages[] = []
-                for(let p = 0; p < databasePack.length; p++) 
+                for (let p = 0; p < databasePack.length; p++)
                     packs.push(PackHelper.updatePackData(databasePack[p]) as PackWithMessages)
 
-                this.setState({packs: packs})
+                this.setState({ packs: packs })
             } catch {
                 console.log('failed to load packs')
             }
@@ -116,7 +116,7 @@ class Create extends React.Component {
     }
 
     swapToAddPage(pack?: Pack) {
-        this.setState({new: pack ? false : true, pack: pack ? pack : new Pack()}, () => {
+        this.setState({ new: pack ? false : true, pack: pack ? pack : new Pack() }, () => {
             this.props.history.push('/app/create/new_pack')
             this.renderVersions()
         })
@@ -125,29 +125,29 @@ class Create extends React.Component {
     renderUsersPacks() {
         let elements: JSX.Element[] = []
 
-        if(this.state.packs != null && this.state.packs.length > 0) {
-            for(let p of this.state.packs) {
-                if(p === null) continue;
+        if (this.state.packs != null && this.state.packs.length > 0) {
+            for (let p of this.state.packs) {
+                if (p === null) continue;
 
-                elements.push(<CreatePackDisplay pack={p} onClick={()=>{
+                elements.push(<CreatePackDisplay pack={p} onClick={() => {
                     this.swapToAddPage(p)
-                }}/>)
+                }} />)
             }
         }
 
-        elements.push(<AddDiv onClick={()=>{
+        elements.push(<AddDiv onClick={() => {
             this.swapToAddPage()
         }}>
-            <StyledLabel style={{color:curPalette.text,fontSize:96,textAlign:'center',fontFamily:'Disket-Bold'}}>+</StyledLabel>
+            <StyledLabel style={{ color: curPalette.text, fontSize: 96, textAlign: 'center', fontFamily: 'Disket-Bold' }}>+</StyledLabel>
         </AddDiv>)
         return elements
     }
 
     renderDownloads(version: Version) {
         let elements: JSX.Element[] = []
-        for(let d in version.downloads) {
+        for (let d in version.downloads) {
             elements.push(
-                <InputField key={d} defaultValue={version.downloads[d] !== '' ? version.downloads[d] : null} text={d[0].toUpperCase() + d.substring(1) + ' URL...'} onChange={(v: string) => {version.downloads[d] = v}}/>
+                <InputField key={d} defaultValue={version.downloads[d] !== '' ? version.downloads[d] : null} text={d[0].toUpperCase() + d.substring(1) + ' URL...'} onChange={(v: string) => { version.downloads[d] = v }} />
             )
         }
         return elements
@@ -156,8 +156,8 @@ class Create extends React.Component {
     renderSupportsOptions() {
         let elements: JSX.Element[] = []
 
-        for(let v of userData.versions) {
-            elements.push(<Option value={v}/>)
+        for (let v of userData.versions) {
+            elements.push(<Option value={v} />)
         }
 
         return elements
@@ -165,10 +165,10 @@ class Create extends React.Component {
     renderSupports(version: Version) {
         let elements: JSX.Element[] = []
 
-        for(let s of version.supports) {
-            elements.push(<RowDiv style={{justifyContent:'left', width:'100%'}}>
-                <li style={{color:curPalette.text}}/>
-                <StyledLabel style={{color:curPalette.text, fontFamily:'Inconsolata'}}>{s}</StyledLabel>
+        for (let s of version.supports) {
+            elements.push(<RowDiv style={{ justifyContent: 'left', width: '100%' }}>
+                <li style={{ color: curPalette.text }} />
+                <StyledLabel style={{ color: curPalette.text, fontFamily: 'Inconsolata' }}>{s}</StyledLabel>
             </RowDiv>)
         }
 
@@ -177,21 +177,21 @@ class Create extends React.Component {
     renderDependencies(version: Version) {
         let elements: JSX.Element[] = []
 
-        if(version.dependencies != null) {
-            for(let d = 0; d < version.dependencies.length; d++) {
+        if (version.dependencies != null) {
+            for (let d = 0; d < version.dependencies.length; d++) {
                 elements.push(
-                <RowDiv style={{justifyContent:'center', width:'100%', gap:8}}>
-                    <RowDiv style={{width:'40%', height:28,alignItems:'center', overflowX:'hidden'}}>
-                        <StyledLabel style={{width:'100%', color:curPalette.text, fontFamily:'Inconsolata', textAlign:'right'}}>{version.dependencies[d].id}</StyledLabel>
-                    </RowDiv>
-                    <InputField style={{width:'20%'}} text="Version Number" defaultValue={version.dependencies[d].version} onChange={(v: string) => {version.dependencies[d].version = v}}/>
-                    <div style={{width:'40%'}}>
-                        <AddButton style={{width:28}} onClick={()=>{
-                            version.dependencies.splice(d, 1)
-                            this.renderVersions()
-                        }}>-</AddButton>
-                    </div>
-                </RowDiv>)
+                    <RowDiv style={{ justifyContent: 'center', width: '100%', gap: 8 }}>
+                        <RowDiv style={{ width: '40%', height: 28, alignItems: 'center', overflowX: 'hidden' }}>
+                            <StyledLabel style={{ width: '100%', color: curPalette.text, fontFamily: 'Inconsolata', textAlign: 'right' }}>{version.dependencies[d].id}</StyledLabel>
+                        </RowDiv>
+                        <InputField style={{ width: '20%' }} text="Version Number" defaultValue={version.dependencies[d].version} onChange={(v: string) => { version.dependencies[d].version = v }} />
+                        <div style={{ width: '40%' }}>
+                            <AddButton style={{ width: 28 }} onClick={() => {
+                                version.dependencies.splice(d, 1)
+                                this.renderVersions()
+                            }}>-</AddButton>
+                        </div>
+                    </RowDiv>)
             }
         }
 
@@ -199,8 +199,8 @@ class Create extends React.Component {
     }
 
     hasDependency(version: Version) {
-        for(let d of version.dependencies) {
-            if(d.id === this.newDependency.id)
+        for (let d of version.dependencies) {
+            if (d.id === this.newDependency.id)
                 return true
         }
         return false
@@ -209,7 +209,7 @@ class Create extends React.Component {
     renderVersions() {
         let elements: JSX.Element[] = []
 
-        for(let v = 0; v < this.state.pack.versions.length; v++) {
+        for (let v = 0; v < this.state.pack.versions.length; v++) {
             let version = this.state.pack.versions[v]
             elements.push(<GroupedFoldout group="version" text={version.name} key={v} style={{width:'98%', backgroundColor:'transparent',border:`1px solid ${curPalette.subText}`}} defaultValue={false}>
                 <RowDiv style={{gap: 8, paddingBottom: 8}}>
@@ -219,6 +219,19 @@ class Create extends React.Component {
                         this.state.pack.versions[v-1] = version
                         this.renderVersions();
                     }}>⬆</StyledButton>
+                    <Popup trigger={
+                        <StyledButton style={{width:'32px', backgroundColor:curPalette.badAccent}}>✖</StyledButton>
+                    }>
+                        <ColumnDiv style={{backgroundColor:curPalette.darkBackground, padding: 8, borderRadius: 4, border:`2px solid ${curPalette.lightAccent}`}}>
+                            <StyledLabel>Are you sure you want to delete <b>{version.name}</b>?</StyledLabel>
+                            <AddButton style={{backgroundColor:curPalette.badAccent}} onClick={() => {
+                                this.state.pack.versions.splice(v, 1)
+                                this.renderVersions()
+                            }}>
+                                Yes
+                            </AddButton>
+                        </ColumnDiv>
+                    </Popup>
                     <StyledButton style={{width:'32px'}} hidden={!(v < this.state.pack.versions.length - 1)} onClick={() => {
                         let otherVersion = this.state.pack.versions[v+1]
                         this.state.pack.versions[v] = otherVersion
@@ -285,82 +298,82 @@ class Create extends React.Component {
                         }}>Add</AddButton>
                     </RowDiv>
                 </GroupedFoldout>
-            </GroupedFoldout>)
+            </GroupedFoldout >)
         }
-        this.setState({versions: elements})
+        this.setState({ versions: elements })
     }
 
     validatePack(): string {
         const pack = this.state.pack
 
-        if(pack.display.name === '')
+        if (pack.display.name === '')
             return 'You must specify a name'
-        if(pack.display.description === '')
+        if (pack.display.description === '')
             return 'You must specify a description'
-        
-        if(pack.id.length < 3)
+
+        if (pack.id.length < 3)
             return 'Pack Id must be atleast 3 characters'
-        if(pack.versions == null || pack.versions.length === 0)
+        if (pack.versions == null || pack.versions.length === 0)
             return 'No versions have been specified'
         else {
-            for(let v = 0; v < pack.versions.length; v++) {
-                if(pack.versions[v].downloads === {} || pack.versions[v].downloads === null)
+            for (let v = 0; v < pack.versions.length; v++) {
+                if (pack.versions[v].downloads === {} || pack.versions[v].downloads === null)
                     return `No downloads have been added to version ${v}`
-                if(pack.versions[v].supports.length === 0)
+                if (pack.versions[v].supports.length === 0)
                     return `Version ${v} must support atleast 1 game version!`
             }
         }
-            
+
         return ''
     }
 
     renderNewPack() {
         return (
-            <ColumnDiv style={{width:'100%', alignItems:'left', gap: 8}}>
-                <InputField text="Pack Id (ex. 'tcc')" defaultValue={this.state.pack.id} style={{width:'15%', marginBottom:3}} onChange={(v: string)=>{this.state.pack.id=v}} disabled={!this.state.new}/>
-                {this.state.pack.messages != null && this.state.pack.messages.length > 0 && 
-                <GroupedFoldout group="mainGroup" text="Messages" style={mainFoldoutStyle} headerStyle={{color:'red'}} defaultValue={true}>
-                    <StyledLabel id="messages" style={{width:'100%'}}>{this.state.pack.messages.join('\n')}</StyledLabel>
-                    <StyledButton onClick={(e)=>{
-                        PackHelper.resetMessages(this.state.pack.id)
-                        const messages = document.getElementById('messages') as HTMLLabelElement
-                        messages.hidden = true
-                    }}>Clear</StyledButton>
-                </GroupedFoldout>}
+            <ColumnDiv style={{ width: '100%', alignItems: 'left', gap: 8 }}>
+                <InputField text="Pack Id (ex. 'tcc')" defaultValue={this.state.pack.id} style={{ width: '15%', marginBottom: 3 }} onChange={(v: string) => { this.state.pack.id = v }} disabled={!this.state.new} />
+                {this.state.pack.messages != null && this.state.pack.messages.length > 0 &&
+                    <GroupedFoldout group="mainGroup" text="Messages" style={mainFoldoutStyle} headerStyle={{ color: 'red' }} defaultValue={true}>
+                        <StyledLabel id="messages" style={{ width: '100%' }}>{this.state.pack.messages.join('\n')}</StyledLabel>
+                        <StyledButton onClick={(e) => {
+                            PackHelper.resetMessages(this.state.pack.id)
+                            const messages = document.getElementById('messages') as HTMLLabelElement
+                            messages.hidden = true
+                        }}>Clear</StyledButton>
+                    </GroupedFoldout>}
                 <GroupedFoldout group="mainGroup" text="Display" style={mainFoldoutStyle} defaultValue={false}>
-                    <ColumnDiv style={{width:'100%', alignItems:'', gap: 8}}>                    
-                        <RadioButton text="Hidden?" defaultValue={this.state.pack.display.hidden} onChange={(value)=>{
+                    <ColumnDiv style={{ width: '100%', alignItems: '', gap: 8 }}>
+                        <RadioButton text="Hidden?" defaultValue={this.state.pack.display.hidden} onChange={(value) => {
                             this.state.pack.display.hidden = value
-                        }}/>
-                        <ColumnDiv style={{width:'100%', gap:8}}>
-                            <InputField text='* Name...' defaultValue={this.state.pack.display.name} onChange={(v: string)=>{
-                                    this.state.pack.display.name = v
-                            }}/>
-                            <InputField text='Icon URL...' defaultValue={this.state.pack.display.icon} onChange={(v: string)=>{
-                                    this.state.pack.display.icon = v
-                            }}/>
-                            <InputField text='* Description...' defaultValue={this.state.pack.display.description} onChange={(v: string)=>{
-                                    this.state.pack.display.description = v
-                            }}/>
-                            <InputField text='Full View Markdown URL...' defaultValue={this.state.pack.display.webPage} onChange={(v: string)=>{
-                                    this.state.pack.display.webPage = v
-                            }}/>
+                        }} />
+                        <ColumnDiv style={{ width: '100%', gap: 8 }}>
+                            <InputField text='* Name...' defaultValue={this.state.pack.display.name} onChange={(v: string) => {
+                                this.state.pack.display.name = v
+                            }} />
+                            <InputField text='Icon URL...' defaultValue={this.state.pack.display.icon} onChange={(v: string) => {
+                                this.state.pack.display.icon = v
+                            }} />
+                            <InputField text='* Description...' defaultValue={this.state.pack.display.description} onChange={(v: string) => {
+                                this.state.pack.display.description = v
+                            }} />
+                            <InputField text='Full View Markdown URL...' defaultValue={this.state.pack.display.webPage} onChange={(v: string) => {
+                                this.state.pack.display.webPage = v
+                            }} />
                         </ColumnDiv>
-                        
+
                     </ColumnDiv>
                 </GroupedFoldout>
                 <GroupedFoldout group="mainGroup" text="Versions" style={mainFoldoutStyle} defaultValue={false}>
-                    <ColumnDiv style={{width:'100%', alignItems:'', gap: 8}}>                    
-                        <RowDiv style={{gap: 8}}>
-                            <InputField text="Version Number..." onChange={(v: string)=>{this.newVersionNumber = v}}/>
-                            <AddButton style={{fontFamily:'Disket-Bold',}} onClick={()=>{
+                    <ColumnDiv style={{ width: '100%', alignItems: '', gap: 8 }}>
+                        <RowDiv style={{ gap: 8 }}>
+                            <InputField text="Version Number..." onChange={(v: string) => { this.newVersionNumber = v }} />
+                            <AddButton style={{ fontFamily: 'Disket-Bold', }} onClick={() => {
 
-                                if(this.newVersionNumber === '') return
+                                if (this.newVersionNumber === '') return
                                 this.newVersionNumber = this.newVersionNumber
 
-                                if(this.state.pack.versions == null)
+                                if (this.state.pack.versions == null)
                                     this.state.pack.versions = []
-                                if(this.state.pack.versions.find((v) => v.name === this.newVersionNumber) == null) {
+                                if (this.state.pack.versions.find((v) => v.name === this.newVersionNumber) == null) {
                                     this.state.pack.versions.push(new Version(this.newVersionNumber))
                                     this.renderVersions()
                                 }
@@ -369,17 +382,17 @@ class Create extends React.Component {
                         {this.state.versions}
                     </ColumnDiv>
                 </GroupedFoldout>
-                {(this.state.error != null && this.state.error !== '') && <b style={{fontFamily:'Inconsolata', color:'red'}}>{this.state.error}</b>}
-                <RowDiv style={{gap:8,justifyContent:'space-evenly',width:'10%'}}>
+                {(this.state.error != null && this.state.error !== '') && <b style={{ fontFamily: 'Inconsolata', color: 'red' }}>{this.state.error}</b>}
+                <RowDiv style={{ gap: 8, justifyContent: 'space-evenly', width: '10%' }}>
 
                     <Popup trigger={
-                        <AddButton style={{backgroundColor:curPalette.badAccent}} hidden={this.state.pack.id === ''}>
+                        <AddButton style={{ backgroundColor: curPalette.badAccent }} hidden={this.state.pack.id === ''}>
                             Delete
                         </AddButton>}>
-                        
-                        <ColumnDiv style={{backgroundColor:curPalette.darkBackground, padding: 8, borderRadius: 4, border:`2px solid ${curPalette.lightAccent}`}}>
+
+                        <ColumnDiv style={{ backgroundColor: curPalette.darkBackground, padding: 8, borderRadius: 4, border: `2px solid ${curPalette.lightAccent}` }}>
                             <StyledLabel>Are you sure you want to delete <b>{this.state.pack.id}</b>?</StyledLabel>
-                            <AddButton style={{backgroundColor:curPalette.badAccent}} onClick={() => {
+                            <AddButton style={{ backgroundColor: curPalette.badAccent }} onClick={() => {
                                 PackHelper.deletePack(this.state.pack, () => {
                                     this.updatePacks()
                                     this.props.history.push('/app/create')
@@ -390,21 +403,21 @@ class Create extends React.Component {
                             </AddButton>
                         </ColumnDiv>
                     </Popup>
-                    <AddButton onClick={()=>{
+                    <AddButton onClick={() => {
                         this.updatePacks()
                         this.props.history.push('/app/create')
                     }}>Cancel</AddButton>
-                    <AddButton onClick={()=>{
+                    <AddButton onClick={() => {
                         const result = this.validatePack()
                         this.updatePacks()
 
-                        if(result === '') {
+                        if (result === '') {
                             PackHelper.createOrUpdatePack(this.state.pack, true, () => {
                                 this.updatePacks()
                             })
                             this.props.history.push('/app/create')
                         } else {
-                            this.setState({error: result})
+                            this.setState({ error: result })
                         }
                     }}>Finish</AddButton>
                 </RowDiv>
@@ -415,8 +428,8 @@ class Create extends React.Component {
 
     render() {
         return (
-            <ColumnDiv style={{width:'100%', height:'100%', padding: 16}}>
-                <RowDiv style={{display:'inline-flex', height: '100%', width:'100%', flexWrap:'wrap', justifyContent:'left', gap:12, alignContent:'flex-start'}}>
+            <ColumnDiv style={{ width: '100%', height: '100%', padding: 16 }}>
+                <RowDiv style={{ display: 'inline-flex', height: '100%', width: '100%', flexWrap: 'wrap', justifyContent: 'left', gap: 12, alignContent: 'flex-start' }}>
                     <Switch>
                         <Route path='/app/create/new_pack'>{this.renderNewPack()}</Route>
                         <Route path={this.props.match.path}>{this.renderUsersPacks()}</Route>
