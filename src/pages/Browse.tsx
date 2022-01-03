@@ -37,15 +37,7 @@ function Browse(props: any) {
     const renderTabs = () => {
         return (
             <div style={{backgroundColor: curPalette.darkBackground, paddingLeft:16, paddingRight: 16, borderRadius: 8, justifyContent:'center', display:'flex', gap: 16, marginTop: 8}}>
-                <TabButton onChange={()=>{
-                    sort = (p: PackEntry) => -p.added
-                    renderPacks(sort)
-                }} defaultValue={true} group="browse-sorting" name="new">New</TabButton>
-                <TabButton onChange={()=>{
-                    sort = (p: PackEntry) => p.downloads !== undefined ? -p.downloads : 0
-                    renderPacks(sort)
-                }} group="browse-sorting" name="trending">Downloads</TabButton>
-                <TabButton onChange={()=>{
+                    <TabButton onChange={()=>{
                     sort = (p: PackEntry) => {
                         if(p.updated !== undefined)
                             return -p.updated
@@ -53,7 +45,15 @@ function Browse(props: any) {
                             return -p.added
                     }
                     renderPacks(sort)
-                }} group="browse-sorting" name="updated">Updated</TabButton>
+                }} defaultValue={true} group="browse-sorting" name="updated">Updated</TabButton>
+                <TabButton onChange={()=>{
+                    sort = (p: PackEntry) => -p.added
+                    renderPacks(sort)
+                }} group="browse-sorting" name="new">New</TabButton>
+                <TabButton onChange={()=>{
+                    sort = (p: PackEntry) => p.downloads !== undefined ? -p.downloads : 0
+                    renderPacks(sort)
+                }} group="browse-sorting" name="trending">Downloads</TabButton>
             </div>
         )
     }
