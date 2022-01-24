@@ -70,6 +70,7 @@ class Settings extends React.Component {
         const updateDonation = (path: string, value: string) => {
             userData.ref?.child(`donation/${path}`).set(value)
         }
+        const platform = process.platform;
 
         return (
             <div style={{flexGrow:1,display:'flex',flexDirection:'column',alignItems:'center'}}>
@@ -83,7 +84,7 @@ class Settings extends React.Component {
                             saveSettings()
                         }
                     }}/>
-                <RowDiv style={{width:'33%'}}>
+                {platform !== 'darwin' && <RowDiv style={{width:'33%'}}>
                     <StyledInput placeholder="Path..." style={{width:'100%'}} value={this.state.launcherPath} disabled/>
                     <SettingsButton onClick={()=>{
                         const input = document.getElementById("launcherInput")
@@ -91,7 +92,7 @@ class Settings extends React.Component {
                             input.click()
                         }
                     }}>Browse</SettingsButton>
-                </RowDiv>
+                </RowDiv>}
                 <Header1>Account Options</Header1>
                 <GroupedFoldout text='Donations' group='Account Options' style={{width:'33%', backgroundColor:'transparent'}}>
                     <StyledLabel>Kofi</StyledLabel>

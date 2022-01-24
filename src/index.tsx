@@ -38,8 +38,6 @@ export const firebaseApp = firebase.initializeApp({
 	measurementId: "G-40SRKC35Z0"
 })
 
-firebaseApp.auth().setPersistence('session')
-
 let startPage: 'login' | 'app' | 'update' = 'login'
 
 
@@ -47,10 +45,9 @@ let ignoreStateChange = false
 export function setIgnoreStateChange(val: boolean) { ignoreStateChange = val }
 firebaseApp.auth().onAuthStateChanged((user) => {
 	if (user != null && !ignoreStateChange) {
+		console.log(user)
 		setFirebaseUser(user)
 		collectUserData()
-		Index.instance.setState({ page: 'app' })
-		console.log('ran')
 		remote.getCurrentWindow().webContents.send('user-data-changed')
 	}
 })
@@ -173,7 +170,6 @@ export const MarkdownOptions = (wrapper?: React.ElementType<any>): MarkdownToJSX
 
 
 interface IndexState {
-	page: 'login' | 'app' | 'update',
 	versionFound: string
 }
 
@@ -188,7 +184,7 @@ export class Index extends React.Component {
 	constructor(props: RouteComponentProps) {
 		super(props)
 		this.props = props
-		this.state = { page: startPage, versionFound: ''}
+		this.state = { versionFound: ''}
 		Index.instance = this
 
 		ipcRenderer.on('go-to-page', (e: any, path: string) => {
@@ -219,13 +215,7 @@ export class Index extends React.Component {
 			<React.StrictMode>
 				<Titlebar />
 				<HashRouter>
-					<Route path='/' render={({history})=>(
-						<Login onSuccess={() => {
-							collectUserData()
-							this.props.history.push(this.returnPage)
-							this.returnPage = '/app';
-						}} />
-					)}/>
+					<Route path='/' component={Login}/>
 					<Route path='/app' component={App}/>
 					<Route path='/update'>
 						<Download version={this.state.versionFound}/>

@@ -15,6 +15,7 @@ export const StyledButton = styled.button`
     border: none;
     font-family: Disket-Bold;
     -webkit-user-select: none;
+    cursor: pointer;
     
     :hover {
         filter: brightness(85%);
@@ -24,6 +25,7 @@ export const StyledButton = styled.button`
     }
 `
 export const ButtonLabel = styled(StyledLabel)`
+    cursor: pointer;
     :hover {
         filter: brightness(85%);
     }

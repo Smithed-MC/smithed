@@ -98,11 +98,9 @@ function ProfileDisplay(props: ProfileDisplayProps) {
                 {mouseOver &&
                     <RowDiv style={{ width: '100%', height: '100%', gap: 4, alignItems: 'center', marginTop: -4 }}>
                         <ProfilePlayButton onClick={async (e) => {
-                            console.log(e)
 
                             if (Home.instance.state.activeProfile === '') {
                                 if (props.profile.setup === undefined || !props.profile.setup) {
-                                    console.log('ran')
                                     if (props.profile.packs !== undefined) {
                                         setDownloading(true)
                                         await downloadAndMerge(props.profile)

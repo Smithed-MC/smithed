@@ -397,7 +397,6 @@ class Create extends React.Component {
                                     this.updatePacks()
                                     this.props.history.push('/app/create')
                                 })
-                                console.log('ran')
                             }}>
                                 Yes
                             </AddButton>

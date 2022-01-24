@@ -1,13 +1,18 @@
-import React from 'react';
+import React, { useState } from 'react';
 import styled from 'styled-components';
 import '../font.css'
 import { ColumnDiv, firebaseUser, RowDiv, setFirebaseUser, setIgnoreStateChange } from '..';
 import curPalette from '../Palette';
-import {firebaseApp} from '../index'
+import { firebaseApp } from '../index'
 import appSettings, { saveSettings } from '../Settings';
 import { PackHelper } from '../Pack';
 import { ButtonLabel } from '../Shared';
 import TabButton from '../components/TabButton';
+import { matchPath, useHistory, useRouteMatch } from 'react-router';
+import RadioButton from '../components/RadioButton';
+
+const { ipcRenderer } = window.require('electron');
+
 
 const emailRegex = new RegExp(/^(([^<>()\]\\.,;:\s@"]+(\.[^<>()\]\\.,;:\s@"]+)*)|(".+"))@(([0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/);
 const strongRegex = new RegExp(/^(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])(?=.*[!@#$%^&*-./:])(?=.{8,})/);
@@ -54,7 +59,8 @@ const LoginButton = styled.button`
     border: none;
     font-family: Disket-Bold;
     -webkit-user-select: none;
-    
+    cursor: pointer;
+
     :hover {
         filter: brightness(85%);
     }
@@ -69,228 +75,249 @@ interface LoginProps {
     onSuccess: () => void;
 }
 
-class Login extends React.Component {
-    state: {tab: number, [key:string]: any}
-    email: string = ''
-    password: string = ''
-    password2: string = ''
-    displayName: string = ''
-    props: LoginProps
-    constructor(props: LoginProps) {
-        super(props)
-        this.props = props
-        this.state = {tab:1,page:'main'}
-        this.email = appSettings.lastEmail
-    }
+function Login(props: LoginProps) {
+    const [tab, setTab] = useState(1)
+    const [page, setPage] = useState('main')
+    const [emailValid, setEmailValid] = useState(true)
+    const [passwordValid, setPasswordValid] = useState(true)
+    const [password2Valid, setPassword2Valid] = useState(true)
+    const [displayNameValid, setDisplayNameValid] = useState(true)
+    const [displayNameValid2, setDisplayNameValid2] = useState(true)
+    const [loginError, setLoginError] = useState('')
 
-    validate(): boolean {
+    const match = useRouteMatch('/')
+    const history = useHistory()
+
+    ipcRenderer.on('user-data-changed', () => {
+        if (firebaseUser != null && match?.isExact) {
+            history.push('/app')
+        }
+    })
+
+
+    let email: string = appSettings.lastEmail
+    let password: string = ''
+    let password2: string = ''
+    let displayName: string = ''
+    let rememberMe: boolean = false;
+
+    const validate = (): boolean => {
         let valid: boolean = true
-        if(!this.email.match(emailRegex) && this.email !== '') {
-            this.setState({emailValid: false})
+        if (!email.match(emailRegex) && email !== '') {
+            setEmailValid(false)
             valid = false
         } else {
-            if(this.email === '') valid = false
-            this.setState({emailValid: true})
+            if (email === '') valid = false
+            setEmailValid(true)
         }
-        if(!this.password.match(strongRegex) && this.password !== '') {
-            this.setState({passwordValid: false})
+        if (!password.match(strongRegex) && password !== '') {
+            setPasswordValid(false)
             valid = false
         } else {
-            if(this.password === '') valid = false
-            this.setState({passwordValid: true})
+            if (password === '') valid = false
+            setPasswordValid(true)
         }
-        if(this.password !== this.password2 && this.password2 !== '') {
-            this.setState({password2Valid: false})
+        if (password !== password2 && password2 !== '') {
+            setPassword2Valid(false)
             valid = false
         } else {
-            if(this.password2 === '') valid = false
-            this.setState({password2Valid: true})
+            if (password2 === '') valid = false
+            setPassword2Valid(true)
         }
 
         return valid
     }
 
-    signUp() {
+    const signUp = () => {
 
-        if(!this.validate()) return;
-       
+        if (!validate()) return;
+
         setIgnoreStateChange(true)
-        firebaseApp.auth().createUserWithEmailAndPassword(this.email, this.password)
-        .then((userCredential) => {
-            // Signed in 
-            var user = userCredential.user;
-            if(user != null) {
-                setFirebaseUser(user)
-                this.setState({page:'finish-setup'})
-                //
-            }
-        })
-        .catch((error) => {
-            var errorCode = error.code;
-            // ..
-            console.log(errorCode)
-            switch(errorCode) {
-                case 'auth/email-already-in-use': {
-                    this.setState({loginError:'That email is in use!'})
-                    break
+        firebaseApp.auth().createUserWithEmailAndPassword(email, password)
+            .then((userCredential) => {
+                // Signed in 
+                var user = userCredential.user;
+                if (user != null) {
+                    setFirebaseUser(user)
+                    setPage('finish-setup')
+                    //
                 }
-                default: {
-                    this.setState({loginError: errorCode})
-                }
-            }
-        });
-
-    }
-    signIn() {
-        firebaseApp.auth().signInWithEmailAndPassword(this.email, this.password).then((userCredential)=>{
-            var user = userCredential.user;
-            if(user != null) {
-                setFirebaseUser(user)
-                appSettings.lastEmail = this.email
-                saveSettings()
-                this.props.onSuccess()
-            }
-        }).catch((error) => {
-            var errorCode = error.code;
-            // ..
-            if (errorCode != null)
+            })
+            .catch((error) => {
+                var errorCode = error.code;
+                // ..
                 console.log(errorCode)
-            else
-                console.log(error)
+                switch (errorCode) {
+                    case 'auth/email-already-in-use': {
+                        setLoginError('That email is in use!')
+                        break
+                    }
+                    default: {
+                        setLoginError(errorCode);
+                    }
+                }
+            });
 
-            switch(errorCode) {
-                case 'auth/user-disabled': {
-                    this.setState({loginError:'That user has been disabled!'})
-                    break
+    }
+    const signIn = () => {
+        firebaseApp.auth().setPersistence(rememberMe ? 'local' : 'session').then(() => {
+            firebaseApp.auth().signInWithEmailAndPassword(email, password).then((userCredential) => {
+                var user = userCredential.user;
+                if (user != null) {
+                    setFirebaseUser(user)
+                    appSettings.lastEmail = email
+                    saveSettings()
+                    props.onSuccess()
                 }
-                case 'auth/user-not-found': {
-                    this.setState({loginError:'No account has been registered with that email!'})
-                    break
+            }).catch((error) => {
+                var errorCode = error.code;
+                // ..
+                if (errorCode != null)
+                    console.log(errorCode)
+                else
+                    console.log(error)
+
+                switch (errorCode) {
+                    case 'auth/user-disabled': {
+                        setLoginError('That user has been disabled!')
+                        break
+                    }
+                    case 'auth/user-not-found': {
+                        setLoginError('No account has been registered with that email!')
+                        break
+                    }
+                    case 'auth/wrong-password': {
+                        setLoginError('Incorrect password or email!')
+                        break
+                    }
+                    case 'auth/invalid-email': {
+                        setLoginError('Invalid email!')
+                        break
+                    }
+                    default: {
+                        setLoginError(errorCode)
+                    }
                 }
-                case 'auth/wrong-password': {
-                    this.setState({loginError:'Incorrect password or email!'})
-                    break
-                }
-                case 'auth/invalid-email': {
-                    this.setState({loginError:'Invalid email!'})
-                    break
-                }
-                default: {
-                    this.setState({loginError: errorCode})
-                }
-            }
+            })
         })
     }
-    
-    swapTab(name: string) {
+
+    const swapTab = (name: string) => {
         const tab = name === 'signin' ? 1 : 0
-        if(tab !== this.state.tab) {
-            this.setState({tab: tab, emailValid:true, passwordValid: true, password2Valid: true, loginError: null})
-            this.email = ''
-            this.password = ''
-            this.password2 = ''
+        if (tab !== tab) {
+            setTab(tab)
+            setEmailValid(true)
+            setPasswordValid(true)
+            setPassword2Valid(true)
+            setLoginError('')
+            email = ''
+            password = ''
+            password2 = ''
         }
     }
 
-    renderEmailField() {
-        return(
-            <ColumnDiv style={{width:'100%', gap:4}}>
-                {(this.state.emailValid === null || this.state.emailValid === false) && <ErrorLabel>Invalid email!</ErrorLabel>}
+    const renderEmailField = () => {
+        return (
+            <ColumnDiv style={{ width: '100%', gap: 4 }}>
+                {(emailValid === null || emailValid === false) && <ErrorLabel>Invalid email!</ErrorLabel>}
                 <LoginInput type="email" onChange={(e) => {
                     let input = e.target as HTMLInputElement
-                    this.email = input.value
-                    this.validate()
-                }} placeholder='Email' defaultValue={this.email}/>
+                    email = input.value
+                    validate()
+                }} placeholder='Email' defaultValue={email} />
             </ColumnDiv>
         )
     }
-    renderDisplayNameField() {
-        return(
-            <ColumnDiv style={{width:'100%', gap:4}}>
-                {(this.state.displayNameValid === null || this.state.displayNameValid === false) && <ErrorLabel>Invalid display name! Must be between 3 and 15 characters!</ErrorLabel>}
-                {(this.state.displayNameValid2 === null || this.state.displayNameValid2 === false) && <ErrorLabel>Name taken!</ErrorLabel>}
+    const renderDisplayNameField = () => {
+        return (
+            <ColumnDiv style={{ width: '100%', gap: 4 }}>
+                {(displayNameValid === null || displayNameValid === false) && <ErrorLabel>Invalid display name! Must be between 3 and 15 characters!</ErrorLabel>}
+                {(displayNameValid2 === null || displayNameValid2 === false) && <ErrorLabel>Name taken!</ErrorLabel>}
 
                 <LoginInput type="email" onChange={async (e) => {
                     let input = e.target as HTMLInputElement
-                    this.displayName = input.value;
-                    
-                    if(this.displayName.length < 3 || this.displayName.length > 15)
-                        this.setState({displayNameValid: false})
+                    displayName = input.value;
+
+                    if (displayName.length < 3 || displayName.length > 15)
+                        setDisplayNameValid(false)
                     else
-                        this.setState({displayNameValid: true})
+                        setDisplayNameValid(true)
 
                     const db = firebaseApp.database()
                     const ref = db.ref('users/')
 
                     let snapshot = await ref.get()
-                    let users : {[key: string]: {displayName: string}} = snapshot.val()
+                    let users: { [key: string]: { displayName: string } } = snapshot.val()
 
-                    const chosenName = PackHelper.displayNameToID(this.displayName)
-                    for(let u in users) {
+                    const chosenName = PackHelper.displayNameToID(displayName)
+                    for (let u in users) {
                         const userName = PackHelper.displayNameToID(users[u].displayName)
-                        if(userName === chosenName) {
-                            this.setState({displayNameValid2: false})
+                        if (userName === chosenName) {
+                            setDisplayNameValid2(false)
                             return;
                         }
                     }
-                    this.setState({displayNameValid2: true})
+                    setDisplayNameValid2(true)
 
-                }} placeholder='Display Name'/>
+                }} placeholder='Display Name' />
             </ColumnDiv>
         )
     }
-    renderPasswordField(onSubmit?: () => void) {
-        return(
-            <ColumnDiv style={{width:'100%', gap:4}}>
-                {(this.state.passwordValid === null || this.state.passwordValid === false) && <ErrorLabel>Password must contain 1 lowercase, 1 uppercase, 1 symbol, 1 number, and be at least 8 characters</ErrorLabel>}
+    const renderPasswordField = (onSubmit?: () => void) => {
+        return (
+            <ColumnDiv style={{ width: '100%', gap: 4 }}>
+                {(passwordValid === null || passwordValid === false) && <ErrorLabel>Password must contain 1 lowercase, 1 uppercase, 1 symbol, 1 number, and be at least 8 characters</ErrorLabel>}
                 <LoginInput type="password" onChange={(e) => {
                     let input = e.target as HTMLInputElement
-                    this.password = input.value
-                    if(this.state.tab === 0)
-                        this.validate()
+                    password = input.value
+                    if (tab === 0)
+                        validate()
                 }} onKeyPress={(e) => {
-                    if(e.key === 'Enter' && onSubmit != null) {
+                    if (e.key === 'Enter' && onSubmit != null) {
                         onSubmit()
                     }
-                }} placeholder='Password'/>
+                }} placeholder='Password' />
             </ColumnDiv>
         )
     }
-    renderPassword2Field() {
-        return(
-            <ColumnDiv style={{width:'100%', gap:4}}>
-                {(this.state.password2Valid === null || this.state.password2Valid === false) && <ErrorLabel>Passwords do not match!</ErrorLabel>}
+    const renderPassword2Field = () => {
+        return (
+            <ColumnDiv style={{ width: '100%', gap: 4 }}>
+                {(password2Valid === null || password2Valid === false) && <ErrorLabel>Passwords do not match!</ErrorLabel>}
                 <LoginInput type="password" onChange={(e) => {
                     let input = e.target as HTMLInputElement
-                    this.password2 = input.value
-                    this.validate()
-                }} placeholder='Re-enter password'/>
+                    password2 = input.value
+                    validate()
+                }} placeholder='Re-enter password' />
             </ColumnDiv>
         )
     }
 
-    renderSignUp() {
+    const renderSignUp = () => {
         return (
-            <ColumnDiv style={{width:'50%', gap:16, padding:24}}>
-                {this.renderEmailField()}
-                {this.renderPasswordField()}
-                {this.renderPassword2Field()}
-                {this.state.loginError != null && <ErrorLabel>{this.state.loginError}</ErrorLabel>}
-                <LoginButton onClick={()=>this.signUp()}>Register</LoginButton>
+            <ColumnDiv style={{ width: '50%', gap: 16, padding: 24 }}>
+                {renderEmailField()}
+                {renderPasswordField()}
+                {renderPassword2Field()}
+                {loginError != null && <ErrorLabel>{loginError}</ErrorLabel>}
+                <LoginButton onClick={() => signUp()}>Register</LoginButton>
             </ColumnDiv>
         );
     }
-    renderSignIn() {
+    const renderSignIn = () => {
         return (
-            <ColumnDiv style={{width:'50%', gap:16, padding:24}}>
-                {this.renderEmailField()}
-                {this.renderPasswordField(()=>this.signIn())}
-                {this.state.loginError != null && <ErrorLabel>{this.state.loginError}</ErrorLabel>}
-                <LoginButton type="submit" onClick={()=>this.signIn()}>Login</LoginButton>
-                <ButtonLabel style={{fontStyle:'italic'}} onClick={() => {
-                    if(this.email !== '' && this.email.match(this.email)) {
-                        firebaseApp.auth().sendPasswordResetEmail(this.email).then(() => {
-                            alert(`Sent reset email to ${this.email}`)
+            <ColumnDiv style={{ width: '50%', gap: 16, padding: 24 }}>
+                {renderEmailField()}
+                {renderPasswordField(() => signIn())}
+                {loginError != null && <ErrorLabel>{loginError}</ErrorLabel>}
+                <LoginButton type="submit" onClick={() => signIn()}>Login</LoginButton>
+                <RadioButton text='Remember me?' onChange={(v) => {
+                    rememberMe = v;
+                }} />
+                <ButtonLabel style={{ fontStyle: 'italic' }} onClick={() => {
+                    if (email !== '' && email.match(email)) {
+                        firebaseApp.auth().sendPasswordResetEmail(email).then(() => {
+                            alert(`Sent reset email to ${email}`)
                         }).catch((r) => {
                             console.log(r)
                         })
@@ -299,54 +326,52 @@ class Login extends React.Component {
             </ColumnDiv>
         );
     }
-    renderMain() {
-        return(
-            <ColumnDiv style={{width:'100%'}}>
-                <RowDiv style={{backgroundColor:curPalette.darkBackground, width:'100%', height:'30px',justifyContent:'center',gap:36}}>
-                    <TabButton group="login-page" name="signin" defaultValue={true} onChange={(n:string)=>this.swapTab(n)}>Sign In</TabButton>
-                    <TabButton group="login-page" name="signup" onChange={(n:string)=>this.swapTab(n)}>Sign Up</TabButton>
+    const renderMain = () => {
+        return (
+            <ColumnDiv style={{ width: '100%' }}>
+                <RowDiv style={{ backgroundColor: curPalette.darkBackground, width: '100%', height: '30px', justifyContent: 'center', gap: 36 }}>
+                    <TabButton group="login-page" name="signin" defaultValue={true} onChange={(n: string) => swapTab(n)}>Sign In</TabButton>
+                    <TabButton group="login-page" name="signup" onChange={(n: string) => swapTab(n)}>Sign Up</TabButton>
                 </RowDiv>
-                {this.state.tab === 0 && this.renderSignUp()}
-                {this.state.tab === 1 && this.renderSignIn()}
+                {tab === 0 && renderSignUp()}
+                {tab === 1 && renderSignIn()}
             </ColumnDiv>
         )
     }
-    renderSetup() {
-        return(
-            <ColumnDiv style={{padding:24, width:'50%', gap:8}}>
-                {this.renderDisplayNameField()}
-                <RowDiv style={{gap:8}}>
+    const renderSetup = () => {
+        return (
+            <ColumnDiv style={{ padding: 24, width: '50%', gap: 8 }}>
+                {renderDisplayNameField()}
+                <RowDiv style={{ gap: 8 }}>
                     <LoginButton onClick={() => {
-                        if(firebaseUser != null) {
+                        if (firebaseUser != null) {
                             firebaseApp.database().ref(`users/${firebaseUser.uid}`).remove()
                             firebaseUser.delete()
                         }
-                        this.setState({page:'main'})
+                        setPage('main')
                     }}>Cancel</LoginButton>
-                    <LoginButton onClick={async ()=>{
+                    <LoginButton onClick={async () => {
 
-                        if(this.displayName.length < 3 || this.displayName.length > 15) return;
-                        if(firebaseUser === null) return;
+                        if (displayName.length < 3 || displayName.length > 15) return;
+                        if (firebaseUser === null) return;
 
-                        firebaseApp.database().ref(`users/${firebaseUser.uid}`).set({displayName: this.displayName, role:'member', packs:[]})
-                        appSettings.lastEmail = this.email
+                        firebaseApp.database().ref(`users/${firebaseUser.uid}`).set({ displayName: displayName, role: 'member', packs: [] })
+                        appSettings.lastEmail = email
                         saveSettings()
-                        this.props.onSuccess()
-    
+                        props.onSuccess()
+
                     }}>Finish</LoginButton>
                 </RowDiv>
             </ColumnDiv>
         )
     }
-    render() {
 
-        return (
-            <LoginContainer>
-                {this.state.page === 'main' && this.renderMain()}
-                {this.state.page === 'finish-setup' && this.renderSetup()}
-            </LoginContainer>
-        );
-    }
+    return (
+        <LoginContainer>
+            {page === 'main' && renderMain()}
+            {page === 'finish-setup' && renderSetup()}
+        </LoginContainer>
+    );
 }
 
 export default Login;

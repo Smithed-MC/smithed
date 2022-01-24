@@ -177,8 +177,6 @@ export class PackHelper {
     static createOrUpdatePack(pack: Pack, addToQueue?: boolean, callback?: () => void) {
         pack = this.toFirebaseValid(pack)
 
-        console.log(pack);
-
         const packsRef = firebaseApp.database().ref(`packs/${PackHelper.displayNameToID(userData.displayName)}:${pack.id}`)
 
         packsRef.get().then((snap) => {
@@ -302,7 +300,6 @@ export class PackHelper {
         const versionData = new DataVersion(version)
 
         for (let v = pack.versions.length - 1; v >= 0; v--) {
-            console.log(pack.versions[v])
             for (let s of pack.versions[v].supports) {
                 if (versionData.equal(new DataVersion(s))) {
                     return pack.versions[v].name
@@ -349,7 +346,6 @@ export class PackHelper {
     }
     static updatePackData(pack: any): Pack {
         if(pack.versions instanceof Array) {
-            console.log('ran')
             return pack as Pack;
         } else {
             let versions: {[key: string]: Version} = pack.versions
@@ -361,7 +357,6 @@ export class PackHelper {
                 newVersions.push(version);
             }
             pack.versions = newVersions;
-            console.log(pack);
             return pack as Pack;
         }
     }

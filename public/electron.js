@@ -88,16 +88,16 @@ function createWindow() {
 		win.webContents.send('message', message)
 	}
 
-	win.webContents.on('new-window', function(e, url) {
+	win.webContents.on('new-window', function (e, url) {
 		e.preventDefault();
 		require('electron').shell.openExternal(url);
 	});
-	
+
 	if (!isDev) {
 		win.on('ready-to-show', () => {
-			
+
 			autoUpdater.checkForUpdates().then((u) => {
-				if(u !== undefined) {
+				if (u !== undefined) {
 					sendMessage('checking for update')
 					updateInfo = u.updateInfo
 					const r = cmp(app.getVersion().replace('-', '.'), u.updateInfo.version.replace('-', '.'))
@@ -193,19 +193,23 @@ class HandleLauncher {
 		this.window = window
 
 		ipcMain.on('start-launcher', async (event, profile, launcherPath) => {
-			if (!fileExists(launcherPath)) {
+			const platform = process.platform
+
+			if (!fileExists(launcherPath) && platform !== 'darwin') {
 				window.webContents.send('invalid-launcher')
 			} else {
 				this.runningProfile = profile
 
-				const platform = process.platform
+				if (platform === 'darwin') {
+					this.launcher = exec(`open -a Minecraft --args "--workdir ${profile.directory}"`)
+				} else {
+					let cmd =
+						platform == 'win32' ? `"${launcherPath}"` :
+							platform == 'linux' ? `${launcherPath}` :
+								platform == 'darwin' ? `open -a ${launcherPath}` : `./${launcherPath}`
 
-				let cmd =
-					platform == 'win32' ? `"${launcherPath}"` :
-						platform == 'linux' ? `${launcherPath}` :
-							platform == 'darwin' ? `open ${launcherPath}` : `./${launcherPath}`
-
-				this.launcher = exec(`${cmd} --workdir ${profile.directory}`)
+					this.launcher = exec(`${cmd} --workdir ${profile.directory}`)
+				}
 
 				this.loop = setInterval(this.isRunning, 200)
 			}
@@ -235,23 +239,23 @@ if (isDev && process.platform === 'win32') {
 	// These two additional parameters are only available on windows.
 	// Setting this is required to get this working in dev mode.
 	app.setAsDefaultProtocolClient(protocolLink, process.execPath, [
-	  path.resolve(process.argv[1])
+		path.resolve(process.argv[1])
 	]);
-  } else {
+} else {
 	app.setAsDefaultProtocolClient(protocolLink);
-  }
+}
 
 const onOpenedFromUrl = (url) => {
 	let data = url.replace(protocolLink + '://', '').split('/')
-	
-	if(data[0] === 'packs' && data.length == 3) {
+
+	if (data[0] === 'packs' && data.length == 3) {
 		win.webContents.send('go-to-page', `/app/browse/view/${data[1]}/${data[2]}`)
 	}
-	
+
 }
 
 
-if(platform === 'win32') {
+if (platform === 'win32') {
 	const gotTheLock = app.requestSingleInstanceLock()
 
 	if (!gotTheLock) {

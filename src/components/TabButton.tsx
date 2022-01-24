@@ -10,6 +10,7 @@ background: none;
 border: none;
 font-size: 16px;
 -webkit-user-select: none;
+cursor: pointer;
 
 :hover {
   filter: brightness(85%);
