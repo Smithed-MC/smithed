@@ -201,7 +201,7 @@ class HandleLauncher {
 				this.runningProfile = profile
 
 				if (platform === 'darwin') {
-					this.launcher = exec(`open -a Minecraft --args "--workdir ${profile.directory}"`)
+					this.launcher = exec(`open -a Minecraft --args --workdir ${profile.directory}`)
 				} else {
 					let cmd =
 						platform == 'win32' ? `"${launcherPath}"` :
