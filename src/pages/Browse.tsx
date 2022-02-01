@@ -90,7 +90,7 @@ function Browse(props: any) {
             if (!display.name.toLowerCase().includes(search)) 
                 return false
 
-            if(filters.length > 0 && !p.data.categories)
+            if(filters.length > 0 && (!p.data.categories || p.data.categories.filter(c => filters.includes(c)).length == 0))
                 return false
             return true
         }

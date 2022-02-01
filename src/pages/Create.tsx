@@ -1,10 +1,10 @@
-import React, { useEffect, useRef, useState } from 'react';
+import { useEffect, useState } from 'react';
 import styled from 'styled-components';
 import '../font.css'
 import { ColumnDiv, firebaseApp, StyledInput, RowDiv, userData } from '..';
 import curPalette from '../Palette';
 import * as linq from 'linq-es5'
-import { DataVersion, Dependency, Display, Pack, PackHelper, Version } from '../Pack';
+import { DataVersion, Dependency, Pack, PackHelper, Version } from '../Pack';
 import Dropdown, { Option } from '../components/Dropdown';
 import CreatePackDisplay from '../components/CreatePackDisplay';
 import RadioButton from '../components/RadioButton';
@@ -83,7 +83,7 @@ function Create(props: RouteComponentProps) {
     const [versions, setVersions] = useState([] as JSX.Element[])
     const [newFlag, setNewFlag] = useState(false)
     const [error, setError] = useState('')
-    
+
     const generateSelectedCategories = () => {
         if (pack && pack.categories) {
             let elements: JSX.Element[] = []
@@ -97,11 +97,9 @@ function Create(props: RouteComponentProps) {
     }
     const [categories, setCategories] = useState(generateSelectedCategories())
 
-    let selectedPack: number = -1
     let newVersionNumber: string = ''
 
     let newDependency: Dependency = { id: '', version: '' }
-
 
     useEffect(() => {
         renderVersions()
@@ -347,6 +345,9 @@ function Create(props: RouteComponentProps) {
     }
     // TODO: Split groupedfoldouts into their own files to make this nicer, might not work but oh well
     const renderNewPack = () => {
+        if (pack.categories.length != categories.length)
+            setCategories(generateSelectedCategories())
+
         return (
             <ColumnDiv style={{ width: '100%', alignItems: 'left', gap: 8 }}>
                 <InputField text="Pack Id (ex. 'tcc')" defaultValue={pack.id} style={{ width: '15%', marginBottom: 3 }} onChange={(v: string) => { pack.id = v }} disabled={!newFlag} />

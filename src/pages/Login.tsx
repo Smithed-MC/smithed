@@ -311,9 +311,11 @@ function Login(props: LoginProps) {
                 {renderPasswordField(() => signIn())}
                 {loginError != null && <ErrorLabel>{loginError}</ErrorLabel>}
                 <LoginButton type="submit" onClick={() => signIn()}>Login</LoginButton>
-                <RadioButton text='Remember me?' onChange={(v) => {
-                    rememberMe = v;
-                }} />
+                <RowDiv>
+                    <RadioButton text='Remember me?' onChange={(v) => {
+                        rememberMe = v;
+                    }} />
+                </RowDiv>
                 <ButtonLabel style={{ fontStyle: 'italic' }} onClick={() => {
                     if (email !== '' && email.match(email)) {
                         firebaseApp.auth().sendPasswordResetEmail(email).then(() => {
