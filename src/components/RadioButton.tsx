@@ -16,30 +16,7 @@ interface RadioButtonState {
     toggled: boolean
 }
 
-const RadioButtonContainer = styled.div`
-    display: flex;
-    flex-direction: row;
-    justify-content: center;
-    gap:8px;
-    align-items: center;
-    -webkit-user-drag: none;
-    :hover {
-        filter: brightness(85%);
-    }
-    :active {
-        filter: brightness(75%);
-    }
-`
-
-const Box = styled.button`
-    background-color: ${curPalette.text};
-    width: 16px;
-    height: 16px;
-    border: none;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
+const Checkbox = styled.input`
 `
 
 class RadioButton extends React.Component {
@@ -54,16 +31,20 @@ class RadioButton extends React.Component {
 
     render() {
         return (
-            <RadioButtonContainer style={this.props.style != null ? this.props.style : {}} onClick={()=>{
-                this.setState({toggled:!this.state.toggled})
-                if(this.props.onChange != null)
-                    this.props.onChange(!this.state.toggled)
-            }}>
-                <Box>
-                    {this.state.toggled && <div style={{width:12, height:12, backgroundColor:curPalette.lightAccent}}></div>}
-                </Box>
-                <StyledLabel style={{color:curPalette.text,fontFamily:'Inconsolata', textAlign:'left', width:'100%', WebkitUserSelect:'none'}}>{this.props.text}</StyledLabel>
-            </RadioButtonContainer>
+            <StyledLabel style={{width:'100%', WebkitUserSelect: 'none'}}><Checkbox type='checkbox' onChange={(v) => {
+                if(!this.props.onChange) return
+                this.props.onChange((v.target as HTMLInputElement).checked)
+            }}/>{this.props.text}</StyledLabel>
+            // <RadioButtonContainer style={this.props.style != null ? this.props.style : {}} onClick={()=>{
+            //     this.setState({toggled:!this.state.toggled})
+            //     if(this.props.onChange != null)
+            //         this.props.onChange(!this.state.toggled)
+            // }}>
+            //     <Box>
+            //         {this.state.toggled && <div style={{width:12, height:12, backgroundColor:curPalette.lightAccent}}></div>}
+            //     </Box>
+            //     <StyledLabel style={{color:curPalette.text,fontFamily:'Inconsolata', textAlign:'left', width:'100%', WebkitUserSelect:'none'}}>{this.props.text}</StyledLabel>
+            // </RadioButtonContainer>
         );
     }
 }

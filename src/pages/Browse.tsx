@@ -10,6 +10,8 @@ import PackView from './Browse/PackView';
 import { asEnumerable } from 'linq-es5';
 import TabButton from '../components/TabButton';
 import curPalette from '../Palette';
+import Foldout from '../components/Foldout';
+import RadioButton from '../components/RadioButton';
 
 
 
@@ -18,6 +20,17 @@ export function setSelectedProfile(name: string) {
     selectedProfile = asEnumerable(userData.profiles).Where(p => p.name === name).FirstOrDefault()
     mainEvents.emit('profile-changed')
 }
+
+export const packCategories = [
+    'Extensive',
+    'Lightweight',
+    'QoL',
+    'Vanilla+',
+    'Tech',
+    'Magic',
+    'Library',
+    'No Resource Pack'
+]
 
 const getProfiles = () => {
     let elements: JSX.Element[] = []
@@ -31,7 +44,7 @@ function Browse(props: any) {
     const [tab, setTab] = useState(0)
     const [search, setSearch] = useState('')
     const [packs, setPacks] = useState([] as JSX.Element[])
-    
+    const [filters, setFilters] = useState([] as string[])
     let sort = (p: PackEntry) => -p.added
 
     const renderTabs = () => {
@@ -68,14 +81,18 @@ function Browse(props: any) {
 
         function validatePack(p: PackEntry): boolean {
             const display = p.data.display;
-            if (!display.hidden) {
-                if (!PackHelper.hasVersion(p.data, selectedProfile.version))
-                    return false;
+            if (display.hidden) 
+                return false
 
-                if (display.name.toLowerCase().includes(search))
-                    return true;
-            }
-            return false;
+            if (!PackHelper.hasVersion(p.data, selectedProfile.version))
+                return false;
+
+            if (!display.name.toLowerCase().includes(search)) 
+                return false
+
+            if(filters.length > 0 && !p.data.categories)
+                return false
+            return true
         }
 
         const packs = userData.packs.Where(validatePack).OrderBy(sort)
@@ -90,7 +107,7 @@ function Browse(props: any) {
 
             setPacks(elements)
         }
-    }, [search])
+    }, [search, filters])
 
     
     const updatePacks = useCallback(() => {
@@ -109,7 +126,25 @@ function Browse(props: any) {
 
     useEffect(() => {
         updatePacks()
-    }, [search, updatePacks])
+    }, [updatePacks])
+
+    const generateCategoryFilters = () => {
+        let elements: JSX.Element[] = []
+        for(let c of packCategories) {
+            elements.push(<RadioButton text={c} onChange={v => {
+                let tempFilters = filters
+                if(!v) {
+                    tempFilters.splice(tempFilters.indexOf(c), 1)
+                } else {
+                    tempFilters.push(c)
+                }
+                setFilters(tempFilters)
+                renderPacks(sort)
+            }}/>)
+            
+        }
+        return elements
+    }
 
     function renderMain() {
         // TODO: Implement basic trending algorith and add back tabs
@@ -118,13 +153,18 @@ function Browse(props: any) {
                 {renderTabs()}
                 <RowDiv style={{ width: '100%', height: '100%', marginTop: 16 }}>
                     <ColumnDiv style={{ flex: '25%' }}>
-                        <Dropdown style={{ width: '78.5%' }} defaultValue={selectedProfile.name !== '' ? selectedProfile.name : undefined} onChange={(v) => setSelectedProfile(v)} placeholder='Select a profile'>
+                        <Dropdown style={{ width: '78.5%' }} defaultValue={selectedProfile.name !== '' ? selectedProfile.name : undefined} reset={false} onChange={(v) => setSelectedProfile(v)} placeholder='Select a profile'>
                             {getProfiles()}
                         </Dropdown>
                         <StyledInput style={{ width: '75%' }} placeholder="Search..." onChange={(e) => {
                             let v = e.target.value
                             setSearch(v)
                         }} />
+                        <Foldout style={{ width: '75%' }} text='Filters'>
+                            <ColumnDiv style={{alignItems:'left', width:'100%'}}>
+                                {generateCategoryFilters()}
+                            </ColumnDiv>
+                        </Foldout>
                     </ColumnDiv>
                     <div style={{ flex: '50%' }}>
                         <ColumnDiv style={{ display: 'inline-flex', gap: 8, overflowY: 'auto', overflowX: 'visible', width: '100%', height: '100%', }}>

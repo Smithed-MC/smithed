@@ -1,6 +1,7 @@
+import { EventEmitter } from "stream";
 import { Condition } from "./conditions";
 import PathFetcher from "./pathFetcher";
-import { Source } from "./sources";
+import { Source, ValueSource } from "./sources";
 
 export interface RuleData {type: string, [key:string]: any}
 export class Rule {
@@ -80,6 +81,9 @@ export class TargetSourceRule extends Rule {
 }
 
 export class Merge extends TargetSourceRule {
+    constructor(data: RuleData) {
+        super(data);
+    }
 
     handle(newTable: {}, sourceTable: {}): {} {
         const sourceData = this.getFromSource(sourceTable);
@@ -96,6 +100,9 @@ export class Merge extends TargetSourceRule {
 }
 
 export class Append extends TargetSourceRule {
+    constructor(data: RuleData) {
+        super(data);
+    }
 
 
     handle(newTable: {}, sourceTable: {}): {} {
@@ -115,6 +122,10 @@ export class Append extends TargetSourceRule {
 }
 
 export class Prepend extends TargetSourceRule {
+    constructor(data: RuleData) {
+        super(data);
+    }
+
 
     handle(newTable: {}, sourceTable: {}): {} {
         const sourceData = this.getFromSource(sourceTable);

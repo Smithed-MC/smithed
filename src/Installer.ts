@@ -135,7 +135,7 @@ export async function downloadAndMerge(profile: Profile) {
         const jarLink = (await firebaseApp.database().ref(`meta/vanilla/${profile.version.replaceAll('.','_')}`).get()).val()
         const jar = await fetchFile(jarLink);
         if(jar != null) {
-            const dpb = new WeldDatapackBuilder(await JSZip.loadAsync(jar))
+            const dpb = new WeldDatapackBuilder(profile.version)
             await generateFinal(dpb, datapacks, 'datapacks.zip', profile.directory + '/datapacks')
         }
     }

@@ -3,26 +3,34 @@ import { FileData, parseData } from "slimeball/out/util";
 import JSZip from 'jszip'
 import { MetaData } from "./metadata";
 import { asEnumerable } from "linq-es5";
-import { TargetSourceRule } from "./rules";
+import { Rule, TargetSourceRule } from "./rules";
+const fetch = require('node-fetch')
 
 const weldCategories = ['loot_tables','predicates','item_modifiers','dimension','dimension_type','worldgen','recipes']
-
+let cachedData: {[key: string]: {
+    [key: string]: any
+}} = {}
 export class WeldDatapackBuilder extends DefaultDatapackBuilder {
-    data: JSZip
-    
-    constructor(data: JSZip) {
+    version: string = '1.18.1'
+    constructor(version?: string) {
         super();
-        this.data = data;
+        if(version !== undefined)
+            this.version = version
+
+        if(cachedData[this.version] === undefined) cachedData[this.version] = {}
     }
 
     async mergeViaWeld(fileData: FileData, resolvedData: string[]) {
-        // console.log('\n' + fileData.path)
         let baseTable = null
         if(fileData.namespace === 'minecraft') {
-            const rawTable = this.data.file(fileData.path)
+            if(cachedData[this.version] !== undefined && cachedData[this.version][fileData.path] !== undefined) {
+                baseTable = cachedData[this.version][fileData.path]
+            }
+            const rawTable = (await fetch(`https://raw.githubusercontent.com/InventivetalentDev/minecraft-assets/${this.version}/${fileData.path}`))
             if(rawTable != null) {
-                const jsonString = await rawTable.async('string');
+                const jsonString = await rawTable.text()
                 baseTable = parseData(jsonString)
+                cachedData[this.version][fileData.path] = baseTable
             }
         }
 
@@ -46,7 +54,6 @@ export class WeldDatapackBuilder extends DefaultDatapackBuilder {
         }
 
         let newTable = this.applyRules(baseTable, data);
-
         this.finalZip.file(fileData.path, JSON.stringify(newTable, null, 2));
         this.fileMap[fileData.namespace][fileData.category][fileData.path] = [];
     }

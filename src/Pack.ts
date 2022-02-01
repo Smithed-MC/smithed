@@ -59,9 +59,9 @@ export class Pack {
     public messages: string[] = []
     public id: string = ''
     public versions: Version[] = [];
+    public categories: string[] = []
 
-
-    constructor(meta?: Meta, display?: Display, id?: string, versions?: Version[]) {
+    constructor(meta?: Meta, display?: Display, id?: string, versions?: Version[], categories?: string[]) {
         if (meta != null)
             this.meta = meta
         if (display != null)
@@ -70,6 +70,8 @@ export class Pack {
             this.id = id
         if (versions != null)
             this.versions = versions
+        if (categories != null)
+            this.categories = categories
     }
 
     hasVersion(version: string): boolean {
@@ -130,7 +132,7 @@ export class PackHelper {
         for (let v = 0; v < pack.versions.length; v++) {
             tempVersions.push(pack.versions[v])
         }
-        return new Pack(pack.meta, pack.display, pack.id, tempVersions)
+        return new Pack(pack.meta, pack.display, pack.id, tempVersions, pack.categories)
     }
 
     static displayNameToID(displayName: string): string {
@@ -176,6 +178,7 @@ export class PackHelper {
 
     static createOrUpdatePack(pack: Pack, addToQueue?: boolean, callback?: () => void) {
         pack = this.toFirebaseValid(pack)
+        console.log(pack)
 
         const packsRef = firebaseApp.database().ref(`packs/${PackHelper.displayNameToID(userData.displayName)}:${pack.id}`)
 
@@ -201,6 +204,7 @@ export class PackHelper {
                         }
                     }
 
+                    console.log(pack)
                     userPacks.child((i).toString()).set(pack)
                     if (!snap.exists())
                         this.addToQueueIfNot(pack)
