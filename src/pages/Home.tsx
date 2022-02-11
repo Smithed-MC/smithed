@@ -216,7 +216,7 @@ class Home extends React.Component {
                     let v = (e.target as HTMLInputElement).value
                     this.profileCreationInfo.name = v
                 }}/>
-                <Dropdown placeholder="Pick a version" onChange={(v)=>{this.profileCreationInfo.version = v; this.renderMods()}} style={{width:'15.8%'}}>
+                <Dropdown reset={false} placeholder="Pick a version" onChange={(v)=>{this.profileCreationInfo.version = v; this.renderMods()}} style={{width:'15.8%'}}>
                     {this.renderVersions(userData.versions)}
                 </Dropdown>
                 <CreateButton onClick={async (e) => {
@@ -247,7 +247,7 @@ class Home extends React.Component {
                         this.buildProfileDisplays()
                         
                         setSelectedProfile(newProfile.name)
-                        this.props.history.push(`/app/browse`)
+                        this.props.history.push(`/app/browse/`)
                     })
 
                     // Browse.instance.update()

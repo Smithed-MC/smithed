@@ -1,6 +1,6 @@
 {
   "name": "smithed",
-  "version": "0.2.5",
+  "version": "0.2.6",
   "private": true,
   "main": "public/electron.js",
   "homepage": "./",
@@ -40,7 +40,7 @@
     "react-dom": "^17.0.2",
     "react-router": "^5.2.0",
     "react-router-dom": "^5.2.0",
-    "react-scripts": "4.0.3",
+    "react-scripts": "^5.0.0",
     "reactjs-popup": "^2.0.5",
     "semver-compare": "^1.0.0",
     "simple-discord-webhooks": "^1.0.1",
@@ -51,15 +51,15 @@
     "web-vitals": "^1.0.1"
   },
   "scripts": {
-    "start": "react-scripts start",
+    "start": "react-scripts --openssl-legacy-provider start",
     "build": "react-scripts build",
     "test": "react-scripts test",
     "eject": "react-scripts eject",
-    "electron:serve": "concurrently -k \"cross-env BROWSER=none yarn start\" \"yarn electron:start\"",
+    "electron:serve": "concurrently -k \"cross-env BROWSER=none PORT=3000 yarn start\" \"yarn electron:start\"",
     "electron:build": "yarn build && electron-builder -c.extraMetadata.main=build/electron.js --publish never",
     "electron:pro-build": "npm prune --production && npm run electron:build",
     "electron:publish": "yarn build && electron-builder -c.extraMetadata.main=build/electron.js --publish always",
-    "electron:start": "wait-on tcp:3000 && electron ."
+    "electron:start": "electron ."
   },
   "eslintConfig": {
     "extends": [

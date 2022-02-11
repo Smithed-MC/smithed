@@ -112,14 +112,15 @@ function ProfileDisplay(props: ProfileDisplayProps) {
                             Home.instance.renderMyProfiles()
                         }} disabled={Home.instance.state.activeProfile !== '' || downloading} onMouseDownCapture={(e) => {
                             if (e.button === 2)
-                                ContextMenu.openMenu("edit-profile", e.clientX, e.clientY)
+                                ContextMenu.openMenu(props.profile.name, e.clientX, e.clientY)
                         }}>
                             {props.active ? 'RUNNING' : 'PLAY'}
                         </ProfilePlayButton>
                     </RowDiv>}
             </div>
 
-            <ContextMenu id="edit-profile" style={{ backgroundColor: curPalette.lightBackground, border: `4px solid ${curPalette.lightAccent}`, borderRadius: 8, padding: 8, gap: 4, width: 128, flexDirection: 'column' }} offsetX={74} offsetY={40}>
+            <ContextMenu id={props.profile.name} style={{ backgroundColor: curPalette.lightBackground, border: `4px solid ${curPalette.lightAccent}`, borderRadius: 8, padding: 8, gap: 4, width: 128, flexDirection: 'column' }} offsetX={74} offsetY={40}>
+                <StyledLabel>{props.profile.name}</StyledLabel>
                 <StyledButton style={{ backgroundColor: curPalette.darkBackground }} onClick={() => {
                     setSelectedProfile(props.profile.name)
                     history.push('/app/browse/')
@@ -131,7 +132,7 @@ function ProfileDisplay(props: ProfileDisplayProps) {
                     saveProfiles(userData.profiles)
                     Home.instance.buildProfileDisplays()
 
-                    ContextMenu.closeMenu("edit-profile")
+                    ContextMenu.closeMenu(props.profile.name)
 
                     fs.rmdirSync(p.directory, {
                         recursive: true

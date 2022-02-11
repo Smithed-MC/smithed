@@ -203,9 +203,10 @@ function Login(props: LoginProps) {
     }
 
     const swapTab = (name: string) => {
-        const tab = name === 'signin' ? 1 : 0
-        if (tab !== tab) {
-            setTab(tab)
+        const curTab = name === 'signin' ? 1 : 0
+        console.log('click')
+        if (curTab !== tab) {
+            setTab(curTab)
             setEmailValid(true)
             setPasswordValid(true)
             setPassword2Valid(true)
