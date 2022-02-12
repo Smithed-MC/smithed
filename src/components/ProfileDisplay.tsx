@@ -120,11 +120,23 @@ function ProfileDisplay(props: ProfileDisplayProps) {
             </div>
 
             <ContextMenu id={props.profile.name} style={{ backgroundColor: curPalette.lightBackground, border: `4px solid ${curPalette.lightAccent}`, borderRadius: 8, padding: 8, gap: 4, width: 128, flexDirection: 'column' }} offsetX={74} offsetY={40}>
-                <StyledLabel>{props.profile.name}</StyledLabel>
                 <StyledButton style={{ backgroundColor: curPalette.darkBackground }} onClick={() => {
                     setSelectedProfile(props.profile.name)
                     history.push('/app/browse/')
                 }}>Edit</StyledButton>
+                <StyledButton style={{backgroundColor: curPalette.darkBackground}} onClick={async () => {
+                    if(props.profile.packs === undefined) {
+                        alert('No packs in this profile!')
+                        return
+                    }
+                    let link = `https://smithed.dev/download?version=${props.profile.version}&name=${encodeURIComponent(props.profile.name)}&author=${encodeURIComponent(props.profile.author ? props.profile.author : 'Unknown')}`
+                    for(let p of props.profile.packs) {
+                        link += `&pack=${p.id}@${encodeURIComponent(p.version)}`
+                    }
+                    await navigator.clipboard.writeText(link)
+                    
+                    alert('Copied link to clipboard!\nSend it your friends!')
+                }}>Export</StyledButton>
                 <StyledButton style={{ backgroundColor: curPalette.darkBackground, color: 'red' }} onClick={() => {
                     const idx = userData.profiles.indexOf(props.profile)
                     const p = userData.profiles.splice(idx, 1)[0]
