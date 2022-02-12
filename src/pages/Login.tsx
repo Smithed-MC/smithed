@@ -362,7 +362,7 @@ function Login(props: LoginProps) {
                         firebaseApp.database().ref(`users/${firebaseUser.uid}`).set({ displayName: displayName, role: 'member', packs: [] })
                         appSettings.lastEmail = email
                         saveSettings()
-                        props.onSuccess()
+                        history.push('/app')
 
                     }}>Finish</LoginButton>
                 </RowDiv>
