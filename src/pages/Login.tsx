@@ -75,6 +75,12 @@ interface LoginProps {
     onSuccess: () => void;
 }
 
+let email: string = appSettings.lastEmail
+let password: string = ''
+let password2: string = ''
+let displayName: string = ''
+let rememberMe: boolean = false;
+
 function Login(props: LoginProps) {
     const [tab, setTab] = useState(1)
     const [page, setPage] = useState('main')
@@ -95,12 +101,6 @@ function Login(props: LoginProps) {
     })
 
 
-    let email: string = appSettings.lastEmail
-    let password: string = ''
-    let password2: string = ''
-    let displayName: string = ''
-    let rememberMe: boolean = false;
-
     const validate = (): boolean => {
         let valid: boolean = true
         if (!email.match(emailRegex) && email !== '') {
@@ -117,6 +117,7 @@ function Login(props: LoginProps) {
             if (password === '') valid = false
             setPasswordValid(true)
         }
+        console.log(password, password2)
         if (password !== password2 && password2 !== '') {
             setPassword2Valid(false)
             valid = false
