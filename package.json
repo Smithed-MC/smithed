@@ -56,12 +56,10 @@
     "build:style": "tailwind build src/index.css -o build/index.css",
     "start": "react-scripts --openssl-legacy-provider start",
     "build": "react-scripts --openssl-legacy-provider build",
-    "build-16": "react-scripts --verbose build",
     "test": "react-scripts test",
     "eject": "react-scripts eject",
     "electron:serve": "concurrently -k \"cross-env BROWSER=none PORT=3000 yarn start\" \"yarn electron:start\"",
     "electron:build": "npm run build && electron-builder -c.extraMetadata.main=build/electron.js --publish never",
-    "electron:build-16": "npm run build-16 && electron-builder -c.extraMetadata.main=build/electron.js --publish never",
     "electron:pro-build": "npm prune --production && npm run electron:build-16",
     "electron:publish": "npm run build && electron-builder -c.extraMetadata.main=build/electron.js --publish always",
     "electron:start": "electron ."
