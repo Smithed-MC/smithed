@@ -55,8 +55,8 @@
   "scripts": {
     "build:style": "tailwind build src/index.css -o build/index.css",
     "start": "react-scripts --openssl-legacy-provider start",
-    "build": "craco build",
-    "test": "craco test",
+    "build": "react-scripts --openssl-legacy-provider build",
+    "test": "react-scripts test",
     "eject": "react-scripts eject",
     "electron:serve": "concurrently -k \"cross-env BROWSER=none PORT=3000 yarn start\" \"yarn electron:start\"",
     "electron:build": "yarn build && electron-builder -c.extraMetadata.main=build/electron.js --publish never",
