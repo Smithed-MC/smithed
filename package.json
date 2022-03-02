@@ -59,9 +59,9 @@
     "test": "react-scripts test",
     "eject": "react-scripts eject",
     "electron:serve": "concurrently -k \"cross-env BROWSER=none PORT=3000 yarn start\" \"yarn electron:start\"",
-    "electron:build": "yarn build && electron-builder -c.extraMetadata.main=build/electron.js --publish never",
+    "electron:build": "npm run build && electron-builder -c.extraMetadata.main=build/electron.js --publish never",
     "electron:pro-build": "npm prune --production && npm run electron:build",
-    "electron:publish": "yarn build && electron-builder -c.extraMetadata.main=build/electron.js --publish always",
+    "electron:publish": "npm run build && electron-builder -c.extraMetadata.main=build/electron.js --publish always",
     "electron:start": "electron ."
   },
   "eslintConfig": {
