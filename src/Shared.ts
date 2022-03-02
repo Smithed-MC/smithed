@@ -1,16 +1,16 @@
 import styled from 'styled-components'
-import curPalette from './Palette'
+import palette from './shared/Palette'
 
 export const StyledLabel = styled.label`
-  	color: ${curPalette.text};
+  	color: ${palette.text};
 	font-family: Inconsolata;
 `
 
 export const StyledButton = styled.button`
     height:32px;
     width:128px;
-    color:${curPalette.text};
-    background-color:${curPalette.lightAccent};
+    color:${palette.text};
+    background-color:${palette.lightAccent};
     font-size:20px;
     border: none;
     font-family: Disket-Bold;

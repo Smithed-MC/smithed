@@ -9,7 +9,7 @@ import { Route, Switch, useLocation, withRouter } from 'react-router';
 import PackView from './Browse/PackView';
 import { asEnumerable } from 'linq-es5';
 import TabButton from '../components/TabButton';
-import curPalette from '../Palette';
+import palette from '../shared/Palette';
 import Foldout from '../components/Foldout';
 import RadioButton from '../components/RadioButton';
 
@@ -49,7 +49,7 @@ function Browse(props: any) {
 
     const renderTabs = () => {
         return (
-            <div style={{backgroundColor: curPalette.darkBackground, paddingLeft:16, paddingRight: 16, borderRadius: 8, justifyContent:'center', display:'flex', gap: 16, marginTop: 8}}>
+            <div style={{backgroundColor: palette.darkBackground, paddingLeft:16, paddingRight: 16, borderRadius: 8, justifyContent:'center', display:'flex', gap: 16, marginTop: 8}}>
                     <TabButton onChange={()=>{
                     sort = (p: PackEntry) => {
                         if(p.updated !== undefined)
@@ -181,8 +181,8 @@ function Browse(props: any) {
 
     return (
         <Switch>
-            <Route path="/app/browse/view/*">
-                {withRouter(PackView)}
+            <Route path="/app/browse/view/:owner/:id">
+                <PackView/>
             </Route>
             <Route path="/app/browse">
                 {renderMain()}

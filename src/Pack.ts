@@ -1,5 +1,6 @@
-import { firebaseApp, userData } from "."
+import { userData } from "."
 import { fs } from "./Settings"
+import { database } from "./shared/ConfigureFirebase"
 
 
 export class Meta {
@@ -141,7 +142,7 @@ export class PackHelper {
 
     private static addToQueueIfNot(pack: Pack) {
         const id = `${this.displayNameToID(userData.displayName)}:${pack.id}`
-        firebaseApp.database().ref(`queue/${id}`).get().then((snapshot) => {
+        database.ref(`queue/${id}`).get().then((snapshot) => {
             const val = snapshot.val()
             if (val == null)
                 PackHelper.addPackToQueue(pack)
@@ -150,18 +151,18 @@ export class PackHelper {
 
     static deletePack(pack: Pack, callback?: () => void) {
         pack = this.toFirebaseValid(pack)
-        const packsRef = firebaseApp.database().ref(`packs/${PackHelper.displayNameToID(userData.displayName)}:${pack.id}`)
+        const packsRef = database.ref(`packs/${PackHelper.displayNameToID(userData.displayName)}:${pack.id}`)
 
         packsRef.get().then((snap) => {
             if (snap.exists()) {
                 packsRef.remove();
             }
             else {
-                const queueRef = firebaseApp.database().ref(`queue/${PackHelper.displayNameToID(userData.displayName)}:${pack.id}`)
+                const queueRef = database.ref(`queue/${PackHelper.displayNameToID(userData.displayName)}:${pack.id}`)
                 queueRef.remove();
             }
 
-            const userPacks = firebaseApp.database().ref(`users/${userData.uid}/packs`)
+            const userPacks = database.ref(`users/${userData.uid}/packs`)
 
             userPacks.get().then((snap => {
                 const packs: Pack[] = snap.val();
@@ -180,7 +181,7 @@ export class PackHelper {
         pack = this.toFirebaseValid(pack)
         console.log(pack)
 
-        const packsRef = firebaseApp.database().ref(`packs/${PackHelper.displayNameToID(userData.displayName)}:${pack.id}`)
+        const packsRef = database.ref(`packs/${PackHelper.displayNameToID(userData.displayName)}:${pack.id}`)
 
         packsRef.get().then((snap) => {
             if (userData.ref != null) {
@@ -217,7 +218,7 @@ export class PackHelper {
     }
 
     static resetMessages(pack: string) {
-        const userPacks = firebaseApp.database().ref(`users/${userData.uid}/packs`)
+        const userPacks = database.ref(`users/${userData.uid}/packs`)
         userPacks.get().then((snapshot) => {
             const val = snapshot.val()
             let packs: Pack[] = val != null ? val : []
@@ -233,7 +234,7 @@ export class PackHelper {
 
     static addPackToQueue(pack: Pack) {
         pack = this.toFirebaseValid(pack)
-        const queue = firebaseApp.database().ref(`queue`)
+        const queue = database.ref(`queue`)
         const id = `${userData.displayName.toLowerCase()}:${pack.id}`
         queue.child(id).get().then((snapshot) => {
             if (snapshot.val() === null) {
@@ -247,8 +248,8 @@ export class PackHelper {
 
     static movePackFromQueue(pack: Pack | string, callback?: () => void) {
         const id = typeof pack == 'string' ? pack : `${this.displayNameToID(userData.displayName)}:${pack.id}`
-        const queueRef = firebaseApp.database().ref(`queue/${id}`)
-        const packRef = firebaseApp.database().ref(`packs/${id}`)
+        const queueRef = database.ref(`queue/${id}`)
+        const packRef = database.ref(`packs/${id}`)
 
         queueRef.get().then((snapshot) => {
             let val = snapshot.val()
@@ -265,8 +266,8 @@ export class PackHelper {
     }
 
     static removePackFromQueue(id: string, owner: string, reason: string, callback?: () => void) {
-        const queueRef = firebaseApp.database().ref(`queue/${id}`)
-        const usersPacksRef = firebaseApp.database().ref(`users/${owner}/packs/`)
+        const queueRef = database.ref(`queue/${id}`)
+        const usersPacksRef = database.ref(`users/${owner}/packs/`)
 
         usersPacksRef.get().then((snapshot) => {
             const packs: Pack[] = snapshot.val()

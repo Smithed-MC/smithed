@@ -1,15 +1,16 @@
 import React from 'react';
 import '../font.css'
-import { ColumnDiv, firebaseApp, StyledInput, RowDiv, userData } from '..';
+import { ColumnDiv, StyledInput, RowDiv, userData } from '..';
 import { Enumerable } from 'linq-es5/lib/enumerable';
 import * as linq from 'linq-es5'
 import { getPack } from '../UserData';
 import GroupedFoldout from '../components/GroupedFoldout';
-import curPalette from '../Palette';
+import palette from '../shared/Palette';
 import { PackDict, PackEntry, PackHelper } from '../Pack';
 import Popup from 'reactjs-popup';
 import { remote } from '../Settings';
 import { StyledLabel, StyledButton } from '../Shared';
+import { database } from '../shared/ConfigureFirebase';
 const {Webhook} = window.require('simple-discord-webhooks');
 
 let reason = ''
@@ -18,7 +19,7 @@ function QueueEntry(props: any) {
         const pack = props.data;
         const webhook = new Webhook(userData.discordWebhook);
         const date = new Date(Date.now());
-        firebaseApp.database().ref(`users/${props.owner}/displayName`).get().then((snapshot) => {
+        database.ref(`users/${props.owner}/displayName`).get().then((snapshot) => {
             const authorName = snapshot.val();
             webhook.send('**A new pack has been approved!**', [{
                 title: `\`\`${pack.display !== 'hidden' ? pack.display.name : pack.id}\`\` by \`\`${authorName}\`\``,
@@ -51,11 +52,11 @@ function QueueEntry(props: any) {
                 </ColumnDiv>}
                 <RowDiv style={{gap:8, marginTop:8}}>
                     <Popup trigger={
-                        <StyledButton style={{backgroundColor:curPalette.lightBackground}} onClick={()=>{reason=''}}>
+                        <StyledButton style={{backgroundColor:palette.lightBackground}} onClick={()=>{reason=''}}>
                             Reject
                         </StyledButton>} modal
                     >
-                        <ColumnDiv style={{backgroundColor:curPalette.lightBackground, padding:16, border: `4px solid ${curPalette.darkAccent}`, borderRadius: 8}}>
+                        <ColumnDiv style={{backgroundColor:palette.lightBackground, padding:16, border: `4px solid ${palette.darkAccent}`, borderRadius: 8}}>
                             <StyledInput placeholder="Reason for rejection..." style={{width:'384px'}} defaultValue={reason} onChange={(e) => {reason = e.target.value}}/>
                             <StyledButton onClick={()=> {
                                 if(reason !== '') {
@@ -91,7 +92,7 @@ class Queue extends React.Component {
     }
 
     componentDidMount() {
-        firebaseApp.database().ref('queue').on('value', (snap) => {
+        database.ref('queue').on('value', (snap) => {
             this.renderQueue(snap)
         })
     }

@@ -1,6 +1,6 @@
 import React from 'react';
 import styled from 'styled-components';
-import curPalette from '../Palette'
+import palette from '../shared/Palette'
 
 const DropdownWrapper = styled.div`
   display: flex;
@@ -12,16 +12,16 @@ const StyledSelect = styled.select`
     width: 100%;
     padding: 8px;
     margin-bottom: 1rem;
-    background-color: ${curPalette.darkBackground};
+    background-color: ${palette.darkBackground};
     border: none;
-    color: ${curPalette.text};
+    color: ${palette.text};
     border-radius: 8px;
     font-family: Inconsolata;
 `;
 
 const StyledOption = styled.option`
-    background-color: ${curPalette.darkBackground};
-    color: ${curPalette.text};
+    background-color: ${palette.darkBackground};
+    color: ${palette.text};
     border: none;
     font-family: Inconsolata;
 `;

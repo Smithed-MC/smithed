@@ -9,19 +9,20 @@ import SettingsSvg from '../icons/settings.svg'
 import SidebarOption, {PageBasedSidebarOption} from './SidebarOption';
 import SignOutSvg from '../icons/sign_out.svg'
 import QueueSvg from '../icons/queue.svg'
-import curPalette from '../Palette';
-import { firebaseApp, Index, mainEvents, setFirebaseUser, userData } from '..';
+import palette from '../shared/Palette';
+import { Index, mainEvents, setFirebaseUser, userData } from '..';
 import { matchPath, useHistory, useLocation } from 'react-router';
+import { auth } from '../shared/ConfigureFirebase';
 
 const SidebarContainer = styled.div`
     display: flex;
     flex-direction: column;
-    width: 32px;
+    width: 54px;
     height: 100wh;
     // border-right: 2px solid #5D5377;
-    background-color: ${curPalette.darkBackground};
+    background-color: ${palette.darkBackground};
     margin-top:0px;
-    padding: 15px 10px;
+    padding: 15px 0px;
     align-items:center;
     gap: 16px;
     -webkit-user-drag: none;
@@ -82,7 +83,7 @@ function Sidebar(props: SidebarProps) {
   const history = useHistory();
   useEffect(() => {
     setSidebar((
-      <SidebarContainer>
+      <div className={`flex flex-col items-center h-full py-[15px] px-[10px] gap-[16px]`} style={{backgroundColor: palette.darkBackground}}>
           <TabNavigator/>
           <PageBasedSidebarOption page='/app/news/' img={NewsSvg} hint='News' onClick={() => {props.onClick('news')}}/>
           <PageBasedSidebarOption page='/app/home/' img={HomeSvg} hint='Home' onClick={() => {props.onClick('home')}}/>
@@ -90,12 +91,12 @@ function Sidebar(props: SidebarProps) {
           <PageBasedSidebarOption page='/app/create/' img={CreateSvg} hint='Create' onClick={() => {props.onClick('create')}}/>
           {userData.role === 'admin' && <PageBasedSidebarOption page='/app/queue/' img={QueueSvg} hint='Queue' onClick={() => {props.onClick('queue')}}/>}
           <li style={{visibility: 'hidden', flexGrow: 1}}/>
-          <SidebarOption img={DiscordSvg} hint='Join the Discord' style={{height:44, width:44, marginLeft:-6, marginTop:-5}} onClick={()=>{
+          <SidebarOption img={DiscordSvg} hint='Join the Discord' onClick={()=>{
             window.require("electron").shell.openExternal('https://smithed.dev/discord')
           }}/>
           <PageBasedSidebarOption page='/app/settings/' img={SettingsSvg} hint='Settings' onClick={() => {props.onClick('settings')}}/>
-          <SidebarOption img={SignOutSvg} hint='Sign Out' onClick={() => {firebaseApp.auth().signOut(); setFirebaseUser(null); history.push(`/`)}}/>
-      </SidebarContainer>
+          <SidebarOption img={SignOutSvg} hint='Sign Out' onClick={() => {auth.signOut(); setFirebaseUser(null); history.push(`/`)}}/>
+      </div>
     ));
   }, [setSidebar, userData])
 

@@ -2,7 +2,7 @@ import React from 'react';
 import styled from 'styled-components';
 import '../font.css'
 import { ColumnDiv, Header1, Header2, RowDiv } from '..';
-import curPalette from '../Palette';
+import palette from '../shared/Palette';
 import { remote } from '../Settings';
 
 const { ipcRenderer } = window.require('electron');
@@ -15,7 +15,7 @@ const DownloadContainer = styled.div`
     width: 100%;
     display: flex;
     overflow: clip;
-    background-color: ${curPalette.lightBackground};
+    background-color: ${palette.lightBackground};
     align-items: center;
     flex-direction: column;
 `
@@ -23,8 +23,8 @@ const DownloadContainer = styled.div`
 const DownloadButton = styled.button`
     height:32px;
     width:128px;
-    color:${curPalette.text};
-    background-color:${curPalette.lightAccent};
+    color:${palette.text};
+    background-color:${palette.lightAccent};
     font-size:20px;
     border: none;
     font-family: Disket-Bold;
@@ -62,7 +62,7 @@ class Download extends React.Component {
         return(
             <ColumnDiv>
                 <Header1>An update was found!</Header1>
-                <Header2 style={{color:curPalette.subText, marginTop:-20}}>Version: {this.props.version}</Header2>
+                <Header2 style={{color:palette.subText, marginTop:-20}}>Version: {this.props.version}</Header2>
                 <RowDiv style={{gap:4}}>
                     <DownloadButton onClick={()=>{
                         remote.app.quit()

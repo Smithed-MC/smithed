@@ -1,16 +1,16 @@
 import '../font.css';
 import styled from 'styled-components';
-import curPalette from '../Palette';
+import palette from '../shared/Palette';
 import { remote, saveSettings } from '../Settings';
 import { StyledLabel } from '../Shared';
 
 
 const remoteModule = window.require('@electron/remote')
 const TopbarContainer = styled.div`
-  -webkit-app-region: drag;
+  -webkit-app-region: drag;	
   height:25;
   width:'100wh';
-  background-color: ${curPalette.darkAccent};
+  background-color: ${palette.darkAccent};
 `
 const ActionButtonSpan = styled.span`
   -webkit-app-region: no-drag;
@@ -20,12 +20,6 @@ const ActionButtonSpan = styled.span`
   align-items: center;
 `
 const ActionButton = styled.button`
-	border: none;
-	background: none;
-	color: ${curPalette.titlebar};
-	font-size: 14px;
-	text-align: left;
-	vertical-align: center;
 	-webkit-user-select: none;
 	:hover {
 		filter: brightness(85%);
@@ -42,7 +36,7 @@ const CircleButton = styled.div`
 	font-weight: bold;
 	border-radius: 50%;
 	border: none;
-	background-color: ${curPalette.titlebar};
+	background-color: ${palette.titlebar};
 	color: white;
 	text-align: center;
 	cursor: pointer;
@@ -74,28 +68,28 @@ function maximizeWindow() {
 
 function WindowsContent() {
 	return (
-		<div style={{ display: 'flex', flexDirection: 'row', justifyContent: 'space-around' }}>
-			<StyledLabel style={{ padding: '3px', fontSize: '14px', fontFamily: 'Disket-Bold', color: curPalette.titlebar, textAlign: 'left', WebkitUserSelect: 'none', verticalAlign: 'center' }}>
-				Smithed <StyledLabel style={{color:curPalette.subText, fontSize:12}}>v{remote.app.getVersion()}</StyledLabel>
-			</StyledLabel>
-			<li style={{ visibility: 'hidden', flexGrow: 1 }}></li>
-			<ActionButtonSpan>
-				<ActionButton style={{marginTop:-3}}
+		<div className='flex flex-row justify-around px-1 items-center h-[22px]'>
+			<label className='p-[3px] text-xs font-[Disket-Bold] text-titlebar text-left select-none'>
+				Smithed <label className='font-[Inconsolata] text-xs text-subText'>v{remote.app.getVersion()}</label>
+			</label>
+			<li style={{ visibility: 'hidden', flexGrow: 1  }}></li>
+			<div className='flex justify-evenly items-center webkit-no-drag gap-4'>
+				<button className={`mt-[-2px] text-titlebar text-left text-l select-none cursor-pointer hover:opacity-75 active:opacity-50`}
 					onClick={minimizeWindow}
-				>–</ActionButton>
-				<ActionButton
+				>–</button>
+				<button className={`text-titlebar text-left text-l select-none cursor-pointer hover:opacity-75 active:opacity-50`}
 					onClick={maximizeWindow}
-				>☐</ActionButton>
-				<ActionButton
+				>☐</button>
+				<button className={`text-titlebar text-left text-l select-none cursor-pointer hover:opacity-75 active:opacity-50`}
 					onClick={closeWindow}
-				>⨉</ActionButton>
-			</ActionButtonSpan>
+				>⨉</button>
+			</div>
 		</div>
 	)
 }
 function MacOSContent() {
 	return (
-		<div style={{ display: 'flex', flexDirection: 'row', justifyContent: 'space-around', paddingLeft:6 }}>
+		<div className='flex flex-row justify-around px-1 items-center h-[22px]'>
 			<ActionButtonSpan style={{gap:'4px', width:'50px',justifyContent:'left', zIndex: 1}}>
 				<CircleButton style={{backgroundColor:'#EB6B63'}}
 					onClick={closeWindow}
@@ -107,10 +101,10 @@ function MacOSContent() {
 					onClick={maximizeWindow}
 				/>
 			</ActionButtonSpan>
-			<StyledLabel style={{ marginLeft:50, width:'100%', padding: '3px', fontSize: '14px', fontFamily: 'Disket-Bold', color: curPalette.titlebar, textAlign: 'center', verticalAlign: 'center' }}>
+			<StyledLabel style={{ marginLeft:50, width:'100%', padding: '3px', fontSize: '14px', fontFamily: 'Disket-Bold', color: palette.titlebar, textAlign: 'center', verticalAlign: 'center' }}>
 				Smithed
 			</StyledLabel>
-			<StyledLabel style={{color:curPalette.subText, fontSize:12, fontFamily: 'Disket-Bold', width:'100px', textAlign: 'right', alignSelf:'center', verticalAlign: 'center', WebkitUserSelect: 'none', marginRight: 6}}>
+			<StyledLabel style={{color:palette.subText, fontSize:12, fontFamily: 'Disket-Bold', width:'100px', textAlign: 'right', alignSelf:'center', verticalAlign: 'center', WebkitUserSelect: 'none'}}>
 				v{remote.app.getVersion()}
 			</StyledLabel>
 		</div>
@@ -122,7 +116,7 @@ function Titlebar() {
 		<TopbarContainer>
 			{window.process.platform === 'darwin' && MacOSContent()}
 			{window.process.platform !== 'darwin' && WindowsContent()}
-			<div style={{ height: 5, backgroundColor: curPalette.lightAccent }}></div>
+			<div style={{ height: 5, backgroundColor: palette.lightAccent }}></div>
 		</TopbarContainer>
 	)
 }

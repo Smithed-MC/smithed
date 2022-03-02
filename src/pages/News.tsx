@@ -1,11 +1,13 @@
 import React, { useEffect } from 'react';
 import styled from 'styled-components';
 import '../font.css'
-import { firebaseApp, Header1, Header2, Header3, mainEvents, MarkdownOptions } from '..';
+import { Header1, Header2, Header3, mainEvents } from '..';
 import Markdown from 'markdown-to-jsx';
-import curPalette from '../Palette';
+import palette from '../shared/Palette';
 import NewsArrow from '../components/NewsArrow';
 import { matchPath, useLocation } from 'react-router';
+import { database } from '../shared/ConfigureFirebase';
+import { MarkdownOptions } from '../shared/Markdown';
 
 const NewsContainer = styled.div`
     display: flex;
@@ -32,9 +34,9 @@ const ArticleBody = styled.text`
     width: 60%; 
     min-height: 30%; 
     text-align: left;
-    color: ${curPalette.text};
+    color: ${palette.text};
     font-family: Inconsolata;
-    background-color: ${curPalette.darkBackground};
+    background-color: ${palette.darkBackground};
     border-radius: 8px;
     -webkit-user-drag: none;
     margin-bottom: 12px;
@@ -47,9 +49,9 @@ const NewsImg = styled.img`
     resise: none;
     imageRender: crisp-edges;
     overflow: hidden;
-    background-color: ${curPalette.darkBackground};
+    background-color: ${palette.darkBackground};
     border-radius: 8px;
-    border: 6px solid ${curPalette.darkBackground};
+    border: 6px solid ${palette.darkBackground};
     minHeight: 56%;
     maxHeight: 100%;
     -webkit-user-select: none;
@@ -93,7 +95,7 @@ class News extends React.Component {
     state: {current: number, articles: Article[]}
     constructor(props: any) {
         super(props)
-        this.articlesLocation = firebaseApp.database().ref('/news/')
+        this.articlesLocation = database.ref('/news/')
 
         this.articlesLocation.get().then((snapshot) => {
             let articles: Article[] = snapshot.val()
@@ -164,7 +166,7 @@ class News extends React.Component {
                     {this.renderNext(nextArticle)}
                 </NewsContainer>
                 <Header2>{curArticle.title}</Header2>
-                <Header3 style={{marginTop:-20, color:curPalette.subText}}>{curArticle.description}</Header3>
+                <Header3 style={{marginTop:-14, color:palette.subText}}>{curArticle.description}</Header3>
                 <Markdown options={MarkdownOptions(ArticleBody)}>
                     {curArticle.content}
                 </Markdown>

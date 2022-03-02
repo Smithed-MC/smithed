@@ -8,7 +8,7 @@ import Titlebar from './components/Titlebar';
 import styled from 'styled-components';
 import reportWebVitals from './reportWebVitals';
 import { MarkdownToJSX } from 'markdown-to-jsx';
-import curPalette from './Palette';
+import palette from './shared/Palette';
 import Login from './pages/Login';
 import firebase from 'firebase';
 import 'firebase/auth';
@@ -19,24 +19,14 @@ import { collectUserData } from './UserData';
 import { Enumerable } from 'linq-es5/lib/enumerable';
 import { asEnumerable } from 'linq-es5';
 import Download from './pages/Download';
-import { Route, RouteComponentProps, withRouter } from 'react-router';
+import { Route, RouteComponentProps, Switch, withRouter } from 'react-router';
 import { HashRouter } from 'react-router-dom';
 import EventEmitter from 'events';
 import { PackEntry } from './Pack';
-
+import { database, firebaseApp } from './shared/ConfigureFirebase';
 
 
 const { ipcRenderer } = window.require('electron');
-
-export const firebaseApp = firebase.initializeApp({
-	apiKey: "AIzaSyDX-vLCBhO8StKAxnpvQ2EW8lz3kzYn4Qk",
-	authDomain: "mc-smithed.firebaseapp.com",
-	projectId: "mc-smithed",
-	storageBucket: "mc-smithed.appspot.com",
-	messagingSenderId: "574184244682",
-	appId: "1:574184244682:web:498d168c09b39e4f0d7b33",
-	measurementId: "G-40SRKC35Z0"
-})
 
 let startPage: 'login' | 'app' | 'update' = 'login'
 
@@ -57,8 +47,8 @@ export let firebaseUser: firebase.User | null
 export async function setFirebaseUser(user: firebase.User | null) {
 	firebaseUser = user
 	if (firebaseUser != null) {
-		const data = await (await (firebaseApp.database().ref(`users/${firebaseUser.uid}`).get())).val()
-		if(data != null) {
+		const data = await (await (database.ref(`users/${firebaseUser.uid}`).get())).val()
+		if (data != null) {
 			userData.displayName = data.displayName
 			userData.role = data.role
 			userData.uid = firebaseUser.uid
@@ -81,7 +71,7 @@ interface UserData {
 export let userData: UserData = { uid: '', displayName: '', role: '', profiles: [], modsDict: {}, versions: [], packs: asEnumerable([]) }
 export function setUserData(data: UserData) {
 	userData = data
-	userData.ref = firebaseApp.database().ref(`/users/${userData.uid}`)
+	userData.ref = database.ref(`/users/${userData.uid}`)
 
 	remote.getCurrentWindow().webContents.send('user-data-changed')
 }
@@ -89,21 +79,24 @@ export function setUserData(data: UserData) {
 
 export const Header1 = styled.h1`
   font-family: Disket-Bold;
-  color: ${curPalette.text}; 
+  color: ${palette.text}; 
   -webkit-user-drag: none;
   -webkit-user-select: none;
+  font-size: 2.25rem;
 `
 export const Header2 = styled.h2`
   font-family: Disket-Bold;
-  color: ${curPalette.text}; 
+  color: ${palette.text}; 
   -webkit-user-drag: none;
   -webkit-user-select: none;
+  font-size: 1.875rem;
 `
 export const Header3 = styled.h3`
   font-family: Disket-Bold;
-  color: ${curPalette.text}; 
+  color: ${palette.text}; 
   -webkit-user-drag: none;
   -webkit-user-select: none;
+  font-size: 1.25rem;
 `
 
 export const ColumnDiv = styled.div`
@@ -122,52 +115,20 @@ export const RowDiv = styled.div`
 export const StyledInput = styled.input`
     padding: 8px;
     margin-bottom: 1rem;
-    background-color: ${curPalette.darkBackground};
+    background-color: ${palette.darkBackground};
     border: none;
-    color: ${curPalette.text};
+    color: ${palette.text};
     border-radius: 8px;
     font-family: Inconsolata;
     &::placeholder {
-        color: ${curPalette.subText};
+        color: ${palette.subText};
 		-webkit-user-select: none;
     }
     :disabled {
-      color: ${curPalette.subText};
+      color: ${palette.subText};
       -webkit-user-select: none;
     }
 `
-
-
-function ModifyiedA(props: any) {
-	return (
-		<a style={{color:curPalette.lightAccent}} href={props.href} target="_blank" rel="noreferrer" title={props.title}>{props.children}</a>
-	)
-}
-
-const StyledHR = styled.hr`
-background-color: ${curPalette.lightAccent};
-`
-
-const StyledSpan = styled.span`
-	color: ${curPalette.text};
-	font-family: Inconsolata;
-`
-
-export const MarkdownOptions = (wrapper?: React.ElementType<any>): MarkdownToJSX.Options => {
-	return {
-		wrapper: wrapper,
-		forceWrapper: wrapper != null ? true : false,
-		overrides: {
-			h1: Header1,
-			h2: Header2,
-			h3: Header3,
-			a: ModifyiedA,
-			hr: StyledHR,
-			span: StyledSpan
-		}
-	}
-}
-
 
 interface IndexState {
 	versionFound: string
@@ -184,12 +145,12 @@ export class Index extends React.Component {
 	constructor(props: RouteComponentProps) {
 		super(props)
 		this.props = props
-		this.state = { versionFound: ''}
+		this.state = { versionFound: '' }
 		Index.instance = this
 
 		ipcRenderer.on('go-to-page', (e: any, path: string) => {
 			console.log(path);
-			if(firebase.auth().currentUser != null) {
+			if (firebase.auth().currentUser != null) {
 				this.props.history.push(path);
 			} else {
 				this.returnPage = path;
@@ -200,27 +161,28 @@ export class Index extends React.Component {
 
 	componentDidMount() {
 		document.addEventListener('keydown', event => {
-			if(!event.repeat)
+			if (!event.repeat)
 				mainEvents.emit('key-press', event)
 		});
 	}
 
-	goToDownload(version: string){ 
-		this.setState({versionFound: version})
+	goToDownload(version: string) {
+		this.setState({ versionFound: version })
 		this.props.history.push('/update')
 	}
 
 	render() {
+		console.log(this.props.location)
 		return (
 			<React.StrictMode>
 				<Titlebar />
-				<HashRouter>
-					<Route path='/' component={Login}/>
-					<Route path='/app' component={App}/>
+				<Switch>
+					<Route exact path='/' component={Login} />
+					<Route path='/app' component={App} />
 					<Route path='/update'>
-						<Download version={this.state.versionFound}/>
+						<Download version={this.state.versionFound} />
 					</Route>
-				</HashRouter>
+				</Switch>
 			</React.StrictMode>
 		)
 
@@ -238,12 +200,12 @@ ReactDOM.render(
 );
 
 ipcRenderer.on('upload-news', (e: any, article: any, data: any) => {
-	firebaseApp.database().ref(`news/${article}`).set(data)
+	database.ref(`news/${article}`).set(data)
 })
 ipcRenderer.on('message', (e: any, message: string) => {
 	console.log(message)
 })
-ipcRenderer.on('update-found', (e:any, version: string) => {
+ipcRenderer.on('update-found', (e: any, version: string) => {
 	Index.instance.goToDownload(version)
 })
 
@@ -251,7 +213,7 @@ remote.app.on('web-contents-created', (event: any, contents: any) => {
 	contents.on('will-navigate', (event: any, navigationUrl: string) => {
 		event.preventDefault();
 		const parsedUrl = new URL(navigationUrl)
-		if(["https:","http:","smithed:"].includes(parsedUrl.protocol)) {
+		if (["https:", "http:", "smithed:"].includes(parsedUrl.protocol)) {
 			remote.shell.openExternal(navigationUrl)
 		}
 	})

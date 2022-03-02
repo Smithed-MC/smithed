@@ -1,6 +1,6 @@
 import React from 'react';
 import styled from 'styled-components';
-import curPalette from '../Palette'
+import palette from '../shared/Palette'
 import { ColumnDiv } from '..';
 import { StyledLabel } from '../Shared';
 
@@ -18,7 +18,7 @@ const FoldoutContainer = styled.div`
     flex-direction: column;
     align-items: center;
     -webkit-user-drag: none;
-    background-color: ${curPalette.darkBackground};
+    background-color: ${palette.darkBackground};
     padding: 8px; 
     border-radius: 8px;
 `
@@ -50,7 +50,7 @@ class Foldout extends React.Component {
     renderChildren() {
         return (
             <ColumnDiv style={{width:'100%'}}>
-                <hr style={{width:'100%', marginTop:-1, borderColor: curPalette.subText}}/>
+                <hr style={{width:'100%', marginTop:-1, borderColor: palette.subText}}/>
                 {this.props.children}
             </ColumnDiv>
         )
@@ -73,7 +73,7 @@ class Foldout extends React.Component {
             borderLeftColor: 'transparent',
             borderRightColor: 'transparent',
             borderTopColor: 'transparent',
-            borderBottomColor: curPalette.text,
+            borderBottomColor: palette.text,
             marginBottom: this.state.open ? -2 : 2,
             transform: this.state.open ? 'rotate(180deg)' : ''
         }

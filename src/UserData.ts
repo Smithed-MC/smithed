@@ -1,11 +1,12 @@
-import { firebaseApp, setUserData, userData } from '.'
+import { setUserData, userData } from '.'
 import { fileExists } from './FSWrapper'
 import { fs, pathModule, remote, settingsFolder } from './Settings'
 import { Pack, PackDict, PackEntry, PackHelper, Version } from './Pack'
 import * as linq from 'linq-es5'
+import { database } from './shared/ConfigureFirebase'
 
 export async function getPack(pack: {added: number, owner: string}, id: string): Promise<Pack> {
-    const userPacksRef = firebaseApp.database().ref(`users/${pack.owner}/packs`)
+    const userPacksRef = database.ref(`users/${pack.owner}/packs`)
     const snapshot = await userPacksRef.get()
     const packs: {[key: string]: any}[] = snapshot.val()
 
@@ -20,7 +21,7 @@ export async function getPack(pack: {added: number, owner: string}, id: string):
 }
 
 async function getDownloadCount(id: string): Promise<number> {
-    const downloads = await firebaseApp.database().ref(`packs/${id}/downloads`).get()
+    const downloads = await database.ref(`packs/${id}/downloads`).get()
 
     let total = 0
     downloads.forEach((c) => {
@@ -30,7 +31,7 @@ async function getDownloadCount(id: string): Promise<number> {
 }
 
 async function queryPacks() {
-    const snapshot = await firebaseApp.database().ref('packs').get()
+    const snapshot = await database.ref('packs').get()
     const packDict: PackDict = snapshot.val()
     let packs: PackEntry[] = []
     let i = 0
@@ -65,13 +66,13 @@ export async function collectUserData() {
 
 
 
-    newUserData.modsDict = await ( await firebaseApp.database().ref('meta/mods').get()).val()
-    newUserData.versions = await ( await firebaseApp.database().ref('versions').get()).val()
+    newUserData.modsDict = await ( await database.ref('meta/mods').get()).val()
+    newUserData.versions = await ( await database.ref('versions').get()).val()
 
     await queryPacks()
 
     if (newUserData.role === 'admin') {
-        newUserData.discordWebhook = (await firebaseApp.database().ref('secret/webhook').get()).val()
+        newUserData.discordWebhook = (await database.ref('secret/webhook').get()).val()
     }
     
     setUserData(newUserData)

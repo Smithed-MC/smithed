@@ -1,8 +1,9 @@
-import { firebaseApp, setUserData, userData } from ".";
+import { setUserData, userData } from ".";
 import { dirExists } from "./FSWrapper";
 import { PackHelper, PackEntry } from "./Pack";
 import { Profile } from "./pages/Home";
 import { fs, pathModule, settingsFolder } from "./Settings";
+import { database } from "./shared/ConfigureFirebase";
 
 const download = window.require('download')
 const { exec } = window.require('child_process')
@@ -169,7 +170,7 @@ export async function setupProfile(profile: Profile, selectedMods: { [key: strin
         fs.writeFileSync(pathModule.join(profile.directory, 'launcher_profiles.json'), JSON.stringify(launcherProfile))
         fs.writeFileSync(pathModule.join(profile.directory, 'options.txt'), options)
 
-        const installer = firebaseApp.database().ref('meta/fabric-installer');
+        const installer = database.ref('meta/fabric-installer');
         installer.get().then((snap) => {
             let url = snap.val();
 
@@ -188,7 +189,7 @@ export async function setupProfile(profile: Profile, selectedMods: { [key: strin
         })
     }
 
-    // let companion = (await firebaseApp.database().ref(`meta/mods/smithed/${profile.version.replaceAll('.','_')}`).get()).val()
+    // let companion = (await database.ref(`meta/mods/smithed/${profile.version.replaceAll('.','_')}`).get()).val()
     // await download(companion, pathModule.join(profile.directory, 'mods'), { filename: 'smithed_companion.jar' })
 }
 

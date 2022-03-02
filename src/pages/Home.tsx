@@ -1,9 +1,9 @@
 import React from 'react';
 import styled from 'styled-components';
 import '../font.css'
-import { ColumnDiv, firebaseApp, StyledInput, firebaseUser, userData, Header2 } from '..';
+import { ColumnDiv, StyledInput, firebaseUser, userData, Header2 } from '..';
 import ProfileDisplay from '../components/ProfileDisplay';
-import curPalette from '../Palette';
+import palette from '../shared/Palette';
 import Dropdown, { Option } from '../components/Dropdown';
 import Foldout from '../components/Foldout';
 import { pathModule, settingsFolder } from '../Settings';
@@ -31,8 +31,8 @@ const CreateButton = styled.button`
     width: 15.9%;
     font-family: Disket-Bold;
     border: none;
-    background-color: ${curPalette.lightAccent};
-    color: ${curPalette.text};
+    background-color: ${palette.lightAccent};
+    color: ${palette.text};
     :hover {
         filter: brightness(85%);
     }
@@ -43,7 +43,7 @@ const CreateButton = styled.button`
     font-size: 20px;
 `
 const ImportText = styled(StyledLabel)`
-    color: ${curPalette.subText};
+    color: ${palette.subText};
     cursor: pointer;
     :hover {
         filter: brightness(85%);
@@ -96,7 +96,7 @@ class Home extends React.Component {
         if (this.state.tab === tab) {
             return {
                 marginTop: 4,
-                borderBottom: `4px solid ${curPalette.lightAccent}`
+                borderBottom: `4px solid ${palette.lightAccent}`
             }
         } else {
             return {}
@@ -120,8 +120,8 @@ class Home extends React.Component {
         }
         return (
             <ColumnDiv style={{ width: 200, height: 300, justifyContent: 'center' }}>
-                <ColumnDiv style={{ width: 150, height: 150, backgroundColor: curPalette.darkBackground, justifyContent: 'center' }}>
-                    <StyledLabel style={{ textAlign: 'center', fontSize: 196, fontFamily: 'Disket', color: curPalette.text, WebkitUserSelect: 'none' }}
+                <ColumnDiv style={{ width: 150, height: 150, backgroundColor: palette.darkBackground, justifyContent: 'center' }}>
+                    <StyledLabel style={{ textAlign: 'center', fontSize: 196, fontFamily: 'Disket', color: palette.text, WebkitUserSelect: 'none' }}
                         onMouseOver={e => setFilter(e, 'brightness(0.8)')}
                         onMouseLeave={e => setFilter(e, 'brightness(1)')}
                         onMouseDown={e => setFilter(e, 'brightness(0.6)')}
@@ -165,7 +165,7 @@ class Home extends React.Component {
     renderMain() {
         return (
             <div style={{ width: '100%', height: '100%' }}>
-                <div style={{ backgroundColor: curPalette.darkBackground, width: '100%', height: '30px', marginTop: 1, display: 'flex', justifyContent: 'space-evenly' }}>
+                <div style={{ backgroundColor: palette.darkBackground, width: '100%', height: '30px', marginTop: 1, display: 'flex', justifyContent: 'space-evenly' }}>
                     <TabButton group="home-tab" name="my-profiles" defaultValue={true}
                     // onChange={(n: string)=>{this.swapTab('/app/home/')}}
                     >My Profiles</TabButton>
@@ -271,7 +271,7 @@ class Home extends React.Component {
                 <Popup trigger={
                     <ImportText>Import from link</ImportText>
                 }>
-                    <ColumnDiv style={{backgroundColor:curPalette.lightBackground, padding:16, border: `4px solid ${curPalette.darkAccent}`, borderRadius: 8, width:'100%'}}>
+                    <ColumnDiv style={{backgroundColor:palette.lightBackground, padding:16, border: `4px solid ${palette.darkAccent}`, borderRadius: 8, width:'100%'}}>
                         <StyledInput style={{width:'100%'}} placeholder='Share link...' id='home:import-link'/>
                         <StyledButton onClick={() => {
                             const link = (document.getElementById('home:import-link') as HTMLInputElement).value

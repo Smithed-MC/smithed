@@ -1,8 +1,8 @@
 import { useEffect, useState } from 'react';
 import styled from 'styled-components';
 import '../font.css'
-import { ColumnDiv, firebaseApp, StyledInput, RowDiv, userData } from '..';
-import curPalette from '../Palette';
+import { ColumnDiv, StyledInput, RowDiv, userData } from '..';
+import palette from '../shared/Palette';
 import * as linq from 'linq-es5'
 import { DataVersion, Dependency, Pack, PackHelper, Version } from '../Pack';
 import Dropdown, { Option } from '../components/Dropdown';
@@ -13,6 +13,7 @@ import { Route, RouteComponentProps, Switch, withRouter } from 'react-router';
 import { StyledButton, StyledLabel } from '../Shared';
 import Popup from 'reactjs-popup';
 import { packCategories } from './Browse';
+import { database } from '../shared/ConfigureFirebase';
 
 
 interface CreateState {
@@ -21,15 +22,15 @@ interface CreateState {
 }
 
 const AddDiv = styled.div`
-    width: 64px;
-    height: 64px;
+    width: 84px;
+    height: 84px;
     padding: 8px;
     -webkit-user-select: none;
     display: flex;
     justify-content: center;
     flex-direction: column;
     align-items: center;
-    background-color: ${curPalette.darkBackground};
+    background-color: ${palette.darkBackground};
 
     :hover {
         filter: brightness(90%);
@@ -40,8 +41,8 @@ const AddDiv = styled.div`
 `
 const AddButton = styled.button`
     border: none;
-    color: ${curPalette.text};
-    background-color: ${curPalette.lightAccent};
+    color: ${palette.text};
+    background-color: ${palette.lightAccent};
     font-family: Disket-Bold;
     font-size: 18px;
     height: 28px;
@@ -74,7 +75,7 @@ class PackWithMessages extends Pack {
 }
 
 
-const mainFoldoutStyle = { width: '40%', backgroundColor: 'transparent', border: `1px solid ${curPalette.subText}` }
+const mainFoldoutStyle = { width: '40%', backgroundColor: 'transparent', border: `1px solid ${palette.subText}` }
 function Create(props: RouteComponentProps) {
 
     const [page, setPage] = useState(0)
@@ -107,7 +108,7 @@ function Create(props: RouteComponentProps) {
     }, [])
 
     const updatePacks = () => {
-        firebaseApp.database().ref(`users/${userData.uid}/packs`).get().then(snapshot => {
+        database.ref(`users/${userData.uid}/packs`).get().then(snapshot => {
             let databasePack: any[] = snapshot.val()
             try {
                 let packs: PackWithMessages[] = []
@@ -149,7 +150,7 @@ function Create(props: RouteComponentProps) {
         elements.push(<AddDiv onClick={() => {
             swapToAddPage()
         }}>
-            <StyledLabel style={{ color: curPalette.text, fontSize: 96, textAlign: 'center', fontFamily: 'Disket-Bold' }}>+</StyledLabel>
+            <StyledLabel style={{ color: palette.text, fontSize: 96, textAlign: 'center', fontFamily: 'Disket-Bold' }}>+</StyledLabel>
         </AddDiv>)
         return elements
     }
@@ -178,8 +179,8 @@ function Create(props: RouteComponentProps) {
 
         for (let s of version.supports) {
             elements.push(<RowDiv style={{ justifyContent: 'left', width: '100%' }}>
-                <li style={{ color: curPalette.text }} />
-                <StyledLabel style={{ color: curPalette.text, fontFamily: 'Inconsolata' }}>{s}</StyledLabel>
+                <li style={{ color: palette.text }} />
+                <StyledLabel style={{ color: palette.text, fontFamily: 'Inconsolata' }}>{s}</StyledLabel>
             </RowDiv>)
         }
 
@@ -193,7 +194,7 @@ function Create(props: RouteComponentProps) {
                 elements.push(
                     <RowDiv style={{ justifyContent: 'center', width: '100%', gap: 8 }}>
                         <RowDiv style={{ width: '40%', height: 28, alignItems: 'center', overflowX: 'hidden' }}>
-                            <StyledLabel style={{ width: '100%', color: curPalette.text, fontFamily: 'Inconsolata', textAlign: 'right' }}>{version.dependencies[d].id}</StyledLabel>
+                            <StyledLabel style={{ width: '100%', color: palette.text, fontFamily: 'Inconsolata', textAlign: 'right' }}>{version.dependencies[d].id}</StyledLabel>
                         </RowDiv>
                         <InputField style={{ width: '20%' }} text="Version Number" defaultValue={version.dependencies[d].version} onChange={(v: string) => { version.dependencies[d].version = v }} />
                         <div style={{ width: '40%' }}>
@@ -222,7 +223,7 @@ function Create(props: RouteComponentProps) {
 
         for (let v = 0; v < pack.versions.length; v++) {
             let version = pack.versions[v]
-            elements.push(<GroupedFoldout group="version" text={version.name} key={v} style={{ width: '98%', backgroundColor: 'transparent', border: `1px solid ${curPalette.subText}` }} defaultValue={false}>
+            elements.push(<GroupedFoldout group="version" text={version.name} key={v} style={{ width: '98%', backgroundColor: 'transparent', border: `1px solid ${palette.subText}` }} defaultValue={false}>
                 <RowDiv style={{ gap: 8, paddingBottom: 8 }}>
                     <StyledButton style={{ width: '32px' }} hidden={!(v > 0)} onClick={() => {
                         let otherVersion = pack.versions[v - 1]
@@ -231,11 +232,11 @@ function Create(props: RouteComponentProps) {
                         renderVersions();
                     }}>⬆</StyledButton>
                     <Popup trigger={
-                        <StyledButton style={{ width: '32px', backgroundColor: curPalette.badAccent }}>✖</StyledButton>
+                        <StyledButton style={{ width: '32px', backgroundColor: palette.badAccent }}>✖</StyledButton>
                     }>
-                        <ColumnDiv style={{ backgroundColor: curPalette.darkBackground, padding: 8, borderRadius: 4, border: `2px solid ${curPalette.lightAccent}` }}>
+                        <ColumnDiv style={{ backgroundColor: palette.darkBackground, padding: 8, borderRadius: 4, border: `2px solid ${palette.lightAccent}` }}>
                             <StyledLabel>Are you sure you want to delete <b>{version.name}</b>?</StyledLabel>
-                            <AddButton style={{ backgroundColor: curPalette.badAccent }} onClick={() => {
+                            <AddButton style={{ backgroundColor: palette.badAccent }} onClick={() => {
                                 pack.versions.splice(v, 1)
                                 renderVersions()
                             }}>
@@ -250,10 +251,12 @@ function Create(props: RouteComponentProps) {
                         renderVersions();
                     }}>⬇</StyledButton>
                 </RowDiv>
-                <RadioButton defaultValue={version.breaking} text="Breaking?" onChange={(v) => {
-                    version.breaking = v
-                    renderVersions()
-                }} />
+                <div>
+                    <RadioButton defaultValue={version.breaking} text="Breaking?" onChange={(v) => {
+                        version.breaking = v
+                        renderVersions()
+                    }} />
+                </div>
                 <GroupedFoldout group={v.toString()} text="Downloads" defaultValue={false} style={{ width: '95%', backgroundColor: 'transparent' }}>
                     <Dropdown placeholder="Add a download" onChange={(e) => {
                         if (version.downloads == null)
@@ -362,9 +365,11 @@ function Create(props: RouteComponentProps) {
                     </GroupedFoldout>}
                 <GroupedFoldout group="mainGroup" text="Display" style={mainFoldoutStyle} defaultValue={false}>
                     <ColumnDiv style={{ width: '100%', alignItems: '', gap: 8 }}>
-                        <RadioButton text="Hidden?" defaultValue={pack.display.hidden} onChange={(value) => {
-                            pack.display.hidden = value
-                        }} />
+                        <div>
+                            <RadioButton text="Hidden?" defaultValue={pack.display.hidden} onChange={(value) => {
+                                pack.display.hidden = value
+                            }} />
+                        </div>
                         <ColumnDiv style={{ width: '100%', gap: 8 }}>
                             <InputField text='* Name...' defaultValue={pack.display.name} onChange={(v: string) => {
                                 pack.display.name = v
@@ -427,13 +432,13 @@ function Create(props: RouteComponentProps) {
                 <RowDiv style={{ gap: 8, justifyContent: 'space-evenly', width: '10%' }}>
 
                     <Popup trigger={
-                        <AddButton style={{ backgroundColor: curPalette.badAccent }} hidden={pack.id === ''}>
+                        <AddButton style={{ backgroundColor: palette.badAccent }} hidden={pack.id === ''}>
                             Delete
                         </AddButton>}>
 
-                        <ColumnDiv style={{ backgroundColor: curPalette.darkBackground, padding: 8, borderRadius: 4, border: `2px solid ${curPalette.lightAccent}` }}>
+                        <ColumnDiv style={{ backgroundColor: palette.darkBackground, padding: 8, borderRadius: 4, border: `2px solid ${palette.lightAccent}` }}>
                             <StyledLabel>Are you sure you want to delete <b>{pack.id}</b>?</StyledLabel>
-                            <AddButton style={{ backgroundColor: curPalette.badAccent }} onClick={() => {
+                            <AddButton style={{ backgroundColor: palette.badAccent }} onClick={() => {
                                 PackHelper.deletePack(pack, () => {
                                     updatePacks()
                                     props.history.push('/app/create')

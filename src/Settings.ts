@@ -26,8 +26,11 @@ if(!fs.statSync(settingsFolder).isDirectory()) {
         saveSettings()
 }
 
-if(!dirExists(pathModule.join(settingsFolder, 'Instances')))
-    fs.mkdirSync(pathModule.join(settingsFolder, 'Instances'))
+if(!dirExists(pathModule.join(settingsFolder, 'Instances'))) {
+    try {
+        fs.mkdirSync(pathModule.join(settingsFolder, 'Instances'))
+    } catch {}
+}
 
 try {
     let data = fs.readFileSync(appSettingsPath)

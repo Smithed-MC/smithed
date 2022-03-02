@@ -1,11 +1,11 @@
 import EventEmitter from 'events'
 import { useEffect, useState } from 'react'
 import styled from 'styled-components'
-import curPalette from '../Palette'
+import palette from '../shared/Palette'
 
 const UnselectedTabButton = styled.button`
 font-family: Disket-Bold;
-color: ${curPalette.text};
+color: ${palette.text};
 background: none;
 border: none;
 font-size: 16px;
@@ -22,7 +22,7 @@ cursor: pointer;
 
 const SelectedTabButton = styled(UnselectedTabButton)`
     margin-top: 4px;
-    border-bottom: 4px solid ${curPalette.lightAccent};
+    border-bottom: 4px solid ${palette.lightAccent};
 `
 
 

@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import styled from 'styled-components';
 import { ColumnDiv, RowDiv } from '..';
 import { Display, PackEntry } from '../Pack';
-import curPalette from '../Palette'
+import palette from '../shared/Palette'
 import { RouteComponentProps, withRouter } from 'react-router';
 import { selectedProfile } from '../pages/Browse';
 import { addPackToProfile, removePackToProfile as removePackFromProfile } from '../ProfileHelper';
@@ -16,7 +16,7 @@ interface PackDisplayState {
 
 const PackName = styled.label`
     font-family: Disket-Bold;
-    color: ${curPalette.text};
+    color: ${palette.text};
     text-align: left;
     width: 100%;
     font-size: 18px;
@@ -25,7 +25,7 @@ const PackName = styled.label`
     overflow: hidden;
     display: table-cell;
     text-overflow: ellipsis;
-
+    vertical-align: text-bottom;
     :hover {
         filter: brightness(85%);
         text-decoration: underline;
@@ -36,7 +36,7 @@ const PackName = styled.label`
 `
 const PackStats = styled.label`
     font-family: Inconsolata;
-    color: ${curPalette.subText};
+    color: ${palette.subText};
     text-align: left;
     width: auto;
     font-size: 12px;
@@ -46,7 +46,7 @@ const PackStats = styled.label`
 `
 const PackDescription = styled.label`
     font-family: Inconsolata;
-    color: ${curPalette.text};
+    color: ${palette.text};
     text-align: left;
     width: 100%;
     font-size: 16px;
@@ -58,12 +58,14 @@ const PackDescription = styled.label`
 
 const PackAddButton = styled.button`
     border: none;
-    color: ${curPalette.text};
-    background-color: ${curPalette.lightAccent};
+    color: ${palette.text};
+    background-color: ${palette.lightAccent};
     font-family: Disket-Bold;
     font-size: 20px;
+    width: 30px;
     -webkit-user-select: none;
     -webkit-user-drag: none;
+    margin-top: 4px;
     :hover {
         filter: brightness(85%);
     }
@@ -76,16 +78,16 @@ const PackAddButton = styled.button`
 `
 
 const formatDownloads = (count: number) => {
-    if(count < 1000) return `${count}`
-    else if(count < 1000000) return `${Math.floor(count / 1000)}K`
+    if (count < 1000) return `${count}`
+    else if (count < 1000000) return `${Math.floor(count / 1000)}K`
     else return `${Math.floor(count / 1000000)}M`
 }
 
 function PackDisplay(props: PackDisplayProps) {
-    const profileContains: ()=>boolean = () => {
-        if(selectedProfile.packs != null) {
-            for(let p of selectedProfile.packs) {
-                if(p.id === props.packEntry.id) 
+    const profileContains: () => boolean = () => {
+        if (selectedProfile.packs != null) {
+            for (let p of selectedProfile.packs) {
+                if (p.id === props.packEntry.id)
                     return true
             }
         }
@@ -93,7 +95,7 @@ function PackDisplay(props: PackDisplayProps) {
     }
     const [contained, setContained] = useState(profileContains())
 
-    useEffect(()=>{
+    useEffect(() => {
         setContained(profileContains())
     }, [])
 
@@ -105,41 +107,43 @@ function PackDisplay(props: PackDisplayProps) {
 
 
     return (
-        <div style={{width:'85%'}}>
-            <RowDiv style={{backgroundColor:curPalette.darkBackground, width: '100%', height:64, padding:16, justifyContent:'left', gap:16, borderRadius:8}}>
-                <img style={{width:64, height: 64, WebkitUserSelect:'none'}} src={display.icon} alt="Pack Icon"/>
-                <ColumnDiv style={{alignItems:'left',width:'100%', justifyContent:'space-evenly'}}>
-                    <RowDiv style={{alignItems:'left', width:'inherit', justifyContent:'space-between', gap:4}}>
-                        <div style={{display:'table',tableLayout:'fixed', width:'100%'}}>
-                            <PackName onClick={()=>{
+        <div style={{ width: '85%' }}>
+            <div className='flex bg-darkBackground w-full h-[96px] p-4 justify-left rounded-xl gap-4'>
+                <img style={{ width: 64, height: 64, WebkitUserSelect: 'none' }} src={display.icon} alt="Pack Icon" />
+                <ColumnDiv style={{ alignItems: 'left', width: '100%', justifyContent: 'space-evenly'}}>
+                    <RowDiv style={{ alignItems: 'bottom', justifyContent: 'space-between', gap: 4, width: '100%'}}>
+                        <div style={{ display: 'table', tableLayout: 'fixed', width: '100%' }}>
+                            <PackName onClick={() => {
                                 const id = props.packEntry.id.split(':')
                                 const link = `/app/browse/view/${id[0]}/${id[1]}`
                                 props.history.push(link)
                             }}>{display.name}</PackName>
                         </div>
-                        {!contained && <PackAddButton disabled={selectedProfile.name === ''} onClick={()=>{
-                            setContained(true)
-                            addPackToProfile(selectedProfile, props.packEntry)
-                        }}>+</PackAddButton>}
-                        {contained && <PackAddButton style={{backgroundColor:curPalette.badAccent}} onClick={()=>{
-                            setContained(false)
-                            removePackFromProfile(selectedProfile, props.packEntry);
-                        }}>-</PackAddButton>}
+                        <div className='relative right-0 bg-red'>
+                            {!contained && <PackAddButton disabled={selectedProfile.name === ''} onClick={() => {
+                                setContained(true)
+                                addPackToProfile(selectedProfile, props.packEntry)
+                            }}>+</PackAddButton>}
+                            {contained && <PackAddButton style={{ backgroundColor: palette.badAccent }} onClick={() => {
+                                setContained(false)
+                                removePackFromProfile(selectedProfile, props.packEntry);
+                            }}>-</PackAddButton>}
+                        </div>
                     </RowDiv>
-                    <RowDiv style={{justifySelf:'left', gap:32, width:'100%'}}>
+                    <RowDiv style={{ justifySelf: 'left', gap: 32, width: '100%' }} className='mt-[-8px]'>
                         <PackStats>{`${formatDownloads(props.packEntry.downloads !== undefined ? props.packEntry.downloads : 0)} Download${props.packEntry.downloads !== 1 ? 's' : ''}`}</PackStats>
                         <PackStats>{`Updated ${timeDiff} day${timeDiff !== 1 ? 's' : ''} ago`}</PackStats>
                         <PackStats>{`Added ${dateAdded.toLocaleDateString()}`}</PackStats>
-                        <li style={{flexGrow:1, width:'100%', visibility:'hidden'}}/>
+                        <li style={{ flexGrow: 1, width: '100%', visibility: 'hidden' }} />
                     </RowDiv>
-                    <div style={{width:'100%'}}>
+                    <div style={{ width: '100%' }} className='mt-[-4px]'>
                         <PackDescription>{display.description}</PackDescription>
                     </div>
                 </ColumnDiv>
-            </RowDiv>
+            </div>
         </div>
     );
-    
+
 }
 
 export default withRouter(PackDisplay);

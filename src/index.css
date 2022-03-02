@@ -1,3 +1,7 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
 body {
   margin: 0;
   font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
@@ -37,4 +41,8 @@ code {
 
 *:focus {
   outline: none;
+}
+
+.webkit-no-drag {
+  -webkit-app-region: no-drag;
 }

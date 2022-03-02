@@ -1,18 +1,19 @@
 import React from 'react';
 import '../font.css'
-import curPalette, { changePalette, registeredPalettes } from '../Palette';
+import palette, { registeredPalettes } from '../shared/Palette';
 import Dropdown, {Option} from '../components/Dropdown';
 import appSettings, { saveSettings } from '../Settings';
 import { Header1, RowDiv, StyledInput, userData } from '..';
 import styled from 'styled-components';
 import GroupedFoldout from '../components/GroupedFoldout';
 import { StyledLabel } from '../Shared';
+import { changePalette } from '../NativePaletteHandler';
 
 const SettingsButton = styled.button`
     height:32px;
     width:128px;
-    color:${curPalette.text};
-    background-color:${curPalette.lightAccent};
+    color:${palette.text};
+    background-color:${palette.lightAccent};
     font-size:20px;
     border: none;
     font-family: Disket-Bold;
@@ -75,7 +76,7 @@ class Settings extends React.Component {
         return (
             <div style={{flexGrow:1,display:'flex',flexDirection:'column',alignItems:'center'}}>
                 <Header1>App Options</Header1>
-                {this.renderPalettes()}
+                {/* {this.renderPalettes()} */}
                 <StyledInput placeholder="" type="file" id="launcherInput" hidden onChange={(e) => {
                         if(e.target.files != null && e.target.files.length !== 0) {
                             const file: any = e.target.files[0]
@@ -84,7 +85,7 @@ class Settings extends React.Component {
                             saveSettings()
                         }
                     }}/>
-                {platform !== 'darwin' && <RowDiv style={{width:'33%'}}>
+                {platform !== 'darwin' && <div className='flex flex-row items-baseline gap-2 w-[33%]'>
                     <StyledInput placeholder="Path..." style={{width:'100%'}} value={this.state.launcherPath} disabled/>
                     <SettingsButton onClick={()=>{
                         const input = document.getElementById("launcherInput")
@@ -92,7 +93,7 @@ class Settings extends React.Component {
                             input.click()
                         }
                     }}>Browse</SettingsButton>
-                </RowDiv>}
+                </div>}
                 <Header1>Account Options</Header1>
                 <GroupedFoldout text='Donations' group='Account Options' style={{width:'33%', backgroundColor:'transparent'}}>
                     <StyledLabel>Kofi</StyledLabel>

@@ -2,14 +2,14 @@ import React, { useState } from 'react';
 import styled from 'styled-components';
 import '../font.css'
 import { ColumnDiv, firebaseUser, RowDiv, setFirebaseUser, setIgnoreStateChange } from '..';
-import curPalette from '../Palette';
-import { firebaseApp } from '../index'
+import palette from '../shared/Palette';
 import appSettings, { saveSettings } from '../Settings';
 import { PackHelper } from '../Pack';
 import { ButtonLabel } from '../Shared';
 import TabButton from '../components/TabButton';
 import { matchPath, useHistory, useRouteMatch } from 'react-router';
 import RadioButton from '../components/RadioButton';
+import { auth, database } from '../shared/ConfigureFirebase';
 
 const { ipcRenderer } = window.require('electron');
 
@@ -25,7 +25,7 @@ const LoginContainer = styled.div`
     width: 100%;
     display: flex;
     overflow: clip;
-    background-color: ${curPalette.lightBackground};
+    background-color: ${palette.lightBackground};
     align-items: center;
     flex-direction: column;
 `
@@ -36,16 +36,16 @@ const ErrorLabel = styled.label`
 `
 
 const LoginInput = styled.input`
-    height: 24px;
+    height: 36px;
     padding: 4px;
     width: 50%;
     font-family: Inconsolata;
     border-radius: 4px;
-    border: 2px solid ${curPalette.darkAccent};
-    color: ${curPalette.text};
-    background-color: ${curPalette.darkBackground};
+    border: 2px solid ${palette.darkAccent};
+    color: ${palette.text};
+    background-color: ${palette.darkBackground};
     &::placeholder {
-        color: ${curPalette.subText};
+        color: ${palette.subText};
         -webkit-user-select: none;
     }
 `
@@ -53,8 +53,8 @@ const LoginInput = styled.input`
 const LoginButton = styled.button`
     height:32px;
     width:128px;
-    color:${curPalette.text};
-    background-color:${curPalette.lightAccent};
+    color:${palette.text};
+    background-color:${palette.lightAccent};
     font-size:20px;
     border: none;
     font-family: Disket-Bold;
@@ -117,7 +117,6 @@ function Login(props: LoginProps) {
             if (password === '') valid = false
             setPasswordValid(true)
         }
-        console.log(password, password2)
         if (password !== password2 && password2 !== '') {
             setPassword2Valid(false)
             valid = false
@@ -134,7 +133,7 @@ function Login(props: LoginProps) {
         if (!validate()) return;
 
         setIgnoreStateChange(true)
-        firebaseApp.auth().createUserWithEmailAndPassword(email, password)
+        auth.createUserWithEmailAndPassword(email, password)
             .then((userCredential) => {
                 // Signed in 
                 var user = userCredential.user;
@@ -161,14 +160,14 @@ function Login(props: LoginProps) {
 
     }
     const signIn = () => {
-        firebaseApp.auth().setPersistence(rememberMe ? 'local' : 'session').then(() => {
-            firebaseApp.auth().signInWithEmailAndPassword(email, password).then((userCredential) => {
+        auth.setPersistence(rememberMe ? 'local' : 'session').then(() => {
+            auth.signInWithEmailAndPassword(email, password).then((userCredential) => {
                 var user = userCredential.user;
                 if (user != null) {
                     setFirebaseUser(user)
                     appSettings.lastEmail = email
                     saveSettings()
-                    props.onSuccess()
+                    history.push('/app')
                 }
             }).catch((error) => {
                 var errorCode = error.code;
@@ -245,8 +244,8 @@ function Login(props: LoginProps) {
                     else
                         setDisplayNameValid(true)
 
-                    const db = firebaseApp.database()
-                    const ref = db.ref('users/')
+                    
+                    const ref = database.ref('users/')
 
                     let snapshot = await ref.get()
                     let users: { [key: string]: { displayName: string } } = snapshot.val()
@@ -320,7 +319,7 @@ function Login(props: LoginProps) {
                 </RowDiv>
                 <ButtonLabel style={{ fontStyle: 'italic' }} onClick={() => {
                     if (email !== '' && email.match(email)) {
-                        firebaseApp.auth().sendPasswordResetEmail(email).then(() => {
+                        auth.sendPasswordResetEmail(email).then(() => {
                             alert(`Sent reset email to ${email}`)
                         }).catch((r) => {
                             console.log(r)
@@ -333,7 +332,7 @@ function Login(props: LoginProps) {
     const renderMain = () => {
         return (
             <ColumnDiv style={{ width: '100%' }}>
-                <RowDiv style={{ backgroundColor: curPalette.darkBackground, width: '100%', height: '30px', justifyContent: 'center', gap: 36 }}>
+                <RowDiv style={{ backgroundColor: palette.darkBackground, width: '100%', height: '30px', justifyContent: 'center', gap: 36 }}>
                     <TabButton group="login-page" name="signin" defaultValue={true} onChange={(n: string) => swapTab(n)}>Sign In</TabButton>
                     <TabButton group="login-page" name="signup" onChange={(n: string) => swapTab(n)}>Sign Up</TabButton>
                 </RowDiv>
@@ -349,7 +348,7 @@ function Login(props: LoginProps) {
                 <RowDiv style={{ gap: 8 }}>
                     <LoginButton onClick={() => {
                         if (firebaseUser != null) {
-                            firebaseApp.database().ref(`users/${firebaseUser.uid}`).remove()
+                            database.ref(`users/${firebaseUser.uid}`).remove()
                             firebaseUser.delete()
                         }
                         setPage('main')
@@ -359,7 +358,7 @@ function Login(props: LoginProps) {
                         if (displayName.length < 3 || displayName.length > 15) return;
                         if (firebaseUser === null) return;
 
-                        firebaseApp.database().ref(`users/${firebaseUser.uid}`).set({ displayName: displayName, role: 'member', packs: [] })
+                        database.ref(`users/${firebaseUser.uid}`).set({ displayName: displayName, role: 'member', packs: [] })
                         appSettings.lastEmail = email
                         saveSettings()
                         history.push('/app')

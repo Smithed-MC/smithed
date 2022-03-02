@@ -2,15 +2,16 @@ import React, { useEffect, useState } from 'react';
 import styled from 'styled-components';
 import { RowDiv, userData } from '..';
 import Home, { Profile } from '../pages/Home';
-import curPalette from '../Palette'
+import palette from '../shared/Palette'
 import { saveProfiles } from '../ProfileHelper';
-import appSettings, { fs } from '../Settings';
+import appSettings, { fs, pathModule } from '../Settings';
 import ContextMenu from './ContextMenu';
 import Dropdown, { Option } from './Dropdown';
 import { StyledLabel, StyledButton } from '../Shared';
-import { downloadAndMerge } from '../Installer';
 import { useHistory } from 'react-router';
 import { setSelectedProfile } from '../pages/Browse';
+import PackDownloader from '../shared/PackDownload';
+import { Dependency } from '../Pack';
 
 
 const { ipcRenderer } = window.require('electron');
@@ -26,8 +27,8 @@ interface ProfileDisplayState {
 
 const ProfileDisplayDiv = styled.div`
     height:300px;
-    width:200px;
-    background-color: ${curPalette.darkBackground};
+    width:210px;
+    background-color: ${palette.darkBackground};
     padding: 8px;
     display: flex;
     flex-direction: column;
@@ -39,9 +40,9 @@ const ProfilePlayButton = styled.button`
     height: 60%;
     font-family: Disket-Bold;
     font-size: 24px;
-    color: ${curPalette.text};
+    color: ${palette.text};
     border: none;
-    background-color: ${curPalette.lightAccent};
+    background-color: ${palette.lightAccent};
     :hover {
         filter: brightness(85%);
     }
@@ -56,7 +57,7 @@ const ProfilePlayButton = styled.button`
 const ProfileNameLabel = styled.label`
     width: 100%;
     text-align: 'left';
-    color: ${curPalette.text};
+    color: ${palette.text};
     font-family: Inconsolata;
     font-size: 20px;
     -webkit-user-select: none;
@@ -78,9 +79,9 @@ function ProfileDisplay(props: ProfileDisplayProps) {
     return (
         <ProfileDisplayDiv onMouseEnter={() => setMouseOver(true)} onMouseLeave={() => setMouseOver(false)}>
             <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
-                {props.profile.img !== undefined && <img style={{ width: 192, height: 192, backgroundColor: curPalette.darkAccent }} src={props.profile.img} alt="Profile Icon" />}
-                {props.profile.img === undefined && <div style={{ width: 192, height: 192, backgroundColor: curPalette.darkAccent }} />}
-                <StyledLabel style={{ width: '40%', position: 'relative', textAlign: 'center', top: -180, left: 45, backgroundColor: 'rgba(0.140625,0.13671875,0.16796875,0.25)', color: curPalette.text, fontFamily: 'Inconsolata', WebkitUserSelect: 'none' }}>{props.profile.version}</StyledLabel>
+                {props.profile.img !== undefined && <img style={{ width: 192, height: 192, backgroundColor: palette.darkAccent }} src={props.profile.img} alt="Profile Icon" />}
+                {props.profile.img === undefined && <div style={{ width: 192, height: 192, backgroundColor: palette.darkAccent }} />}
+                <StyledLabel style={{ width: '40%', position: 'relative', textAlign: 'center', top: -180, left: 45, backgroundColor: 'rgba(0.140625,0.13671875,0.16796875,0.25)', color: palette.text, fontFamily: 'Inconsolata', WebkitUserSelect: 'none' }}>{props.profile.version}</StyledLabel>
             </div>
             <div style={{ width: '90%', flexGrow: 1, display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
                 {!mouseOver &&
@@ -88,7 +89,7 @@ function ProfileDisplay(props: ProfileDisplayProps) {
                         <b>{props.profile.name}</b>
                     </ProfileNameLabel>}
                 {!mouseOver &&
-                    <ProfileNameLabel style={{ color: curPalette.subText, fontSize: 18 }}>
+                    <ProfileNameLabel style={{ color: palette.subText, fontSize: 18 }}>
                         {`by ${props.profile.author}`}
                     </ProfileNameLabel>}
 
@@ -103,7 +104,14 @@ function ProfileDisplay(props: ProfileDisplayProps) {
                                 if (props.profile.setup === undefined || !props.profile.setup) {
                                     if (props.profile.packs !== undefined) {
                                         setDownloading(true)
-                                        await downloadAndMerge(props.profile)
+                                        let packs: {id:string,owner:string,version?:string}[] = []
+                                        for(let p of props.profile.packs) {
+                                            packs.push({id: p.id.split(':')[1], owner: p.id.split(':')[0], version: p.version })
+                                        }
+                                        await (new PackDownloader((m)=>console.log(m), props.profile.version)).downloadAndMerge(packs, (dpBlob, rpBlob, packIds)=>{
+                                            fs.writeFileSync(pathModule.join(props.profile.directory, 'datapacks/datapacks.zip', dpBlob[1]))
+                                            fs.writeFileSync(pathModule.join(props.profile.directory, 'resourcepacks/resourcepacks.zip', rpBlob[1]))
+                                        })
                                         setDownloading(false)
                                     }
                                 }
@@ -119,12 +127,12 @@ function ProfileDisplay(props: ProfileDisplayProps) {
                     </RowDiv>}
             </div>
 
-            <ContextMenu id={props.profile.name} style={{ backgroundColor: curPalette.lightBackground, border: `4px solid ${curPalette.lightAccent}`, borderRadius: 8, padding: 8, gap: 4, width: 128, flexDirection: 'column' }} offsetX={74} offsetY={40}>
-                <StyledButton style={{ backgroundColor: curPalette.darkBackground }} onClick={() => {
+            <ContextMenu id={props.profile.name} style={{ backgroundColor: palette.lightBackground, border: `4px solid ${palette.lightAccent}`, borderRadius: 8, padding: 8, gap: 4, width: 152, flexDirection: 'column' }} offsetX={74} offsetY={40}>
+                <StyledButton style={{ backgroundColor: palette.darkBackground }} onClick={() => {
                     setSelectedProfile(props.profile.name)
                     history.push('/app/browse/')
                 }}>Edit</StyledButton>
-                <StyledButton style={{backgroundColor: curPalette.darkBackground}} onClick={async () => {
+                <StyledButton style={{backgroundColor: palette.darkBackground}} onClick={async () => {
                     if(props.profile.packs === undefined) {
                         alert('No packs in this profile!')
                         return
@@ -137,7 +145,7 @@ function ProfileDisplay(props: ProfileDisplayProps) {
                     
                     alert('Copied link to clipboard!\nSend it your friends!')
                 }}>Export</StyledButton>
-                <StyledButton style={{ backgroundColor: curPalette.darkBackground, color: 'red' }} onClick={() => {
+                <StyledButton style={{ backgroundColor: palette.darkBackground, color: 'red' }} onClick={() => {
                     const idx = userData.profiles.indexOf(props.profile)
                     const p = userData.profiles.splice(idx, 1)[0]
 

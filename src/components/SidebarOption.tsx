@@ -1,11 +1,11 @@
 import React from 'react';
 import styled from 'styled-components';
 import colorize from 'css-colorize'
-import curPalette from '../Palette';
+import palette from '../shared/Palette';
 import { useRouteMatch } from 'react-router';
 
 
-const filter = colorize.colorize(curPalette.lightAccent).filter.replace('filter: ','').replace(';','')
+const filter = colorize.colorize(palette.lightAccent).filter.replace('filter: ','').replace(';','')
 
 const ColoredSvg = styled.img`
     height: 32px;
@@ -52,7 +52,7 @@ export function PageBasedSidebarOption(props: GroupedSidebarOptionProps) {
     let style = props.style;
     if(match) {
         if(style == null) style = {}
-        const filter = colorize.colorize(curPalette.text).filter.replace('filter: ','').replace(';','')
+        const filter = colorize.colorize(palette.text).filter.replace('filter: ','').replace(';','')
         style.filter = filter
     }
  
