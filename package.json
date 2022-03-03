@@ -62,7 +62,7 @@
     "electron:serve": "concurrently -k \"cross-env BROWSER=none PORT=3000 yarn start\" \"yarn electron:start\"",
     "electron:build": "npm run build && electron-builder -c.extraMetadata.main=build/electron.js --publish never",
     "electron:build-16": "npm run build-16 && electron-builder -c.extraMetadata.main=build/electron.js --publish never",
-    "electron:pro-build": "npm prune --production && npm run electron:build-16",
+    "electron:pro-build": "npm prune --production && npm run electron:build",
     "electron:publish": "npm run build && electron-builder -c.extraMetadata.main=build/electron.js --publish always",
     "electron:start": "electron ."
   },
