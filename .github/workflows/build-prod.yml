@@ -15,7 +15,7 @@ jobs:
 
     strategy:
       matrix:
-        os: [ windows-latest ] # macos-latest, ubuntu-latest,
+        os: [ macos-latest, ubuntu-latest, windows-latest ]
 
     steps:
     - uses: actions/checkout@v2
@@ -33,7 +33,7 @@ jobs:
       env: 
         CI: false
         GH_TOKEN: ${{ secrets.GH_TOKEN }}
-      run: npm ls && npm run electron:build --if-present
+      run: npm ls && npm run electron:pro-build --if-present
     - name: Upload artifacts Windows
       if: ${{ matrix.os == 'windows-latest'}}
       uses: actions/upload-artifact@v2
