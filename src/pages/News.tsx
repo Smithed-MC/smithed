@@ -3,7 +3,7 @@ import styled from 'styled-components';
 import '../font.css'
 import { Header1, Header2, Header3, mainEvents } from '..';
 import Markdown from 'markdown-to-jsx';
-import palette from '../shared/Palette.js';
+import palette from '../shared/Palette';
 import NewsArrow from '../components/NewsArrow';
 import { matchPath, useLocation } from 'react-router';
 import { database } from '../shared/ConfigureFirebase';

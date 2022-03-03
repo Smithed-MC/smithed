@@ -1,7 +1,7 @@
 import EventEmitter from 'events'
 import { useEffect, useState } from 'react'
 import styled from 'styled-components'
-import palette from '../shared/Palette.js'
+import palette from '../shared/Palette'
 
 const UnselectedTabButton = styled.button`
 font-family: Disket-Bold;

@@ -1,6 +1,6 @@
 import React from 'react';
 import '../font.css'
-import palette, { registeredPalettes } from '../shared/Palette.js';
+import palette, { registeredPalettes } from '../shared/Palette';
 import Dropdown, {Option} from '../components/Dropdown';
 import appSettings, { saveSettings } from '../Settings';
 import { Header1, RowDiv, StyledInput, userData } from '..';

@@ -4,7 +4,7 @@ import styled from 'styled-components';
 import Sidebar from './components/Sidebar';
 import News from './pages/News';
 import Home from './pages/Home';
-import palette from './shared/Palette.js'
+import palette from './shared/Palette'
 import Settings from './pages/Settings';
 import appSettings from './Settings';
 import Browse from './pages/Browse';

@@ -8,7 +8,7 @@ import Titlebar from './components/Titlebar';
 import styled from 'styled-components';
 import reportWebVitals from './reportWebVitals';
 import { MarkdownToJSX } from 'markdown-to-jsx';
-import palette from './shared/Palette.js';
+import palette from './shared/Palette';
 import Login from './pages/Login';
 import firebase from 'firebase';
 import 'firebase/auth';

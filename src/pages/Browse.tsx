@@ -9,7 +9,7 @@ import { Route, Switch, useLocation, withRouter } from 'react-router';
 import PackView from './Browse/PackView';
 import { asEnumerable } from 'linq-es5';
 import TabButton from '../components/TabButton';
-import palette from '../shared/Palette.js';
+import palette from '../shared/Palette';
 import Foldout from '../components/Foldout';
 import RadioButton from '../components/RadioButton';
 

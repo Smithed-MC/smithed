@@ -1,6 +1,6 @@
 import '../font.css';
 import styled from 'styled-components';
-import palette from '../shared/Palette.js';
+import palette from '../shared/Palette';
 import { remote, saveSettings } from '../Settings';
 import { StyledLabel } from '../Shared';
 

@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import styled from 'styled-components';
 import { ColumnDiv, RowDiv } from '..';
 import { Display, PackEntry } from '../Pack';
-import palette from '../shared/Palette.js'
+import palette from '../shared/Palette'
 import { RouteComponentProps, withRouter } from 'react-router';
 import { selectedProfile } from '../pages/Browse';
 import { addPackToProfile, removePackToProfile as removePackFromProfile } from '../ProfileHelper';

@@ -3,7 +3,7 @@ import styled from 'styled-components';
 import '../font.css'
 import { ColumnDiv, StyledInput, firebaseUser, userData, Header2 } from '..';
 import ProfileDisplay from '../components/ProfileDisplay';
-import palette from '../shared/Palette.js';
+import palette from '../shared/Palette';
 import Dropdown, { Option } from '../components/Dropdown';
 import Foldout from '../components/Foldout';
 import { pathModule, settingsFolder } from '../Settings';

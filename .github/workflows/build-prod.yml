@@ -31,7 +31,7 @@ jobs:
       env: 
         CI: false
         GH_TOKEN: ${{ secrets.GH_TOKEN }}
-      run: ls && npm run electron:pro-build --if-present
+      run: npm ls && npm run electron:pro-build --if-present
     - name: Upload artifacts Windows
       if: ${{ matrix.os == 'windows-latest'}}
       uses: actions/upload-artifact@v2

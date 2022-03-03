@@ -1,7 +1,7 @@
 import React from 'react';
 import { RowDiv,} from '..';
 import { Pack } from '../Pack';
-import palette from '../shared/Palette.js'
+import palette from '../shared/Palette'
 import Hidden from '../icons/hidden.svg'
 import colorize from 'css-colorize'
 import { StyledLabel,} from '../Shared';

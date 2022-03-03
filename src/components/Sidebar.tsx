@@ -9,7 +9,7 @@ import SettingsSvg from '../icons/settings.svg'
 import SidebarOption, {PageBasedSidebarOption} from './SidebarOption';
 import SignOutSvg from '../icons/sign_out.svg'
 import QueueSvg from '../icons/queue.svg'
-import palette from '../shared/Palette.js';
+import palette from '../shared/Palette';
 import { Index, mainEvents, setFirebaseUser, userData } from '..';
 import { matchPath, useHistory, useLocation } from 'react-router';
 import { auth } from '../shared/ConfigureFirebase';
