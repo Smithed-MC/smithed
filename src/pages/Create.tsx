@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react';
 import styled from 'styled-components';
 import '../font.css'
 import { ColumnDiv, StyledInput, RowDiv, userData } from '..';
-import palette from '../shared/Palette';
+import palette from '../shared/Palette.js';
 import * as linq from 'linq-es5'
 import { DataVersion, Dependency, Pack, PackHelper, Version } from '../Pack';
 import Dropdown, { Option } from '../components/Dropdown';

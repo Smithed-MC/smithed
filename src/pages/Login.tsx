@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import styled from 'styled-components';
 import '../font.css'
 import { ColumnDiv, firebaseUser, RowDiv, setFirebaseUser, setIgnoreStateChange } from '..';
-import palette from '../shared/Palette';
+import palette from '../shared/Palette.js';
 import appSettings, { saveSettings } from '../Settings';
 import { PackHelper } from '../Pack';
 import { ButtonLabel } from '../Shared';

@@ -5,7 +5,7 @@ import { Enumerable } from 'linq-es5/lib/enumerable';
 import * as linq from 'linq-es5'
 import { getPack } from '../UserData';
 import GroupedFoldout from '../components/GroupedFoldout';
-import palette from '../shared/Palette';
+import palette from '../shared/Palette.js';
 import { PackDict, PackEntry, PackHelper } from '../Pack';
 import Popup from 'reactjs-popup';
 import { remote } from '../Settings';

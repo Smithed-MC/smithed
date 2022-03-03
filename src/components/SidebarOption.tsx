@@ -1,7 +1,7 @@
 import React from 'react';
 import styled from 'styled-components';
 import colorize from 'css-colorize'
-import palette from '../shared/Palette';
+import palette from '../shared/Palette.js';
 import { useRouteMatch } from 'react-router';
 
 

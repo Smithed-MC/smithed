@@ -1,5 +1,5 @@
 import styled from 'styled-components'
-import palette from './shared/Palette'
+import palette from './shared/Palette.js'
 
 export const StyledLabel = styled.label`
   	color: ${palette.text};

@@ -1,6 +1,6 @@
 import React from 'react';
 import styled from 'styled-components';
-import palette from '../shared/Palette'
+import palette from '../shared/Palette.js'
 
 const DropdownWrapper = styled.div`
   display: flex;

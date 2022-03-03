@@ -2,7 +2,7 @@ import React from 'react';
 import styled from 'styled-components';
 import '../font.css'
 import { ColumnDiv, Header1, Header2, RowDiv } from '..';
-import palette from '../shared/Palette';
+import palette from '../shared/Palette.js';
 import { remote } from '../Settings';
 
 const { ipcRenderer } = window.require('electron');

@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import styled from 'styled-components';
 import { RowDiv, userData } from '..';
 import Home, { Profile } from '../pages/Home';
-import palette from '../shared/Palette'
+import palette from '../shared/Palette.js'
 import { saveProfiles } from '../ProfileHelper';
 import appSettings, { fs, pathModule } from '../Settings';
 import ContextMenu from './ContextMenu';
