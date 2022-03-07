@@ -31,8 +31,8 @@ const CreateButton = styled.button`
     width: 15.9%;
     font-family: Disket-Bold;
     border: none;
-    background-color: ${palette.lightAccent};
-    color: ${palette.text};
+    background-color: var(--lightAccent);
+    color: var(--text);
     :hover {
         filter: brightness(85%);
     }
@@ -43,7 +43,7 @@ const CreateButton = styled.button`
     font-size: 20px;
 `
 const ImportText = styled(StyledLabel)`
-    color: ${palette.subText};
+    color: var(--subText);
     cursor: pointer;
     :hover {
         filter: brightness(85%);
@@ -120,8 +120,8 @@ class Home extends React.Component {
         }
         return (
             <ColumnDiv style={{ width: 200, height: 300, justifyContent: 'center' }}>
-                <ColumnDiv style={{ width: 150, height: 150, backgroundColor: palette.darkBackground, justifyContent: 'center' }}>
-                    <StyledLabel style={{ textAlign: 'center', fontSize: 196, fontFamily: 'Disket', color: palette.text, WebkitUserSelect: 'none' }}
+                <ColumnDiv style={{ width: 150, height: 150, backgroundColor: 'var(--darkBackground)', justifyContent: 'center' }}>
+                    <StyledLabel style={{ textAlign: 'center', fontSize: 196, fontFamily: 'Disket', color: 'var(--text)', WebkitUserSelect: 'none' }}
                         onMouseOver={e => setFilter(e, 'brightness(0.8)')}
                         onMouseLeave={e => setFilter(e, 'brightness(1)')}
                         onMouseDown={e => setFilter(e, 'brightness(0.6)')}
@@ -165,7 +165,7 @@ class Home extends React.Component {
     renderMain() {
         return (
             <div style={{ width: '100%', height: '100%' }}>
-                <div style={{ backgroundColor: palette.darkBackground, width: '100%', height: '30px', marginTop: 1, display: 'flex', justifyContent: 'space-evenly' }}>
+                <div style={{ backgroundColor: 'var(--darkBackground)', width: '100%', height: '30px', marginTop: 1, display: 'flex', justifyContent: 'space-evenly' }}>
                     <TabButton group="home-tab" name="my-profiles" defaultValue={true}
                     // onChange={(n: string)=>{this.swapTab('/app/home/')}}
                     >My Profiles</TabButton>
@@ -271,7 +271,7 @@ class Home extends React.Component {
                 <Popup trigger={
                     <ImportText>Import from link</ImportText>
                 }>
-                    <ColumnDiv style={{backgroundColor:palette.lightBackground, padding:16, border: `4px solid ${palette.darkAccent}`, borderRadius: 8, width:'100%'}}>
+                    <ColumnDiv style={{backgroundColor: 'var(--lightBackground)', padding:16, border: `4px solid ${palette.darkAccent}`, borderRadius: 8, width:'100%'}}>
                         <StyledInput style={{width:'100%'}} placeholder='Share link...' id='home:import-link'/>
                         <StyledButton onClick={() => {
                             const link = (document.getElementById('home:import-link') as HTMLInputElement).value

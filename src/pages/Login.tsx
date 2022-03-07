@@ -25,7 +25,7 @@ const LoginContainer = styled.div`
     width: 100%;
     display: flex;
     overflow: clip;
-    background-color: ${palette.lightBackground};
+    background-color: var(--lightBackground);
     align-items: center;
     flex-direction: column;
 `
@@ -42,10 +42,10 @@ const LoginInput = styled.input`
     font-family: Inconsolata;
     border-radius: 4px;
     border: 2px solid ${palette.darkAccent};
-    color: ${palette.text};
-    background-color: ${palette.darkBackground};
+    color: var(--text);
+    background-color: var(--darkBackground);
     &::placeholder {
-        color: ${palette.subText};
+        color: var(--subText);
         -webkit-user-select: none;
     }
 `
@@ -53,8 +53,8 @@ const LoginInput = styled.input`
 const LoginButton = styled.button`
     height:32px;
     width:128px;
-    color:${palette.text};
-    background-color:${palette.lightAccent};
+    color: var(--text);
+    background-color: var(--lightAccent);
     font-size:20px;
     border: none;
     font-family: Disket-Bold;
@@ -332,7 +332,7 @@ function Login(props: LoginProps) {
     const renderMain = () => {
         return (
             <ColumnDiv style={{ width: '100%' }}>
-                <RowDiv style={{ backgroundColor: palette.darkBackground, width: '100%', height: '30px', justifyContent: 'center', gap: 36 }}>
+                <RowDiv style={{ backgroundColor: 'var(--darkBackground)', width: '100%', height: '30px', justifyContent: 'center', gap: 36 }}>
                     <TabButton group="login-page" name="signin" defaultValue={true} onChange={(n: string) => swapTab(n)}>Sign In</TabButton>
                     <TabButton group="login-page" name="signup" onChange={(n: string) => swapTab(n)}>Sign Up</TabButton>
                 </RowDiv>

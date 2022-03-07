@@ -18,7 +18,7 @@ const FoldoutContainer = styled.div`
     flex-direction: column;
     align-items: center;
     -webkit-user-drag: none;
-    background-color: ${palette.darkBackground};
+    background-color: var(--darkBackground);
     padding: 8px; 
     border-radius: 8px;
 `
@@ -50,7 +50,7 @@ class Foldout extends React.Component {
     renderChildren() {
         return (
             <ColumnDiv style={{width:'100%'}}>
-                <hr style={{width:'100%', marginTop:-1, borderColor: palette.subText}}/>
+                <hr style={{width:'100%', marginTop:-1}} className='border-subTesxt'/>
                 {this.props.children}
             </ColumnDiv>
         )
@@ -73,7 +73,6 @@ class Foldout extends React.Component {
             borderLeftColor: 'transparent',
             borderRightColor: 'transparent',
             borderTopColor: 'transparent',
-            borderBottomColor: palette.text,
             marginBottom: this.state.open ? -2 : 2,
             transform: this.state.open ? 'rotate(180deg)' : ''
         }
@@ -82,7 +81,7 @@ class Foldout extends React.Component {
             <FoldoutContainer style={this.props.style ? this.props.style : {}}>
                 <FoldoutHeader style={{alignItems:'center', gap:8}} onClick={this.onClick}>
                     <StyledLabel style={this.props.headerStyle}>{this.props.text}</StyledLabel>
-                    <div style={triangle}/>
+                    <div style={triangle} className='border-b-text'/>
                 </FoldoutHeader>
                 {this.state.open && this.renderChildren()}
             </FoldoutContainer>

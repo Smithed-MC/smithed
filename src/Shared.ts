@@ -2,15 +2,15 @@ import styled from 'styled-components'
 import palette from './shared/Palette'
 
 export const StyledLabel = styled.label`
-  	color: ${palette.text};
+  	color: var(--text);
 	font-family: Inconsolata;
 `
 
 export const StyledButton = styled.button`
     height:32px;
     width:128px;
-    color:${palette.text};
-    background-color:${palette.lightAccent};
+    color: var(--text);
+    background-color: var(--lightAccent);
     font-size:20px;
     border: none;
     font-family: Disket-Bold;

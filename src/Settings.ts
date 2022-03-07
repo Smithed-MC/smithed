@@ -1,3 +1,5 @@
+import { changePalette } from "NativePaletteHandler"
+import { setPalette } from "shared/Palette"
 import { dirExists } from "./FSWrapper"
 
 export const fs = window.require('fs')

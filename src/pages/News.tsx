@@ -34,9 +34,9 @@ const ArticleBody = styled.text`
     width: 60%; 
     min-height: 30%; 
     text-align: left;
-    color: ${palette.text};
+    color: var(--text);
     font-family: Inconsolata;
-    background-color: ${palette.darkBackground};
+    background-color: var(--darkBackground);
     border-radius: 8px;
     -webkit-user-drag: none;
     margin-bottom: 12px;
@@ -49,7 +49,7 @@ const NewsImg = styled.img`
     resise: none;
     imageRender: crisp-edges;
     overflow: hidden;
-    background-color: ${palette.darkBackground};
+    background-color: var(--darkBackground);
     border-radius: 8px;
     border: 6px solid ${palette.darkBackground};
     minHeight: 56%;
@@ -166,7 +166,7 @@ class News extends React.Component {
                     {this.renderNext(nextArticle)}
                 </NewsContainer>
                 <Header2>{curArticle.title}</Header2>
-                <Header3 style={{marginTop:-14, color:palette.subText}}>{curArticle.description}</Header3>
+                <Header3 style={{marginTop:-14, color: 'var(--subText)'}}>{curArticle.description}</Header3>
                 <Markdown options={MarkdownOptions(ArticleBody)}>
                     {curArticle.content}
                 </Markdown>

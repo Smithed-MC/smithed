@@ -5,7 +5,7 @@ import palette from '../shared/Palette'
 
 const UnselectedTabButton = styled.button`
 font-family: Disket-Bold;
-color: ${palette.text};
+color: var(--text);
 background: none;
 border: none;
 font-size: 16px;
@@ -22,7 +22,7 @@ cursor: pointer;
 
 const SelectedTabButton = styled(UnselectedTabButton)`
     margin-top: 4px;
-    border-bottom: 4px solid ${palette.lightAccent};
+    border-bottom: 4px solid var(--lightAccent);
 `
 
 

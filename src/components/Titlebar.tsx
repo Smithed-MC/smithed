@@ -10,7 +10,7 @@ const TopbarContainer = styled.div`
   -webkit-app-region: drag;	
   height:25;
   width:'100wh';
-  background-color: ${palette.darkAccent};
+  background-color: var(--darkAccent);
 `
 const ActionButtonSpan = styled.span`
   -webkit-app-region: no-drag;
@@ -36,7 +36,7 @@ const CircleButton = styled.div`
 	font-weight: bold;
 	border-radius: 50%;
 	border: none;
-	background-color: ${palette.titlebar};
+	background-color: var(--titlebar);
 	color: white;
 	text-align: center;
 	cursor: pointer;
@@ -101,12 +101,12 @@ function MacOSContent() {
 					onClick={maximizeWindow}
 				/>
 			</ActionButtonSpan>
-			<StyledLabel style={{ marginLeft:50, width:'100%', padding: '3px', fontSize: '14px', fontFamily: 'Disket-Bold', color: palette.titlebar, textAlign: 'center', verticalAlign: 'center' }}>
+			<StyledLabel className='text-titlebar' style={{ marginLeft:50, width:'100%', padding: '3px', fontSize: '14px', fontFamily: 'Disket-Bold', textAlign: 'center', verticalAlign: 'center' }}>
 				Smithed
 			</StyledLabel>
-			<StyledLabel style={{color:palette.subText, fontSize:12, fontFamily: 'Disket-Bold', width:'100px', textAlign: 'right', alignSelf:'center', verticalAlign: 'center', WebkitUserSelect: 'none'}}>
+			<label className='text-subText' style={{fontSize:12, fontFamily: 'Disket-Bold', width:'100px', textAlign: 'right', alignSelf:'center', verticalAlign: 'center', WebkitUserSelect: 'none'}}>
 				v{remote.app.getVersion()}
-			</StyledLabel>
+			</label>
 		</div>
 	)
 }
@@ -116,7 +116,7 @@ function Titlebar() {
 		<TopbarContainer>
 			{window.process.platform === 'darwin' && MacOSContent()}
 			{window.process.platform !== 'darwin' && WindowsContent()}
-			<div style={{ height: 5, backgroundColor: palette.lightAccent }}></div>
+			<div style={{ height: 5 }} className='bg-lightAccent'></div>
 		</TopbarContainer>
 	)
 }

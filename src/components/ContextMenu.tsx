@@ -46,7 +46,7 @@ class ContextMenu extends React.Component {
         style.top = this.state.y - this.props.offsetY
         style.left = this.state.x - this.props.offsetX
         return (    
-            <RowDiv style={style} onMouseLeave={()=>{this.closeMenu()}}>
+            <RowDiv style={style} className={this.props.className} onMouseLeave={()=>{this.closeMenu()}}>
                 {this.props.children}
             </RowDiv>
         )

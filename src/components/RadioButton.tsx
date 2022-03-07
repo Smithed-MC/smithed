@@ -41,9 +41,9 @@ class RadioButton extends React.Component {
             //         this.props.onChange(!this.state.toggled)
             // }}>
             //     <Box>
-            //         {this.state.toggled && <div style={{width:12, height:12, backgroundColor:palette.lightAccent}}></div>}
+            //         {this.state.toggled && <div style={{width:12, height:12, backgroundColor: 'var(--lightAccent)'}}></div>}
             //     </Box>
-            //     <StyledLabel style={{color:palette.text,fontFamily:'Inconsolata', textAlign:'left', width:'100%', WebkitUserSelect:'none'}}>{this.props.text}</StyledLabel>
+            //     <StyledLabel style={{color: 'var(--text)',fontFamily:'Inconsolata', textAlign:'left', width:'100%', WebkitUserSelect:'none'}}>{this.props.text}</StyledLabel>
             // </RadioButtonContainer>
         );
     }

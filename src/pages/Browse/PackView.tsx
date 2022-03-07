@@ -44,7 +44,7 @@ const ContentContainer = styled.div`
 //     function renderSupport() {
 //         if (donation != null) {
 //             return (
-//                 <ColumnDiv style={{ backgroundColor: palette.darkBackground, padding: 8, borderRadius: 8, width: '90%' }}>
+//                 <ColumnDiv style={{ backgroundColor: 'var(--darkBackground)', padding: 8, borderRadius: 8, width: '90%' }}>
 //                     <Header2 style={{ margin:0, textAlign:'center' }}>Support the Creator</Header2>
 //                     <hr style={{width:'100%'}}/>
 //                     <ColumnDiv style={{ gap: 4, width: '40%' }}>
@@ -114,13 +114,13 @@ const ContentContainer = styled.div`
 //                         <img style={{ width: 64, height: 64, border: `4px solid ${palette.darkAccent}`, borderRadius: 8 }} src={pack.data.display.icon} alt="Pack Icon"/>
 //                         <StyledLabel style={{ fontFamily: 'Disket-Bold', fontSize: 18, alignSelf: 'center', width: '100%', WebkitUserSelect: 'none' }}>{pack.data.display.name}</StyledLabel>
 //                     </RowDiv>
-//                     <div style={{ width: '100%', backgroundColor: palette.darkAccent, height: '2px', borderRadius: 8 }}></div>
-//                     <Markdown style={{ width: '100%', color: palette.text, marginBottom: 8, fontFamily: 'Inconsolata', padding: 8 }} options={MarkdownOptions()}>
+//                     <div style={{ width: '100%', backgroundColor: 'var(--darkAccent)', height: '2px', borderRadius: 8 }}></div>
+//                     <Markdown style={{ width: '100%', color: 'var(--text)', marginBottom: 8, fontFamily: 'Inconsolata', padding: 8 }} options={MarkdownOptions()}>
 //                         {content == null ? 'null' : content}
 //                     </Markdown>
 //                 </ColumnDiv>
 //                 <ColumnDiv style={{ flex: '25%' }}>
-//                     <ColumnDiv style={{ backgroundColor: palette.darkBackground, padding: 8, borderRadius: 8, width: '90%' }}>
+//                     <ColumnDiv style={{ backgroundColor: 'var(--darkBackground)', padding: 8, borderRadius: 8, width: '90%' }}>
 //                         <Dropdown defaultValue={selectedProfile.name !== '' ? selectedProfile.name : undefined} placeholder='Select a profile' onChange={v=>setSelectedProfile(v)}>
 //                             {renderProfiles()}
 //                         </Dropdown>

@@ -28,7 +28,7 @@ interface ProfileDisplayState {
 const ProfileDisplayDiv = styled.div`
     height:300px;
     width:210px;
-    background-color: ${palette.darkBackground};
+    background-color: var(--darkBackground);
     padding: 8px;
     display: flex;
     flex-direction: column;
@@ -40,9 +40,9 @@ const ProfilePlayButton = styled.button`
     height: 60%;
     font-family: Disket-Bold;
     font-size: 24px;
-    color: ${palette.text};
     border: none;
-    background-color: ${palette.lightAccent};
+    background-color: var(--lightAccent);
+    color: var(--text);
     :hover {
         filter: brightness(85%);
     }
@@ -57,7 +57,7 @@ const ProfilePlayButton = styled.button`
 const ProfileNameLabel = styled.label`
     width: 100%;
     text-align: 'left';
-    color: ${palette.text};
+    color: var(--text);
     font-family: Inconsolata;
     font-size: 20px;
     -webkit-user-select: none;
@@ -79,9 +79,9 @@ function ProfileDisplay(props: ProfileDisplayProps) {
     return (
         <ProfileDisplayDiv onMouseEnter={() => setMouseOver(true)} onMouseLeave={() => setMouseOver(false)}>
             <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
-                {props.profile.img !== undefined && <img style={{ width: 192, height: 192, backgroundColor: palette.darkAccent }} src={props.profile.img} alt="Profile Icon" />}
-                {props.profile.img === undefined && <div style={{ width: 192, height: 192, backgroundColor: palette.darkAccent }} />}
-                <StyledLabel style={{ width: '40%', position: 'relative', textAlign: 'center', top: -180, left: 45, backgroundColor: 'rgba(0.140625,0.13671875,0.16796875,0.25)', color: palette.text, fontFamily: 'Inconsolata', WebkitUserSelect: 'none' }}>{props.profile.version}</StyledLabel>
+                {props.profile.img !== undefined && <img className='bg-darkAccent' style={{ width: 192, height: 192 }} src={props.profile.img} alt="Profile Icon" />}
+                {props.profile.img === undefined && <div className='bg-darkAccent' style={{ width: 192, height: 192 }} />}
+                <StyledLabel style={{ width: '40%', position: 'relative', textAlign: 'center', top: -180, left: 45, backgroundColor: 'rgba(0.140625,0.13671875,0.16796875,0.25)', fontFamily: 'Inconsolata', WebkitUserSelect: 'none' }}>{props.profile.version}</StyledLabel>
             </div>
             <div style={{ width: '90%', flexGrow: 1, display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
                 {!mouseOver &&
@@ -89,7 +89,7 @@ function ProfileDisplay(props: ProfileDisplayProps) {
                         <b>{props.profile.name}</b>
                     </ProfileNameLabel>}
                 {!mouseOver &&
-                    <ProfileNameLabel style={{ color: palette.subText, fontSize: 18 }}>
+                    <ProfileNameLabel className='text-subText' style={{ fontSize: 18 }}>
                         {`by ${props.profile.author}`}
                     </ProfileNameLabel>}
 
@@ -127,12 +127,12 @@ function ProfileDisplay(props: ProfileDisplayProps) {
                     </RowDiv>}
             </div>
 
-            <ContextMenu id={props.profile.name} style={{ backgroundColor: palette.lightBackground, border: `4px solid ${palette.lightAccent}`, borderRadius: 8, padding: 8, gap: 4, width: 152, flexDirection: 'column' }} offsetX={74} offsetY={40}>
-                <StyledButton style={{ backgroundColor: palette.darkBackground }} onClick={() => {
+            <ContextMenu id={props.profile.name} className='bg-lightBackground border-4 border-lightAccent' style={{borderRadius: 8, padding: 8, gap: 4, width: 152, flexDirection: 'column' }} offsetX={74} offsetY={40}>
+                <button className='bg-darkBackground text-text font-[Disket-Bold] text-[20px] hover:brightness-75 active:brightness-60' onClick={() => {
                     setSelectedProfile(props.profile.name)
                     history.push('/app/browse/')
-                }}>Edit</StyledButton>
-                <StyledButton style={{backgroundColor: palette.darkBackground}} onClick={async () => {
+                }}>Edit</button>
+                <button className='bg-darkBackground text-text font-[Disket-Bold] text-[20px] hover:brightness-75 active:brightness-60' onClick={async () => {
                     if(props.profile.packs === undefined) {
                         alert('No packs in this profile!')
                         return
@@ -144,8 +144,8 @@ function ProfileDisplay(props: ProfileDisplayProps) {
                     await navigator.clipboard.writeText(link)
                     
                     alert('Copied link to clipboard!\nSend it your friends!')
-                }}>Export</StyledButton>
-                <StyledButton style={{ backgroundColor: palette.darkBackground, color: 'red' }} onClick={() => {
+                }}>Export</button>
+                <button className='bg-darkBackground text-badAccent font-[Disket-Bold] text-[20px] hover:brightness-75 active:brightness-60' onClick={() => {
                     const idx = userData.profiles.indexOf(props.profile)
                     const p = userData.profiles.splice(idx, 1)[0]
 
@@ -158,7 +158,7 @@ function ProfileDisplay(props: ProfileDisplayProps) {
                         recursive: true
                     })
 
-                }}>Delete</StyledButton>
+                }}>Delete</button>
             </ContextMenu>
         </ProfileDisplayDiv>
     );

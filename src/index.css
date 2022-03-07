@@ -2,6 +2,19 @@
 @tailwind components;
 @tailwind utilities;
 
+@layer base {
+  [data-theme="default"] {
+    --darkAccent: #1B48C4;
+    --lightAccent: #216BEA;
+    --badAccent: #FF282F;
+    --darkBackground: #24232B;
+    --lightBackground: #2F2F38;
+    --text: #FFFFFF;
+    --subText: #A0A0A0;
+    --titlebar: #FFFFFF;
+  }
+}
+
 body {
   margin: 0;
   font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',

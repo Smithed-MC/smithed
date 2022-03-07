@@ -1,14 +1,14 @@
 import React, { useEffect, useState } from 'react';
 import styled from 'styled-components';
-import NewsSvg from '../icons/news.svg'
-import HomeSvg from '../icons/home.svg'
-import BrowseSvg from '../icons/browse.svg'
-import CreateSvg from '../icons/create.svg'
-import DiscordSvg from '../icons/discord.svg'
-import SettingsSvg from '../icons/settings.svg' 
+import { ReactComponent as NewsSvg } from '../icons/news.svg'
+import { ReactComponent as HomeSvg } from '../icons/home.svg'
+import { ReactComponent as BrowseSvg } from '../icons/browse.svg'
+import { ReactComponent as CreateSvg } from '../icons/create.svg'
+import { ReactComponent as DiscordSvg } from '../icons/discord.svg'
+import { ReactComponent as SettingsSvg } from '../icons/settings.svg' 
 import SidebarOption, {PageBasedSidebarOption} from './SidebarOption';
-import SignOutSvg from '../icons/sign_out.svg'
-import QueueSvg from '../icons/queue.svg'
+import { ReactComponent as SignOutSvg } from '../icons/sign_out.svg'
+import { ReactComponent as QueueSvg } from '../icons/queue.svg'
 import palette from '../shared/Palette';
 import { Index, mainEvents, setFirebaseUser, userData } from '..';
 import { matchPath, useHistory, useLocation } from 'react-router';
@@ -20,7 +20,7 @@ const SidebarContainer = styled.div`
     width: 54px;
     height: 100wh;
     // border-right: 2px solid #5D5377;
-    background-color: ${palette.darkBackground};
+    background-color: var(--darkBackground);
     margin-top:0px;
     padding: 15px 0px;
     align-items:center;
@@ -83,7 +83,7 @@ function Sidebar(props: SidebarProps) {
   const history = useHistory();
   useEffect(() => {
     setSidebar((
-      <div className={`flex flex-col items-center h-full py-[15px] px-[10px] gap-[16px]`} style={{backgroundColor: palette.darkBackground}}>
+      <div className={`flex flex-col items-center h-full py-[15px] px-[10px] gap-[16px] bg-darkBackground`}>
           <TabNavigator/>
           <PageBasedSidebarOption page='/app/news/' img={NewsSvg} hint='News' onClick={() => {props.onClick('news')}}/>
           <PageBasedSidebarOption page='/app/home/' img={HomeSvg} hint='Home' onClick={() => {props.onClick('home')}}/>

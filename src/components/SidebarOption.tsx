@@ -1,69 +1,62 @@
-import React from 'react';
+import React, { SVGProps } from 'react';
 import styled from 'styled-components';
 import colorize from 'css-colorize'
 import palette from '../shared/Palette';
 import { useRouteMatch } from 'react-router';
 
 
-const filter = colorize.colorize(palette.lightAccent).filter.replace('filter: ','').replace(';','')
+const filter = colorize.colorize(palette.lightAccent).filter.replace('filter: ', '').replace(';', '')
 
 const ColoredSvg = styled.img`
     height: 32px;
     width: 32px;
     // filter: invert(47%) sepia(99%) saturate(5318%) hue-rotate(211deg) brightness(96%) contrast(91%);
-    filter: ${filter};
     -webkit-user-select: none;
     -webkit-user-drag: none;
     :hover {
-        filter: ${filter} brightness(80%);
+        filter: brightness(80%);
     }
     :active {
-        filter: ${filter} brightness(70%);
+        filter: brightness(70%);
     }
 `
 
 interface SidebarOptionProps {
-    img: string
+    img: React.FunctionComponent<React.SVGProps<SVGSVGElement> & { title?: string }>
     hint: string
-    onClick?: ()=>void
+    onClick?: () => void
     style?: React.CSSProperties
 }
 
 
 interface GroupedSidebarOptionProps extends SidebarOptionProps {
-   page: string
+    page: string
 }
 
 
 function SidebarOption(props: SidebarOptionProps) {
-  return (
-    <div style={{height:32, width:32}}>
-        <ColoredSvg src={props.img} title={props.hint} style={props.style} onClick={()=>{
-            if(props.onClick != null)
-                props.onClick()
-        }}/>
-    </div>
-  );
+    return (
+        <div style={{ height: 32, width: 32 }}>
+            <props.img title={props.hint} style={props.style} className={`fill-lightAccent hover:brightness-75 active:brightness-50 h-[32px] w-[32px]`} fill='none' stroke='0' onClick={() => {
+                if (props.onClick != null)
+                    props.onClick()
+            }} />
+        </div>
+    );
 }
 
 export function PageBasedSidebarOption(props: GroupedSidebarOptionProps) {
     const match = useRouteMatch(props.page)
-
     let style = props.style;
-    if(match) {
-        if(style == null) style = {}
-        const filter = colorize.colorize(palette.text).filter.replace('filter: ','').replace(';','')
-        style.filter = filter
-    }
- 
+
     return (
-      <div style={{height:32, width:32}}>
-          <ColoredSvg src={props.img} title={props.hint} style={style} onClick={()=>{
-              if(props.onClick != null)
-                  props.onClick()
-          }}/>
-      </div>
+        <div style={{ height: 32, width: 32 }}>
+            <props.img title={props.hint} style={style} className={match ? 'fill-text' : `fill-lightAccent hover:brightness-75 active:brightness-50`} fill='none' stroke='0' onClick={() => {
+                if (props.onClick != null)
+                    props.onClick()
+            }} />
+        </div>
     );
-  }
+}
 
 export default SidebarOption;

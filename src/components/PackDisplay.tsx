@@ -16,7 +16,7 @@ interface PackDisplayState {
 
 const PackName = styled.label`
     font-family: Disket-Bold;
-    color: ${palette.text};
+    color: var(--text);
     text-align: left;
     width: 100%;
     font-size: 18px;
@@ -36,7 +36,7 @@ const PackName = styled.label`
 `
 const PackStats = styled.label`
     font-family: Inconsolata;
-    color: ${palette.subText};
+    color: var(--subText);
     text-align: left;
     width: auto;
     font-size: 12px;
@@ -46,7 +46,7 @@ const PackStats = styled.label`
 `
 const PackDescription = styled.label`
     font-family: Inconsolata;
-    color: ${palette.text};
+    color: var(--text);
     text-align: left;
     width: 100%;
     font-size: 16px;
@@ -58,8 +58,7 @@ const PackDescription = styled.label`
 
 const PackAddButton = styled.button`
     border: none;
-    color: ${palette.text};
-    background-color: ${palette.lightAccent};
+    color: var(--text);
     font-family: Disket-Bold;
     font-size: 20px;
     width: 30px;
@@ -120,11 +119,11 @@ function PackDisplay(props: PackDisplayProps) {
                             }}>{display.name}</PackName>
                         </div>
                         <div className='relative right-0 bg-red'>
-                            {!contained && <PackAddButton disabled={selectedProfile.name === ''} onClick={() => {
+                            {!contained && <PackAddButton className='bg-lightAccent' disabled={selectedProfile.name === ''} onClick={() => {
                                 setContained(true)
                                 addPackToProfile(selectedProfile, props.packEntry)
                             }}>+</PackAddButton>}
-                            {contained && <PackAddButton style={{ backgroundColor: palette.badAccent }} onClick={() => {
+                            {contained && <PackAddButton className='bg-badAccent' onClick={() => {
                                 setContained(false)
                                 removePackFromProfile(selectedProfile, props.packEntry);
                             }}>-</PackAddButton>}

@@ -14,8 +14,6 @@ interface CreatePackDisplayProps {
 interface CreatePackDisplayState {
 }
 
-const filter = colorize.colorize(palette.lightAccent).filter.replace('filter: ','').replace(';','')
-
 
 class CreatePackDisplay extends React.Component {
     props: CreatePackDisplayProps
@@ -28,9 +26,9 @@ class CreatePackDisplay extends React.Component {
 
     render() {
         return(
-            <RowDiv style={{backgroundColor:palette.darkBackground, alignItems:'center', justifyContent:'left', padding: 8, gap: 8, width:320, height:84}} onClick={this.props.onClick}>
+            <RowDiv className='bg-darkBackground' style={{alignItems:'center', justifyContent:'left', padding: 8, gap: 8, width:320, height:84}} onClick={this.props.onClick}>
                 <img style={{width:64,height:64, WebkitUserSelect:'none'}} src={this.props.pack.display.icon !== '' ? this.props.pack.display.icon : Hidden} alt="Pack icon"/>
-                <StyledLabel style={{WebkitUserSelect:'none',fontFamily:'Disket-Bold', color: this.props.pack.messages != null && this.props.pack.messages.length > 0 ? 'red' : palette.text}}>{this.props.pack.display.name}</StyledLabel>
+                <StyledLabel className={`text-${this.props.pack.messages != null && this.props.pack.messages.length > 0 ? 'red-500' : 'text'}`} style={{WebkitUserSelect:'none',fontFamily:'Disket-Bold'}}>{this.props.pack.display.name}</StyledLabel>
             </RowDiv>
         );
     }

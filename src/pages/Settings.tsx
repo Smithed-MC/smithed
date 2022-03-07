@@ -12,8 +12,8 @@ import { changePalette } from '../NativePaletteHandler';
 const SettingsButton = styled.button`
     height:32px;
     width:128px;
-    color:${palette.text};
-    background-color:${palette.lightAccent};
+    color: var(--text);
+    background-color: var(--lightAccent);
     font-size:20px;
     border: none;
     font-family: Disket-Bold;
@@ -60,7 +60,7 @@ class Settings extends React.Component {
         return(
             <RowDiv style={{justifyContent:'bottom'}}>
                 <StyledLabel style={{marginTop:6}}>Palette:</StyledLabel>
-                <Dropdown onChange={(p)=>{changePalette(p)}}>
+                <Dropdown onChange={(p)=>{changePalette(p)}} reset={false}>
                     {final}
                 </Dropdown>
             </RowDiv>
@@ -76,7 +76,7 @@ class Settings extends React.Component {
         return (
             <div style={{flexGrow:1,display:'flex',flexDirection:'column',alignItems:'center'}}>
                 <Header1>App Options</Header1>
-                {/* {this.renderPalettes()} */}
+                {this.renderPalettes()}
                 <StyledInput placeholder="" type="file" id="launcherInput" hidden onChange={(e) => {
                         if(e.target.files != null && e.target.files.length !== 0) {
                             const file: any = e.target.files[0]

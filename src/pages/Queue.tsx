@@ -52,11 +52,11 @@ function QueueEntry(props: any) {
                 </ColumnDiv>}
                 <RowDiv style={{gap:8, marginTop:8}}>
                     <Popup trigger={
-                        <StyledButton style={{backgroundColor:palette.lightBackground}} onClick={()=>{reason=''}}>
+                        <StyledButton style={{backgroundColor: 'var(--lightBackground)'}} onClick={()=>{reason=''}}>
                             Reject
                         </StyledButton>} modal
                     >
-                        <ColumnDiv style={{backgroundColor:palette.lightBackground, padding:16, border: `4px solid ${palette.darkAccent}`, borderRadius: 8}}>
+                        <ColumnDiv style={{backgroundColor: 'var(--lightBackground)', padding:16, border: `4px solid ${palette.darkAccent}`, borderRadius: 8}}>
                             <StyledInput placeholder="Reason for rejection..." style={{width:'384px'}} defaultValue={reason} onChange={(e) => {reason = e.target.value}}/>
                             <StyledButton onClick={()=> {
                                 if(reason !== '') {

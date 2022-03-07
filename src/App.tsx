@@ -20,7 +20,7 @@ const AppContainer = styled.div`
   width: 100%;
   display: flex;
   overflow: clip;
-  background-color: ${palette.lightBackground};
+  background-color: var(--lightBackground);
 `
 
 interface AppState {

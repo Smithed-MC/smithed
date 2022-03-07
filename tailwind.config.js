@@ -1,3 +1,9 @@
+function withOpacity(cssVariable) {
+  return ({ opacityValue }) => {
+      return `var(${cssVariable})`
+  }
+}
+
 module.exports = {
   content: ["./src/**/*.{js,jsx,ts,tsx}"],
   darkMode: false, // or 'media' or 'class'
@@ -16,14 +22,14 @@ module.exports = {
       colors: {
         'light-accent': '#216BEA',
         'dark-accent': '#1B48C4',
-        darkAccent: '#1B48C4',
-        lightAccent: '#216BEA',
-        badAccent: '#FF282F',
-        darkBackground: '#24232B',
-        lightBackground: '#2F2F38',
-        text: '#FFFFFF',
-        subText: '#A0A0A0',
-        titlebar: '#FFFFFF'
+        darkAccent: withOpacity('--darkAccent'),
+        lightAccent: withOpacity('--lightAccent'),
+        badAccent: withOpacity('--badAccent'),
+        darkBackground: withOpacity('--darkBackground'),
+        lightBackground: withOpacity('--lightBackground'),
+        text: withOpacity('--text'),
+        subText: withOpacity('--subText'),
+        titlebar: withOpacity('--titlebar')
       },
       fontFamily: {
         'disket': ['Disket'],

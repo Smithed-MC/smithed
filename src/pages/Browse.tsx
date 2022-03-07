@@ -49,7 +49,7 @@ function Browse(props: any) {
 
     const renderTabs = () => {
         return (
-            <div style={{backgroundColor: palette.darkBackground, paddingLeft:16, paddingRight: 16, borderRadius: 8, justifyContent:'center', display:'flex', gap: 16, marginTop: 8}}>
+            <div className='bg-darkBackground' style={{paddingLeft:16, paddingRight: 16, borderRadius: 8, justifyContent:'center', display:'flex', gap: 16, marginTop: 8}}>
                     <TabButton onChange={()=>{
                     sort = (p: PackEntry) => {
                         if(p.updated !== undefined)

@@ -79,21 +79,21 @@ export function setUserData(data: UserData) {
 
 export const Header1 = styled.h1`
   font-family: Disket-Bold;
-  color: ${palette.text}; 
+  color: var(--text); 
   -webkit-user-drag: none;
   -webkit-user-select: none;
   font-size: 2.25rem;
 `
 export const Header2 = styled.h2`
   font-family: Disket-Bold;
-  color: ${palette.text}; 
+  color: var(--text); 
   -webkit-user-drag: none;
   -webkit-user-select: none;
   font-size: 1.875rem;
 `
 export const Header3 = styled.h3`
   font-family: Disket-Bold;
-  color: ${palette.text}; 
+  color: var(--text); 
   -webkit-user-drag: none;
   -webkit-user-select: none;
   font-size: 1.25rem;
@@ -115,17 +115,17 @@ export const RowDiv = styled.div`
 export const StyledInput = styled.input`
     padding: 8px;
     margin-bottom: 1rem;
-    background-color: ${palette.darkBackground};
+    background-color: var(--darkBackground);
     border: none;
-    color: ${palette.text};
+    color: var(--text);
     border-radius: 8px;
     font-family: Inconsolata;
     &::placeholder {
-        color: ${palette.subText};
+        color: var(--subText);
 		-webkit-user-select: none;
     }
     :disabled {
-      color: ${palette.subText};
+      color: var(--subText);
       -webkit-user-select: none;
     }
 `
@@ -174,16 +174,16 @@ export class Index extends React.Component {
 	render() {
 		console.log(this.props.location)
 		return (
-			<React.StrictMode>
-				<Titlebar />
-				<Switch>
-					<Route exact path='/' component={Login} />
-					<Route path='/app' component={App} />
-					<Route path='/update'>
-						<Download version={this.state.versionFound} />
-					</Route>
-				</Switch>
-			</React.StrictMode>
+				<React.StrictMode>
+					<Titlebar />
+					<Switch>
+						<Route exact path='/' component={Login} />
+						<Route path='/app' component={App} />
+						<Route path='/update'>
+							<Download version={this.state.versionFound} />
+						</Route>
+					</Switch>
+				</React.StrictMode>
 		)
 
 	}

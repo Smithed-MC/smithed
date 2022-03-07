@@ -12,16 +12,16 @@ const StyledSelect = styled.select`
     width: 100%;
     padding: 8px;
     margin-bottom: 1rem;
-    background-color: ${palette.darkBackground};
+    background-color: var(--darkBackground);
     border: none;
-    color: ${palette.text};
+    color: var(--text);
     border-radius: 8px;
     font-family: Inconsolata;
 `;
 
 const StyledOption = styled.option`
-    background-color: ${palette.darkBackground};
-    color: ${palette.text};
+    background-color: var(--darkBackground);
+    color: var(--text);
     border: none;
     font-family: Inconsolata;
 `;
@@ -58,7 +58,7 @@ class Dropdown extends React.Component {
             style.appearance = 'none'
         
         return (
-            <DropdownWrapper style={this.props.style != null ? this.props.style : {}} id={this.props.id}>
+            <DropdownWrapper className='text-text' style={this.props.style != null ? this.props.style : {}} id={this.props.id}>
                 <StyledSelect id="options" name="options" defaultValue={this.props.defaultValue != null ? this.props.defaultValue : "null"} style={style} onChange={e=>{
                     this.onChange(e)
                     if(this.props.reset != undefined && this.props.reset === false) return
