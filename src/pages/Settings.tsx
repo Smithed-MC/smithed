@@ -60,7 +60,9 @@ class Settings extends React.Component {
         return(
             <RowDiv style={{justifyContent:'bottom'}}>
                 <StyledLabel style={{marginTop:6}}>Palette:</StyledLabel>
-                <Dropdown onChange={(p)=>{changePalette(p)}} reset={false}>
+                <Dropdown onChange={(p)=>{
+                    changePalette(p)
+                }} reset={false}>
                     {final}
                 </Dropdown>
             </RowDiv>

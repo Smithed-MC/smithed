@@ -177,44 +177,41 @@ export class PackHelper {
         })
     }
 
-    static createOrUpdatePack(pack: Pack, addToQueue?: boolean, callback?: () => void) {
+    static async createOrUpdatePack(pack: Pack, addToQueue?: boolean) {
         pack = this.toFirebaseValid(pack)
         console.log(pack)
 
         const packsRef = database.ref(`packs/${PackHelper.displayNameToID(userData.displayName)}:${pack.id}`)
 
-        packsRef.get().then((snap) => {
-            if (userData.ref != null) {
+        const packsSnap = await packsRef.get()
 
-                const userPacks = userData.ref?.child(`packs`)
+        if (userData.ref != null) {
 
-                userPacks.get().then((snapshot) => {
-                    const val = snapshot.val()
-                    let packs: Pack[] = val != null ? val : []
+            const userPacks = userData.ref?.child(`packs`)
 
-                    for (var i = 0; i < packs.length; i++) {
-                        if (packs[i].id === pack.id) {
-                            userPacks.child(i.toString()).set(pack)
+            const userPacksSnap = await userPacks.get()
+            const val = userPacksSnap.val()
+            let packs: Pack[] = val != null ? val : []
 
-                            if (packs[i].versions !== pack.versions)
-                                packsRef.child('updated').set(Date.now())
+            for (var i = 0; i < packs.length; i++) {
+                if (packs[i].id === pack.id) {
+                    userPacks.child(i.toString()).set(pack)
 
-                            if (!snap.exists())
-                                this.addToQueueIfNot(pack)
-                            return;
-                        }
-                    }
+                    if (packs[i].versions !== pack.versions)
+                        packsRef.child('updated').set(Date.now())
 
-                    console.log(pack)
-                    userPacks.child((i).toString()).set(pack)
-                    if (!snap.exists())
+                    if (!packsSnap.exists())
                         this.addToQueueIfNot(pack)
-
-                    if (callback !== undefined)
-                        callback()
-                })
+                    return;
+                }
             }
-        })
+
+            console.log(pack)
+            userPacks.child((i).toString()).set(pack)
+            if (!packsSnap.exists())
+                this.addToQueueIfNot(pack)
+
+        }
     }
 
     static resetMessages(pack: string) {
@@ -350,12 +347,12 @@ export class PackHelper {
         return [];
     }
     static updatePackData(pack: any): Pack {
-        if(pack.versions instanceof Array) {
+        if (pack.versions instanceof Array) {
             return pack as Pack;
         } else {
-            let versions: {[key: string]: Version} = pack.versions
+            let versions: { [key: string]: Version } = pack.versions
             let newVersions: Version[] = []
-            for(let v in versions) {
+            for (let v in versions) {
                 let version = versions[v];
 
                 version.name = v.replaceAll('_', '.');

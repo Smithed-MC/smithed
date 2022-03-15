@@ -29,6 +29,8 @@ export const packCategories = [
     'Tech',
     'Magic',
     'Library',
+    'Exploration',
+    'World Overhaul',
     'No Resource Pack'
 ]
 

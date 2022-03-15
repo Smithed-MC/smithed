@@ -81,7 +81,7 @@ function ProfileDisplay(props: ProfileDisplayProps) {
             <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
                 {props.profile.img !== undefined && <img className='bg-darkAccent' style={{ width: 192, height: 192 }} src={props.profile.img} alt="Profile Icon" />}
                 {props.profile.img === undefined && <div className='bg-darkAccent' style={{ width: 192, height: 192 }} />}
-                <StyledLabel style={{ width: '40%', position: 'relative', textAlign: 'center', top: -180, left: 45, backgroundColor: 'rgba(0.140625,0.13671875,0.16796875,0.25)', fontFamily: 'Inconsolata', WebkitUserSelect: 'none' }}>{props.profile.version}</StyledLabel>
+                <StyledLabel style={{ width: '40%', position: 'relative', textAlign: 'center', top: -180, left: 45, backgroundColor: 'rgba(0.140625,0.13671875,0.16796875,0.25)', fontFamily: 'Inconsolata', WebkitUserSelect: 'none', color: 'var(--titlebar)' }}>{props.profile.version}</StyledLabel>
             </div>
             <div style={{ width: '90%', flexGrow: 1, display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
                 {!mouseOver &&

@@ -1,5 +1,5 @@
 import styled from 'styled-components';
-import LeftArrow from '../icons/left_arrow.svg'
+import { ReactComponent as LeftArrow} from '../icons/left_arrow.svg'
 
 
 const Image = styled.img`
@@ -20,17 +20,10 @@ function UpdateBrightness(e : EventTarget, b : number) {
 
 function NewsArrow(props: NewsArrowProps) {
   return (
-    
-    <Image src={LeftArrow} style={{width:'100px',transform:props.transform}} onMouseOver={(e)=>{
-        UpdateBrightness(e.target, 0.85)
-    }} onMouseLeave ={(e)=>{
-        UpdateBrightness(e.target, 1)
-    }} onMouseDown = {(e) => {
-        UpdateBrightness(e.target, 0.5)
-    }} onMouseUp = {(e) => {
-        UpdateBrightness(e.target, 0.85)
-    }} onClick={props.onClick}/>
-    
+    <div>
+        <LeftArrow className={`fill-text hover:opacity-75 active:opacity-50 h-[100px] w-[100px]`} fill='none' stroke='0' style={{width:100,transform:props.transform}} 
+        onClick={props.onClick}/>
+    </div>
   );
 }
 

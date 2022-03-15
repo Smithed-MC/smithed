@@ -24,6 +24,7 @@ import { HashRouter } from 'react-router-dom';
 import EventEmitter from 'events';
 import { PackEntry } from './Pack';
 import { database, firebaseApp } from './shared/ConfigureFirebase';
+import { QueryParamProvider } from 'use-query-params';
 
 
 const { ipcRenderer } = window.require('electron');
@@ -193,7 +194,9 @@ const IndexWithRouter = withRouter(Index)
 
 ReactDOM.render(
 	<HashRouter>
-		<IndexWithRouter />
+		<QueryParamProvider ReactRouterRoute={Route}>
+			<IndexWithRouter />
+		</QueryParamProvider>
 	</HashRouter>
 	,
 	document.getElementById('root')
