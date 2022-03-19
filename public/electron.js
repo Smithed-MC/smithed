@@ -4,12 +4,11 @@ require('@electron/remote/main').initialize()
 const path = require('path')
 
 const isDev = require('electron-is-dev')
-const execa = require('execa');
-const { exec } = require('child_process');
-const isRunning = require('is-running')
-const argv = process.argv
+
 const fs = require('fs');
 const { platform } = require('process');
+
+const {HandleLauncher} = require('./src/launcher')
 
 const protocolLink = 'smithed'
 
@@ -158,81 +157,6 @@ app.on('activate', function () {
 
 
 
-function fileExists(path) {
-	try {
-		if (fs.statSync(path).isFile()) {
-			return true;
-		} else {
-			return false;
-		}
-	} catch {
-		return false;
-	}
-}
-
-function dirExists(path) {
-	try {
-		if (fs.statSync(path).isDirectory()) {
-			return true;
-		} else {
-			return false;
-		}
-	} catch {
-		return false;
-	}
-}
-
-
-
-class HandleLauncher {
-	launcher = null
-	runningProfile = null
-	window = null
-	cachedSaves = []
-	constructor(window) {
-		this.window = window
-
-		ipcMain.on('start-launcher', async (event, profile, launcherPath) => {
-			const platform = process.platform
-
-			if (!fileExists(launcherPath) && platform !== 'darwin') {
-				window.webContents.send('invalid-launcher')
-			} else {
-				this.runningProfile = profile
-
-				if (platform === 'darwin') {
-					this.launcher = exec(`open -a Minecraft --args --workdir ${profile.directory}`)
-				} else {
-					let cmd =
-						platform == 'win32' ? `"${launcherPath}"` :
-							platform == 'linux' ? `${launcherPath}` :
-								platform == 'darwin' ? `open -a ${launcherPath}` : `./${launcherPath}`
-
-					this.launcher = exec(`${cmd} --workdir ${profile.directory}`)
-				}
-
-				this.loop = setInterval(this.isRunning, 200)
-			}
-		})
-
-		ipcMain.on('stop-launcher', () => {
-			this.launcher.kill()
-		})
-	}
-
-	isRunning = () => {
-		if (isRunning(this.launcher.pid)) {
-			this.window.webContents.send('update-profile', this.runningProfile.name)
-
-		}
-		else {
-			this.window.webContents.send('update-profile', '')
-			this.runningProfile = null
-			console.log('[Heartbeat] Game closed!')
-			clearInterval(this.loop)
-		}
-	}
-}
 
 if (isDev && process.platform === 'win32') {
 	// Set the path of electron.exe and your app.

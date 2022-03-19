@@ -1,3 +1,4 @@
+import { Dependency } from "shared/Profile"
 import { userData } from "."
 import { fs } from "./Settings"
 import { database } from "./shared/ConfigureFirebase"
@@ -13,11 +14,6 @@ export class Display {
     icon: string = ''
     description: string = ''
     webPage: string = ''
-}
-
-export interface Dependency {
-    id: string
-    version: string
 }
 
 export interface PackDict {

@@ -14,7 +14,6 @@ import firebase from 'firebase';
 import 'firebase/auth';
 import 'firebase/database';
 import { remote } from './Settings';
-import { Profile } from './pages/Home';
 import { collectUserData } from './UserData';
 import { Enumerable } from 'linq-es5/lib/enumerable';
 import { asEnumerable } from 'linq-es5';
@@ -25,6 +24,7 @@ import EventEmitter from 'events';
 import { PackEntry } from './Pack';
 import { database, firebaseApp } from './shared/ConfigureFirebase';
 import { QueryParamProvider } from 'use-query-params';
+import Profile from 'shared/Profile';
 
 
 const { ipcRenderer } = window.require('electron');

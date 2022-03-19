@@ -9,12 +9,12 @@ import Foldout from '../components/Foldout';
 import { pathModule, settingsFolder } from '../Settings';
 import { saveProfiles, setupProfile } from '../ProfileHelper';
 import RadioButton from '../components/RadioButton';
-import { Dependency } from '../Pack'
 import { RouteComponentProps, Switch, Route } from 'react-router';
 import { StyledButton, StyledLabel } from '../Shared';
 import TabButton from '../components/TabButton';
 import { setSelectedProfile } from './Browse';
 import Popup from 'reactjs-popup';
+import Profile, { Dependency } from 'shared/Profile';
 
 const { ipcRenderer } = window.require('electron');
 
@@ -52,15 +52,6 @@ const ImportText = styled(StyledLabel)`
         filter: brightness(75%);
     }
 `
-export interface Profile {
-    name: string,
-    version: string,
-    img?: string,
-    packs?: Dependency[],
-    directory?: string,
-    author?: string,
-    setup?: boolean
-}
 
 class Home extends React.Component {
     state: HomeState
@@ -88,8 +79,18 @@ class Home extends React.Component {
         })
     }
 
+    async checkForRunningProfile() {
+        
+        const info = await ipcRenderer.invoke('get-launcher-info')
+        console.log(info)
+        if(info.running)
+            this.setState({activeProfile: info.profile})
+    }
+
     componentDidMount() {
         this.buildProfileDisplays()
+
+        this.checkForRunningProfile()
     }
 
     getSelectedStyle(tab: number): React.CSSProperties {

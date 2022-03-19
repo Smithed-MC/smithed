@@ -1,6 +1,10 @@
+import { userData } from 'index'
+import { PackEntry } from 'Pack'
+import { addPackToProfile } from 'ProfileHelper'
 import { useParams } from 'react-router'
 import styled from 'styled-components'
-import Packs from '../../shared/Packs'
+import { getPack } from 'UserData'
+import Packs, { PackData } from '../../shared/Packs'
 
 const ContentContainer = styled.div`
     display: flex;
@@ -170,7 +174,13 @@ const ContentContainer = styled.div`
 
 function PackView(props: any) {
     const {owner, id}: {owner: string, id: string} = useParams()
-    return <Packs owner={owner} id={id}/>
+    return <Packs owner={owner} id={id} profiles={userData.profiles} addPackToProfile={async (p: string) => {
+        const profile = userData.profiles.find(profile => profile.name === p)
+        if(!profile) return
+        const pack = await getPack({added: 0, owner: owner}, id)
+
+        addPackToProfile(profile, {id: id, owner: owner, data: pack, added: 0})
+    }}/>
 }
 
 export default PackView

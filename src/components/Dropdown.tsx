@@ -37,11 +37,13 @@ interface DropdownProps {
     disabled?: boolean,
     noarrow?: boolean,
     defaultValue?: string,
-    reset?: boolean
+    reset?: boolean,
+    className?: string,
 }
 
 class Dropdown extends React.Component {
     props: DropdownProps
+    value?: string
     constructor(props: DropdownProps) {
         super(props)
         this.props = props
@@ -51,6 +53,7 @@ class Dropdown extends React.Component {
         let s = e.target as HTMLSelectElement
         if(this.props.onChange != null)
             this.props.onChange(s.value)
+        this.value = s.value
     }
     render() {
         let style = this.props.optionsStyle != null ? this.props.optionsStyle : {}
@@ -59,7 +62,7 @@ class Dropdown extends React.Component {
         
         return (
             <DropdownWrapper className='text-text' style={this.props.style != null ? this.props.style : {}} id={this.props.id}>
-                <StyledSelect id="options" name="options" defaultValue={this.props.defaultValue != null ? this.props.defaultValue : "null"} style={style} onChange={e=>{
+                <StyledSelect className={this.props.className} id="options" name="options" defaultValue={this.props.defaultValue != null ? this.props.defaultValue : "null"} style={style} onChange={e=>{
                     this.onChange(e)
                     if(this.props.reset != undefined && this.props.reset === false) return
                     if(this.props.placeholder == null)

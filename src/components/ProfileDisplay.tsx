@@ -1,17 +1,16 @@
-import React, { useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import styled from 'styled-components';
 import { RowDiv, userData } from '..';
-import Home, { Profile } from '../pages/Home';
-import palette from '../shared/Palette'
+import Home from '../pages/Home';
 import { saveProfiles } from '../ProfileHelper';
-import appSettings, { fs, pathModule } from '../Settings';
+import appSettings, { fs, pathModule, remote } from '../Settings';
 import ContextMenu from './ContextMenu';
 import Dropdown, { Option } from './Dropdown';
-import { StyledLabel, StyledButton } from '../Shared';
+import { StyledLabel } from '../Shared';
 import { useHistory } from 'react-router';
 import { setSelectedProfile } from '../pages/Browse';
 import PackDownloader from '../shared/PackDownload';
-import { Dependency } from '../Pack';
+import Profile from 'shared/Profile';
 
 
 const { ipcRenderer } = window.require('electron');
@@ -99,23 +98,32 @@ function ProfileDisplay(props: ProfileDisplayProps) {
                 {mouseOver &&
                     <RowDiv style={{ width: '100%', height: '100%', gap: 4, alignItems: 'center', marginTop: -4 }}>
                         <ProfilePlayButton onClick={async (e) => {
+                            if(e.altKey) return
 
                             if (Home.instance.state.activeProfile === '') {
                                 if (props.profile.setup === undefined || !props.profile.setup) {
                                     if (props.profile.packs !== undefined) {
                                         setDownloading(true)
-                                        let packs: {id:string,owner:string,version?:string}[] = []
-                                        for(let p of props.profile.packs) {
-                                            packs.push({id: p.id.split(':')[1], owner: p.id.split(':')[0], version: p.version })
+                                        let packs: { id: string, owner: string, version?: string }[] = []
+                                        for (let p of props.profile.packs) {
+                                            packs.push({ id: p.id.split(':')[1], owner: p.id.split(':')[0], version: p.version })
                                         }
-                                        await (new PackDownloader((m)=>console.log(m), props.profile.version)).downloadAndMerge(packs, (dpBlob, rpBlob, packIds)=>{
-                                            fs.writeFileSync(pathModule.join(props.profile.directory, 'datapacks/datapacks.zip', dpBlob[1]))
-                                            fs.writeFileSync(pathModule.join(props.profile.directory, 'resourcepacks/resourcepacks.zip', rpBlob[1]))
+                                        await (new PackDownloader((m, spam) => {
+                                            if (spam) return
+                                            console.log(m)
+                                        }, props.profile.version)).downloadAndMerge(packs, async (dpBlob, rpBlob, packIds) => {
+                                            fs.writeFileSync(pathModule.join(props.profile.directory, 'datapacks/datapacks.zip'), Buffer.from(await dpBlob[1].arrayBuffer()))
+                                            fs.writeFileSync(pathModule.join(props.profile.directory, 'resourcepacks/resourcepacks.zip'), Buffer.from(await rpBlob[1].arrayBuffer()))
+
+
+                                            props.profile.setup = true;
+                                            saveProfiles(userData.profiles)
+                                            setDownloading(false)
                                         })
-                                        setDownloading(false)
                                     }
                                 }
                                 ipcRenderer.send('start-launcher', props.profile, appSettings.launcher)
+
                             }
                             Home.instance.renderMyProfiles()
                         }} disabled={Home.instance.state.activeProfile !== '' || downloading} onMouseDownCapture={(e) => {
@@ -127,22 +135,25 @@ function ProfileDisplay(props: ProfileDisplayProps) {
                     </RowDiv>}
             </div>
 
-            <ContextMenu id={props.profile.name} className='bg-lightBackground border-4 border-lightAccent' style={{borderRadius: 8, padding: 8, gap: 4, width: 152, flexDirection: 'column' }} offsetX={74} offsetY={40}>
+            <ContextMenu id={props.profile.name} className='bg-lightBackground border-4 border-lightAccent' style={{ borderRadius: 8, padding: 8, gap: 4, width: 152, flexDirection: 'column' }} offsetX={74} offsetY={40}>
+                <button className='bg-darkBackground text-text font-[Disket-Bold] text-[20px] hover:brightness-75 active:brightness-60' onClick={() => {
+                    remote.shell.openExternal(props.profile.directory)
+                }}>Open</button>
                 <button className='bg-darkBackground text-text font-[Disket-Bold] text-[20px] hover:brightness-75 active:brightness-60' onClick={() => {
                     setSelectedProfile(props.profile.name)
                     history.push('/app/browse/')
                 }}>Edit</button>
                 <button className='bg-darkBackground text-text font-[Disket-Bold] text-[20px] hover:brightness-75 active:brightness-60' onClick={async () => {
-                    if(props.profile.packs === undefined) {
+                    if (props.profile.packs === undefined) {
                         alert('No packs in this profile!')
                         return
                     }
                     let link = `https://smithed.dev/download?version=${props.profile.version}&name=${encodeURIComponent(props.profile.name)}&author=${encodeURIComponent(props.profile.author ? props.profile.author : 'Unknown')}`
-                    for(let p of props.profile.packs) {
+                    for (let p of props.profile.packs) {
                         link += `&pack=${p.id}@${encodeURIComponent(p.version)}`
                     }
                     await navigator.clipboard.writeText(link)
-                    
+
                     alert('Copied link to clipboard!\nSend it your friends!')
                 }}>Export</button>
                 <button className='bg-darkBackground text-badAccent font-[Disket-Bold] text-[20px] hover:brightness-75 active:brightness-60' onClick={() => {

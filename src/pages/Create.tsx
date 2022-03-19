@@ -1,20 +1,12 @@
 import { useCallback, useEffect, useState } from 'react';
 import styled from 'styled-components';
 import '../font.css'
-import { ColumnDiv, StyledInput, RowDiv, userData } from '..';
-import palette from '../shared/Palette';
-import * as linq from 'linq-es5'
-import { DataVersion, Dependency, Pack, PackHelper, Version } from '../Pack';
-import Dropdown, { Option } from '../components/Dropdown';
+import { ColumnDiv, RowDiv, userData } from '..';
+import { Pack, PackHelper } from '../Pack';
 import CreatePackDisplay from '../components/CreatePackDisplay';
-import RadioButton from '../components/RadioButton';
-import GroupedFoldout from '../components/GroupedFoldout';
-import { Route, RouteComponentProps, Switch, useHistory, withRouter } from 'react-router';
-import { StyledButton, StyledLabel } from '../Shared';
-import Popup from 'reactjs-popup';
-import { packCategories } from './Browse';
+import { Route, Switch, useHistory, withRouter } from 'react-router';
+import { StyledLabel } from '../Shared';
 import { database } from '../shared/ConfigureFirebase';
-import { StringParam, useQueryParam, useQueryParams } from 'use-query-params';
 import Edit, { PackWithMessages } from './Create/Edit';
 
 

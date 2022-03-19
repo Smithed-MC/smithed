@@ -3,13 +3,14 @@ import GroupedFoldout from 'components/GroupedFoldout';
 import RadioButton from 'components/RadioButton';
 import { ColumnDiv, RowDiv, StyledInput, userData } from 'index';
 import {asEnumerable} from 'linq-es5';
-import { DataVersion, Dependency, Version } from 'Pack';
+import { DataVersion, Version } from 'Pack';
 import { versions } from 'process';
 import React, { useEffect, useRef, useState } from 'react'
 import Popup from 'reactjs-popup';
 import { StyledButton, StyledLabel } from 'Shared';
 import { InputField } from './Edit';
 import * as semver from 'semver'
+import { Dependency } from 'shared/Profile';
 
 export default function VersionSettings(props: {versions: Version[]}) {
     const [versions, setVersion] = useState<Version[]>([])
@@ -113,7 +114,7 @@ export default function VersionSettings(props: {versions: Version[]}) {
                     renderVersions()
                 } }>⬆</StyledButton>
                 <Popup trigger={<button className='bg-badAccent text-text w-[32px] h-[32px] text-[20px] hover:brightness-75 active:brightness-[60%]'>✖</button>}>
-                    <ColumnDiv style={{ backgroundColor: 'var(--darkBackground)', padding: 8, borderRadius: 4, border: `2px solid var(--lightAccent)` }}>
+                    <ColumnDiv className='bg-darkBackground text-text border-2 border-lightAccent rounded-md p-2'>
                         <StyledLabel>Are you sure you want to delete <b>{version.name}</b>?</StyledLabel>
                         <StyledButton style={{ backgroundColor: 'var(--badAccent)' }} onClick={() => {
                             versions.splice(v, 1);
@@ -221,6 +222,7 @@ export default function VersionSettings(props: {versions: Version[]}) {
                 }
             }}>Add</StyledButton>
         </div>
+        {versions.length > 0 && <label className='text-text'>Latest Version is {versions[versions.length - 1].name}</label>}
         {versionDisplays}
     </div>;
 }

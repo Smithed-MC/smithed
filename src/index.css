@@ -13,6 +13,29 @@
     --subText: #A0A0A0;
     --titlebar: #FFFFFF;
   }
+  h1 {
+    font-size: 3rem;
+    margin: 0px;
+    font-family: Disket-Bold;
+    color: var(--text);
+  }
+  h2 {
+    font-size: 2.25rem;
+    margin: 0px;
+    font-family: Disket-Bold;
+    color: var(--subText);
+  }
+  h3 {
+    font-size: 1.5rem;
+    margin: 0px;
+    font-family: Disket-Bold;
+    color: var(--subText);
+  }
+  hr {
+    border-color: var(--text);
+  }
+
+  label {@apply text-text font-[Inconsolata]}
 }
 
 body {

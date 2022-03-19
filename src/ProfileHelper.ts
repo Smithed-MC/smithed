@@ -1,7 +1,7 @@
+import Profile from "shared/Profile";
 import { setUserData, userData } from ".";
 import { dirExists } from "./FSWrapper";
 import { PackHelper, PackEntry } from "./Pack";
-import { Profile } from "./pages/Home";
 import { fs, pathModule, settingsFolder } from "./Settings";
 import { database } from "./shared/ConfigureFirebase";
 
@@ -218,7 +218,7 @@ export function addPackToProfile(profile: Profile, packEntry: PackEntry) {
 }
 
 export function removePackToProfile(profile: Profile, packEntry: PackEntry) {
-    let packs = profile.packs != null ? profile.packs : []
+    let packs = profile.packs ? profile.packs : []
 
     for (let p of packs) {
         if (p.id === packEntry.id) {
