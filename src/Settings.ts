@@ -44,7 +44,7 @@ interface PaletteDefinition extends Palette {
     extend?: string
 }
 
-if(fs.statSync(palettesPath).isFile()) {
+if(fileExists(palettesPath)) {
     const palettes: PaletteDefinitions = JSON.parse(fs.readFileSync(palettesPath))
     console.log(palettes)
     for(let p in palettes) {
