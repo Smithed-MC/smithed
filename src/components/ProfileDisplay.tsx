@@ -11,7 +11,8 @@ import { useHistory } from 'react-router';
 import { setSelectedProfile } from '../pages/Browse';
 import PackDownloader from '../shared/PackDownload';
 import Profile from 'shared/Profile';
-
+import JSZip from 'jszip';
+import * as zip from '@zip.js/zip.js'
 
 const { ipcRenderer } = window.require('electron');
 interface ProfileDisplayProps {
@@ -98,28 +99,39 @@ function ProfileDisplay(props: ProfileDisplayProps) {
                 {mouseOver &&
                     <RowDiv style={{ width: '100%', height: '100%', gap: 4, alignItems: 'center', marginTop: -4 }}>
                         <ProfilePlayButton onClick={async (e) => {
-                            if(e.altKey) return
+                            if (e.altKey) return
 
                             if (Home.instance.state.activeProfile === '') {
                                 if (props.profile.setup === undefined || !props.profile.setup) {
                                     if (props.profile.packs !== undefined) {
                                         setDownloading(true)
-                                        let packs: { id: string, owner: string, version?: string }[] = []
-                                        for (let p of props.profile.packs) {
-                                            packs.push({ id: p.id.split(':')[1], owner: p.id.split(':')[0], version: p.version })
+
+                                        const baseUrl = 'https://ovh.smithed.dev'// 'http://vps-fb6d39ae.vps.ovh.us'
+                                        const url = `${baseUrl}/api/download?version=${props.profile.version}&` + props.profile.packs.map(p => {
+                                            return 'pack=' + p.id + '@' + p.version
+                                        }).join('&')
+
+                                        const response = await fetch(`https://api.allorigins.win/raw?url=${encodeURIComponent(url)}`)
+                                        const packsBuf = await (response).blob()
+
+                                        const packsZip = new zip.ZipReader(new zip.BlobReader(packsBuf))
+
+                                        const entries = await packsZip.getEntries()
+                                        for (let e of entries) {
+                                            if (e.getData === undefined) continue;
+
+                                            const data: Blob = (await e.getData(new zip.BlobWriter()))
+                                            const buffer: Buffer = Buffer.from(await data.arrayBuffer())
+
+                                            if (e.filename.includes('datapack'))
+                                                fs.writeFileSync(pathModule.join(props.profile.directory, 'datapacks/datapacks.zip'), buffer)
+                                            else if (e.filename.includes('resourcepack'))
+                                                fs.writeFileSync(pathModule.join(props.profile.directory, 'resourcepacks/resourcepacks.zip'), buffer)
                                         }
-                                        await (new PackDownloader((m, spam) => {
-                                            if (spam) return
-                                            console.log(m)
-                                        }, props.profile.version)).downloadAndMerge(packs, async (dpBlob, rpBlob, packIds) => {
-                                            fs.writeFileSync(pathModule.join(props.profile.directory, 'datapacks/datapacks.zip'), Buffer.from(await dpBlob[1].arrayBuffer()))
-                                            fs.writeFileSync(pathModule.join(props.profile.directory, 'resourcepacks/resourcepacks.zip'), Buffer.from(await rpBlob[1].arrayBuffer()))
 
-
-                                            props.profile.setup = true;
-                                            saveProfiles(userData.profiles)
-                                            setDownloading(false)
-                                        })
+                                        setDownloading(false)
+                                        props.profile.setup = true;
+                                        saveProfiles(userData.profiles)
                                     }
                                 }
                                 ipcRenderer.send('start-launcher', props.profile, appSettings.launcher)
