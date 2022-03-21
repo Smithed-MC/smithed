@@ -100,6 +100,8 @@ function Edit(props: any) {
 
         if (pack.id.length < 3)
             return 'Pack Id must be atleast 3 characters'
+        if (pack.id.match(/[`~!@#$%^&*()|+=?;:'",<>\{\}\[\]\\\/A-Z]/g))
+            return 'Pack Id may only contain lowercase letters, numbers, _, -, and .'
         if (pack.versions == null || pack.versions.length === 0)
             return 'No versions have been specified'
         else {
