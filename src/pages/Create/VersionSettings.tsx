@@ -11,6 +11,7 @@ import { StyledButton, StyledLabel } from 'Shared';
 import { InputField } from './Edit';
 import * as semver from 'semver'
 import { Dependency } from 'shared/Profile';
+import Foldout from 'components/Foldout';
 
 export default function VersionSettings(props: {versions: Version[]}) {
     const [versions, setVersion] = useState<Version[]>([])
@@ -137,7 +138,7 @@ export default function VersionSettings(props: {versions: Version[]}) {
                     renderVersions();
                 } } />
             </div>
-            <GroupedFoldout group={v.toString()} text="Downloads" defaultValue={false} style={{ width: '95%', backgroundColor: 'transparent' }}>
+            <Foldout text="Downloads" defaultValue={false} style={{ width: '95%', backgroundColor: 'transparent' }}>
                 <Dropdown placeholder="Add a download" onChange={(e) => {
                     if (version.downloads == null)
                         version.downloads = {};
@@ -150,8 +151,8 @@ export default function VersionSettings(props: {versions: Version[]}) {
                     <Option value="Resourcepack" />
                 </Dropdown>
                 {renderDownloads(version)}
-            </GroupedFoldout>
-            <GroupedFoldout group={v.toString()} text="Supports" defaultValue={false} style={{ width: '95%', backgroundColor: 'transparent' }}>
+            </Foldout>
+            <Foldout text="Supports" defaultValue={false} style={{ width: '95%', backgroundColor: 'transparent' }}>
                 <ColumnDiv style={{ alignItems: 'left', width: '10%' }}>
                     {renderSupports(version)}
                 </ColumnDiv>
@@ -172,8 +173,8 @@ export default function VersionSettings(props: {versions: Version[]}) {
                 } }>
                     {renderSupportsOptions()}
                 </Dropdown>
-            </GroupedFoldout>
-            <GroupedFoldout group={v.toString()} text="Dependencies" defaultValue={false} style={{ width: '95%', backgroundColor: 'transparent' }}>
+            </Foldout>
+            <Foldout text="Dependencies" defaultValue={false} style={{ width: '95%', backgroundColor: 'transparent' }}>
                 <ColumnDiv style={{ alignItems: 'left', width: '100%' }}>
                     {renderDependencies(version)}
                 </ColumnDiv>
@@ -197,7 +198,7 @@ export default function VersionSettings(props: {versions: Version[]}) {
                         }
                     } }>Add</StyledButton>
                 </RowDiv>
-            </GroupedFoldout>
+            </Foldout>
         </GroupedFoldout>;
     }
 

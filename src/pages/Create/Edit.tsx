@@ -127,7 +127,7 @@ function Edit(props: any) {
     
     console.log(pack)
     return (
-        <ColumnDiv style={{ width: '100%', alignItems: 'left', gap: 8 }}>
+        <ColumnDiv style={{ width: '100%', alignItems: 'left', gap: 8 }} className='overflow-y-scroll h-full'>
             <InputField text="Pack Id (ex. 'tcc')" defaultValue={pack.id} style={{ width: '15%', marginBottom: 3 }} onChange={(v: string) => { pack.id = v }} disabled={!newPack} />
             {pack.messages != null && pack.messages.length > 0 &&
                 <GroupedFoldout group="mainGroup" text="Messages" style={mainFoldoutStyle} headerStyle={{ color: 'red' }} defaultValue={true}>
@@ -169,9 +169,9 @@ function Edit(props: any) {
             <RowDiv style={{ gap: 8, justifyContent: 'space-evenly', width: '10%' }}>
 
                 <Popup trigger={
-                    <AddButton style={{ backgroundColor: 'var(--badAccent)' }} hidden={pack.id === ''}>
+                    <button className='bg-badAccent p-1 font-[Disket-Bold] text-text text-lg hover:brightness-75 active:brightness-[65%]' hidden={pack.id === ''}>
                         Delete
-                    </AddButton>}>
+                    </button>}>
 
                     <ColumnDiv style={{ backgroundColor: 'var(--darkBackground)', padding: 8, borderRadius: 4, border: `2px solid var(--lightAccent)` }}>
                         <StyledLabel>Are you sure you want to delete <b>{pack.id}</b>?</StyledLabel>
@@ -184,10 +184,10 @@ function Edit(props: any) {
                         </AddButton>
                     </ColumnDiv>
                 </Popup>
-                <AddButton onClick={() => {
+                <button className='bg-lightAccent p-1 font-[Disket-Bold] text-text text-lg hover:brightness-75 active:brightness-[65%]' onClick={() => {
                     history.push('/app/create')
-                }}>Cancel</AddButton>
-                <AddButton onClick={() => {
+                }}>Cancel</button>
+                <button className='bg-lightAccent p-1 font-[Disket-Bold] text-text text-lg hover:brightness-75 active:brightness-[65%]' onClick={() => {
                     const result = validatePack()
 
                     console.log(result)
@@ -198,7 +198,7 @@ function Edit(props: any) {
                     } else {
                         setError(result)
                     }
-                }}>Finish</AddButton>
+                }}>Finish</button>
             </RowDiv>
         </ColumnDiv>
     )

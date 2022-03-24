@@ -173,18 +173,17 @@ export class Index extends React.Component {
 	}
 
 	render() {
-		console.log(this.props.location)
 		return (
-				<React.StrictMode>
-					<Titlebar />
-					<Switch>
-						<Route exact path='/' component={Login} />
-						<Route path='/app' component={App} />
-						<Route path='/update'>
-							<Download version={this.state.versionFound} />
-						</Route>
-					</Switch>
-				</React.StrictMode>
+			<React.StrictMode>
+				<Titlebar />
+				<Switch>
+					<Route exact path='/' component={Login} />
+					<Route path='/app' component={App} />
+					<Route path='/update'>
+						<Download version={this.state.versionFound} />
+					</Route>
+				</Switch>
+			</React.StrictMode>
 		)
 
 	}

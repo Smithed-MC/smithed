@@ -37,7 +37,7 @@ interface GroupedSidebarOptionProps extends SidebarOptionProps {
 function SidebarOption(props: SidebarOptionProps) {
     return (
         <div style={{ height: 32, width: 32 }}>
-            <props.img title={props.hint} style={props.style} className={`fill-lightAccent hover:brightness-75 active:brightness-50 h-[32px] w-[32px]`} fill='none' stroke='0' onClick={() => {
+            <props.img title={props.hint} style={props.style} className={`fill-lightAccent hover:brightness-75 active:brightness-50 h-[32px] w-[32px] cursor-pointer`} fill='none' stroke='0' onClick={() => {
                 if (props.onClick != null)
                     props.onClick()
             }} />
@@ -51,7 +51,7 @@ export function PageBasedSidebarOption(props: GroupedSidebarOptionProps) {
 
     return (
         <div style={{ height: 32, width: 32 }}>
-            <props.img title={props.hint} style={style} className={match ? 'fill-text' : `fill-lightAccent hover:brightness-75 active:brightness-50`} fill='none' stroke='0' onClick={() => {
+            <props.img title={props.hint} style={style} className={(match ? 'fill-text' : `fill-lightAccent hover:brightness-75 active:brightness-50`) + ' cursor-pointer'} fill='none' stroke='0' onClick={() => {
                 if (props.onClick != null)
                     props.onClick()
             }} />
