@@ -153,11 +153,11 @@ function Browse(props: any) {
             <ColumnDiv style={{ flexGrow: 1, width: '100%' }}>
                 {renderTabs()}
                 <RowDiv style={{ width: '100%', height: '100%', marginTop: 16 }}>
-                    <ColumnDiv style={{ flex: '25%' }}>
-                        <Dropdown style={{ width: '78.5%' }} defaultValue={selectedProfile.name !== '' ? selectedProfile.name : undefined} reset={false} onChange={(v) => setSelectedProfile(v)} placeholder='Select a profile'>
+                    <ColumnDiv className='flex-[25%] gap-2'>
+                        <Dropdown className='w-3/4' defaultValue={selectedProfile.name !== '' ? selectedProfile.name : undefined} reset={false} onChange={(v) => setSelectedProfile(v)} placeholder='Select a profile'>
                             {getProfiles()}
                         </Dropdown>
-                        <StyledInput style={{ width: '75%' }} placeholder="Search..." onChange={(e) => {
+                        <input className='w-3/4' placeholder="Search..." onChange={(e) => {
                             let v = e.target.value
                             setSearch(v)
                         }} />

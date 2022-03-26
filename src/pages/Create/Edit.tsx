@@ -12,8 +12,9 @@ import { packCategories } from '../Browse';
 import { BooleanParam, StringParam, useQueryParam } from 'use-query-params';
 import DisplaySettings from './DisplaySettings';
 import VersionSettings from './VersionSettings';
+import Foldout from 'components/Foldout';
 
-const mainFoldoutStyle = { width: '40%', backgroundColor: 'transparent', border: `1px solid var(--subText)` }
+const mainFoldoutStyle = { width: '100%', backgroundColor: 'transparent', border: `4px solid var(--darkAccent)` }
 
 export const AddButton = styled.button`
     border: none;
@@ -55,12 +56,13 @@ function Edit(props: any) {
     const history = useHistory()
 
     useEffect(() => {
-        if(newPack) {
+        if (newPack) {
             setPack(new PackWithMessages())
+            generateSelectedCategories(new PackWithMessages())
             return
         }
         const p = packs.find(p => p.id === packId)
-        if(p === undefined) {
+        if (p === undefined) {
             setPack(undefined)
             return
         }
@@ -68,6 +70,9 @@ function Edit(props: any) {
 
     }, [newPack, packId])
 
+    useEffect(() => {
+        if(pack) generateSelectedCategories(pack)
+    }, [pack])
 
     // console.log(packId)
 
@@ -76,20 +81,20 @@ function Edit(props: any) {
     const [error, setError] = useState('')
 
 
-    const generateSelectedCategories = () => {
-        if (pack && pack.categories) {
+    const generateSelectedCategories = (pack: PackWithMessages) => {
+        if (pack.categories) {
             let elements: JSX.Element[] = []
             for (let c of pack.categories) {
                 elements.push(<StyledLabel>{c}</StyledLabel>)
             }
-            return elements
-        } else {
-            return []
+            console.log(elements)
+            setCategories(elements)
         }
+        setCategories([] as JSX.Element[])
     }
-    const [categories, setCategories] = useState(generateSelectedCategories())
+    const [categories, setCategories] = useState<JSX.Element[]>()
 
-    if(pack === undefined) return (<h1>No pack</h1>)
+    if (pack === undefined) return (<h1>No pack</h1>)
 
 
     const validatePack = (): string => {
@@ -124,83 +129,83 @@ function Edit(props: any) {
         return options
     }
 
-    
-    console.log(pack)
     return (
-        <ColumnDiv style={{ width: '100%', alignItems: 'left', gap: 8 }} className='overflow-y-scroll h-full'>
-            <InputField text="Pack Id (ex. 'tcc')" defaultValue={pack.id} style={{ width: '15%', marginBottom: 3 }} onChange={(v: string) => { pack.id = v }} disabled={!newPack} />
-            {pack.messages != null && pack.messages.length > 0 &&
-                <GroupedFoldout group="mainGroup" text="Messages" style={mainFoldoutStyle} headerStyle={{ color: 'red' }} defaultValue={true}>
-                    <StyledLabel id="messages" style={{ width: '100%' }}>{pack.messages.join('\n')}</StyledLabel>
-                    <StyledButton onClick={(e) => {
-                        PackHelper.resetMessages(pack.id)
-                        const messages = document.getElementById('messages') as HTMLLabelElement
-                        messages.hidden = true
-                    }}>Clear</StyledButton>
-                </GroupedFoldout>}
-            <GroupedFoldout group="mainGroup" text="Display" style={mainFoldoutStyle} defaultValue={false}>
-                <DisplaySettings pack={pack}/>
-            </GroupedFoldout>
-            <GroupedFoldout group="mainGroup" text="Versions" style={mainFoldoutStyle} defaultValue={false}>
-                <VersionSettings versions={pack.versions}/> 
-            </GroupedFoldout>
-            <GroupedFoldout group="mainGroup" text="Search Information" style={mainFoldoutStyle} defaultValue={false}>
-                <ColumnDiv style={{ gap: 4, marginBottom: 4 }}>
-                    {categories}
-                </ColumnDiv>
-                <Dropdown style={{ width: '33%' }} placeholder='Add/remove a category' onChange={(e) => {
-                    if (!pack.categories) {
-                        pack.categories = [e]
-                    }
-                    else if (!pack.categories.includes(e)) {
-                        pack.categories.push(e)
-                    } else {
-                        pack.categories.splice(pack.categories.indexOf(e), 1)
-                    }
-                    setCategories(generateSelectedCategories())
+        <div className='w-full flex justify-center overflow-y-scroll h-full'>
+            <div className='flex flex-col w-full items-center gap-2 xl:w-1/2'>
+                <input placeholder="Pack Id (ex. 'tcc')" defaultValue={pack.id} className='w-1/2 rounded-md p-2 bg-darkBackground placeholder:text-subText text-text font-inconsolata text-center' onChange={(e) => { pack.id = e.target.value }} disabled={!newPack} />
+                {pack.messages != null && pack.messages.length > 0 &&
+                    <GroupedFoldout group="mainGroup" text="Messages" style={mainFoldoutStyle} headerStyle={{ color: 'red' }} defaultValue={true}>
+                        <StyledLabel id="messages" style={{ width: '100%' }}>{pack.messages.join('\n')}</StyledLabel>
+                        <StyledButton onClick={(e) => {
+                            PackHelper.resetMessages(pack.id)
+                            const messages = document.getElementById('messages') as HTMLLabelElement
+                            messages.hidden = true
+                        }}>Clear</StyledButton>
+                    </GroupedFoldout>}
+                <Foldout text="Display" style={mainFoldoutStyle} defaultValue={false}>
+                    <DisplaySettings pack={pack} />
+                </Foldout>
+                <Foldout text="Versions" style={mainFoldoutStyle} defaultValue={false}>
+                    <VersionSettings versions={pack.versions} />
+                </Foldout>
+                <Foldout text="Search Information" style={mainFoldoutStyle} defaultValue={false}>
+                    <ColumnDiv style={{ gap: 4, marginBottom: 4 }}>
+                        {categories}
+                    </ColumnDiv>
+                    <Dropdown style={{ width: '33%' }} placeholder='Add/remove a category' onChange={(e) => {
+                        if (!pack.categories) {
+                            pack.categories = [e]
+                        }
+                        else if (!pack.categories.includes(e)) {
+                            pack.categories.push(e)
+                        } else {
+                            pack.categories.splice(pack.categories.indexOf(e), 1)
+                        }
+                        generateSelectedCategories(pack)
 
 
-                    // TODO: Display which categories the pack is + add user keywords
-                }}>
-                    {renderCategoryOptions()}
-                </Dropdown>
-            </GroupedFoldout>
-            {(error != null && error !== '') && <b style={{ fontFamily: 'Inconsolata', color: 'red' }}>{error}</b>}
-            <RowDiv style={{ gap: 8, justifyContent: 'space-evenly', width: '10%' }}>
+                        // TODO: Display which categories the pack is + add user keywords
+                    }}>
+                        {renderCategoryOptions()}
+                    </Dropdown>
+                </Foldout>
+                {(error != null && error !== '') && <b style={{ fontFamily: 'Inconsolata', color: 'red' }}>{error}</b>}
+                <RowDiv style={{ gap: 8, justifyContent: 'space-evenly', width: '10%' }}>
 
-                <Popup trigger={
-                    <button className='bg-badAccent p-1 font-[Disket-Bold] text-text text-lg hover:brightness-75 active:brightness-[65%]' hidden={pack.id === ''}>
-                        Delete
-                    </button>}>
+                    <Popup trigger={
+                        <button className='bg-badAccent p-1 font-[Disket-Bold] text-text text-lg hover:brightness-75 active:brightness-[65%]' hidden={pack.id === ''}>
+                            Delete
+                        </button>}>
 
-                    <ColumnDiv style={{ backgroundColor: 'var(--darkBackground)', padding: 8, borderRadius: 4, border: `2px solid var(--lightAccent)` }}>
-                        <StyledLabel>Are you sure you want to delete <b>{pack.id}</b>?</StyledLabel>
-                        <AddButton style={{ backgroundColor: 'var(--badAccent)' }} onClick={() => {
-                            PackHelper.deletePack(pack, () => {
+                        <ColumnDiv style={{ backgroundColor: 'var(--darkBackground)', padding: 8, borderRadius: 4, border: `2px solid var(--lightAccent)` }}>
+                            <StyledLabel>Are you sure you want to delete <b>{pack.id}</b>?</StyledLabel>
+                            <AddButton style={{ backgroundColor: 'var(--badAccent)' }} onClick={() => {
+                                PackHelper.deletePack(pack, () => {
+                                    history.push('/app/create')
+                                })
+                            }}>
+                                Yes
+                            </AddButton>
+                        </ColumnDiv>
+                    </Popup>
+                    <button className='bg-lightAccent p-1 font-[Disket-Bold] text-text text-lg hover:brightness-75 active:brightness-[65%]' onClick={() => {
+                        history.push('/app/create')
+                    }}>Cancel</button>
+                    <button className='bg-lightAccent p-1 font-[Disket-Bold] text-text text-lg hover:brightness-75 active:brightness-[65%]' onClick={() => {
+                        const result = validatePack()
+
+                        console.log(result)
+                        if (result === '') {
+                            PackHelper.createOrUpdatePack(pack, true).then(() => {
                                 history.push('/app/create')
                             })
-                        }}>
-                            Yes
-                        </AddButton>
-                    </ColumnDiv>
-                </Popup>
-                <button className='bg-lightAccent p-1 font-[Disket-Bold] text-text text-lg hover:brightness-75 active:brightness-[65%]' onClick={() => {
-                    history.push('/app/create')
-                }}>Cancel</button>
-                <button className='bg-lightAccent p-1 font-[Disket-Bold] text-text text-lg hover:brightness-75 active:brightness-[65%]' onClick={() => {
-                    const result = validatePack()
-
-                    console.log(result)
-                    if (result === '') {
-                        PackHelper.createOrUpdatePack(pack, true).then(() => {
-                            history.push('/app/create')
-                        })
-                    } else {
-                        setError(result)
-                    }
-                }}>Finish</button>
-            </RowDiv>
-        </ColumnDiv>
+                        } else {
+                            setError(result)
+                        }
+                    }}>Finish</button>
+                </RowDiv>
+            </div>
+        </div>
     )
 }
 

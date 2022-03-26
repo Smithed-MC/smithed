@@ -36,6 +36,14 @@
   }
 
   label {@apply text-text font-[Inconsolata]}
+
+  input {
+    @apply bg-darkBackground text-text placeholder:text-subText font-inconsolata rounded-md p-2
+  }
+
+  select {
+    @apply bg-darkBackground text-text placeholder:text-subText font-inconsolata rounded-md p-2
+  }
 }
 
 body {

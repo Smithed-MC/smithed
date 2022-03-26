@@ -11,6 +11,7 @@ export interface FoldoutProps {
     children?: any,
     defaultValue?: boolean
     disabled?: boolean
+    className?: string
 }
 
 const FoldoutContainer = styled.div`
@@ -18,7 +19,7 @@ const FoldoutContainer = styled.div`
     flex-direction: column;
     align-items: center;
     -webkit-user-drag: none;
-    background-color: var(--darkBackground);
+    // background-color: var(--darkBackground);
     padding: 8px; 
     border-radius: 8px;
 `
@@ -48,12 +49,10 @@ class Foldout extends React.Component {
     }
 
     renderChildren() {
-        return (
-            <ColumnDiv style={{width:'100%'}}>
-                <hr style={{width:'100%', marginTop:-1}} className='border-subTesxt'/>
-                {this.props.children}
-            </ColumnDiv>
-        )
+        return [
+                <hr style={{width:'100%', marginTop: 4, marginBottom: 4}} className='border-inherit border-2 rounded-md'/>,
+                this.props.children
+        ]
     }
 
     onClick = () => {
@@ -74,15 +73,19 @@ class Foldout extends React.Component {
             borderRightColor: 'transparent',
             borderTopColor: 'transparent',
             marginBottom: this.state.open ? -2 : 2,
-            transform: this.state.open ? 'rotate(180deg)' : ''
+            transform: this.state.open ? 'rotate(180deg)' : '',
+
         }
 
         return (
-            <FoldoutContainer style={this.props.style ? this.props.style : {}}>
-                <FoldoutHeader style={{alignItems:'center', gap:8}} onClick={this.onClick}>
-                    <StyledLabel style={this.props.headerStyle}>{this.props.text}</StyledLabel>
-                    <div style={triangle} className='border-b-text'/>
-                </FoldoutHeader>
+            <FoldoutContainer style={this.props.style ? this.props.style : {}} className={this.props.className}>
+                <div className='flex flex-row w-full items-center justify-center gap-2 hover:brightness-75 active:brightness-[65%]' onClick={this.onClick}>
+                    <div className='flex flex-grow'/>
+                    <StyledLabel style={this.props.headerStyle} className='select-none cursor-pointer justify-self-center'>{this.props.text}</StyledLabel>
+                    <div className='flex flex-grow items-center'>
+                        <div style={triangle} className='border-b-text justify-self-end'/>
+                    </div>
+                </div>
                 {this.state.open && this.renderChildren()}
             </FoldoutContainer>
         );
