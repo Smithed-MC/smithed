@@ -245,11 +245,15 @@ export class PackHelper {
         const packRef = database.ref(`packs/${id}`)
 
         queueRef.get().then((snapshot) => {
+            console.log('got queue')
             let val = snapshot.val()
             if (val != null) {
-                queueRef.set(null).then(() => {
+                console.log('removing')
+                queueRef.remove().then(() => {
+                    console.log('removed')
                     val.added = Date.now()
                     packRef.set(val).then(() => {
+                        console.log('added')
                         if (callback != null)
                             callback()
                     })
@@ -262,12 +266,12 @@ export class PackHelper {
         const queueRef = database.ref(`queue/${id}`)
         const usersPacksRef = database.ref(`users/${owner}/packs/`)
 
+        queueRef.remove()
         usersPacksRef.get().then((snapshot) => {
             const packs: Pack[] = snapshot.val()
 
             for (let i = 0; i < packs.length; i++) {
                 if (packs[i].id === id.split(':')[1]) {
-                    queueRef.set(null)
                     usersPacksRef.child(`${i}/messages`).get().then((snapshot) => {
                         let messages: string[] = snapshot.val()
                         if (messages == null) messages = []

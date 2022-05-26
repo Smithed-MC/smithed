@@ -225,5 +225,6 @@ export default function VersionSettings(props: { versions: Version[] }) {
         </div>
         {versions.length > 0 && <label className='text-text'>Latest Version is {versions[versions.length - 1].name}</label>}
         {versionDisplays}
+ 
     </div>;
 }

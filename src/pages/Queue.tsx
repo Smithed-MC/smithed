@@ -45,11 +45,11 @@ function QueueEntry(props: {data: Pack, owner: string, id: string}) {
     }
 
     return (
-        <GroupedFoldout text={props.id} group="queue" style={{ width: '95%' }}>
+        <GroupedFoldout text={props.id} group="queue" style={{ width: '95%', backgroundColor:'var(--darkBackground)' }}>
             <ColumnDiv style={{ gap: 8 }}>
                 <ColumnDiv style={{ gap: 8 }}>
                     <StyledLabel style={{}}><b style={{ fontSize: 18 }}>Description: </b> {props.data.display.description.length < 400 ? props.data.display.description : props.data.display.description.substring(0, 400) + '...'}</StyledLabel>
-                    <div className='flex flex-row'>
+                    <div className='flex flex-row gap-2 justify-center'>
                         <StyledButton onClick={async () => {
                             const ver = props.data.versions[0]
                             console.log(props.data.versions)
@@ -72,9 +72,18 @@ function QueueEntry(props: {data: Pack, owner: string, id: string}) {
                             const tempZip = new zip.ZipReader(new zip.BlobReader(blob))
 
                             const entries = await tempZip.getEntries()
+                            console.log(entries)
                             for(let e of entries) {
-                                const path = pathModule.join(tempFolder, e.filename)
+                                let path = tempFolder
+
+                                for(let part of e.filename.split('/').slice(0, -1)) {
+                                    if(!fs.existsSync(path)) fs.mkdirSync(path)
+                                    path = pathModule.join(path, part)
+                                }
+                                path = pathModule.join(tempFolder, e.filename)
+
                                 if(e.directory) {
+                                    console.log(e.filename)
                                     fs.mkdirSync(path)
                                     continue 
                                 }
@@ -82,13 +91,17 @@ function QueueEntry(props: {data: Pack, owner: string, id: string}) {
                                 if(e.getData === undefined) return
                                 await e.getData(fileDataWriter)
 
-                                fs.writeFileSync(path, Buffer.from(await fileDataWriter.getData().arrayBuffer()))
+                                try {
+                                    fs.writeFileSync(path, Buffer.from(await fileDataWriter.getData().arrayBuffer()))
+                                } catch (e) {
+                                    console.log(e)
+                                }
                             }
                             
                             const exec = window.require('child_process').exec
                             exec(`code ${tempFolder}`)
-                        }}>Open</StyledButton>
-                        {props.data.display.webPage !== '' && <StyledButton style={{ width: '196px' }} onClick={() => {
+                        }} style={{width:'128px'}}>Open</StyledButton>
+                        {props.data.display.webPage !== '' && <StyledButton style={{ width: '128px' }} onClick={() => {
                             remote.shell.openExternal(props.data.display.webPage)
                         }}>View Page</StyledButton>}
                     </div>
@@ -99,7 +112,7 @@ function QueueEntry(props: {data: Pack, owner: string, id: string}) {
                             Reject
                         </StyledButton>} modal
                     >
-                        <ColumnDiv style={{ backgroundColor: 'var(--lightBackground)', padding: 16, border: `4px solid ${palette.darkAccent}`, borderRadius: 8 }}>
+                        <ColumnDiv style={{ backgroundColor: 'var(--lightBackground)', padding: 16, border: `4px solid var(--darkAccent)`, borderRadius: 8 }}>
                             <StyledInput placeholder="Reason for rejection..." style={{ width: '384px' }} defaultValue={reason} onChange={(e) => { reason = e.target.value }} />
                             <StyledButton onClick={() => {
                                 if (reason !== '') {

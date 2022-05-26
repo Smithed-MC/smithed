@@ -106,7 +106,7 @@ function ProfileDisplay(props: ProfileDisplayProps) {
                                     if (props.profile.packs !== undefined) {
                                         setDownloading(true)
 
-                                        const baseUrl = 'https://ovh.smithed.dev'// 'http://vps-fb6d39ae.vps.ovh.us'
+                                        const baseUrl = 'https://smithed.dev'// 'http://vps-fb6d39ae.vps.ovh.us'
                                         const url = `${baseUrl}/api/download?version=${props.profile.version}&` + props.profile.packs.map(p => {
                                             return 'pack=' + p.id + '@' + p.version
                                         }).join('&')
