@@ -44,6 +44,11 @@
   select {
     @apply bg-darkBackground text-text placeholder:text-subText font-inconsolata rounded-md p-2
   }
+  
+  .hideOnSmithed {
+    display: none;
+  }
+
 }
 
 body {

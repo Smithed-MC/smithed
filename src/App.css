@@ -38,6 +38,7 @@
     transform: rotate(360deg);
   }
 }
+
 .hideOnSmithed {
   display: none;
 }
