@@ -95,6 +95,7 @@ function Login(props: LoginProps) {
     const history = useHistory()
 
     ipcRenderer.on('user-data-changed', () => {
+        console.log(match)
         if (firebaseUser != null && match?.isExact) {
             history.push('/app')
         }
