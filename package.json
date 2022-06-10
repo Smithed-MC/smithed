@@ -45,6 +45,7 @@
     "react-router-dom": "^5.2.0",
     "react-scripts": "^5.0.0",
     "reactjs-popup": "^2.0.5",
+    "recharts": "^2.1.10",
     "semver": "^7.3.5",
     "semver-compare": "^1.0.0",
     "simple-discord-webhooks": "^1.0.1",

@@ -213,8 +213,10 @@ export default function VersionSettings(props: { versions: Version[] }) {
 
                 if (verNumber === undefined || verNumber === '')
                     return;
-                if (!semver.valid(verNumber))
+                if (!semver.valid(verNumber)) {
                     versionNumberRef.current.value = 'Not valid semver'
+                    return;
+                }
 
 
                 if (versions.find((v) => v.name === verNumber) == null) {

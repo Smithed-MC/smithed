@@ -13,6 +13,7 @@ import { BooleanParam, StringParam, useQueryParam } from 'use-query-params';
 import DisplaySettings from './DisplaySettings';
 import VersionSettings from './VersionSettings';
 import Foldout from 'components/Foldout';
+import Analytics from './Analytics';
 
 const mainFoldoutStyle = { width: '100%', backgroundColor: 'transparent', border: `4px solid var(--darkAccent)` }
 
@@ -111,7 +112,7 @@ function Edit(props: any) {
             return 'No versions have been specified'
         else {
             for (let v = 0; v < pack.versions.length; v++) {
-                if (pack.versions[v].downloads === {} || pack.versions[v].downloads === null)
+                if (Object.keys(pack.versions[v].downloads).length === 0 || pack.versions[v].downloads === null)
                     return `No downloads have been added to version ${v}`
                 if (pack.versions[v].supports.length === 0)
                     return `Version ${v} must support atleast 1 game version!`
@@ -168,6 +169,9 @@ function Edit(props: any) {
                     }}>
                         {renderCategoryOptions()}
                     </Dropdown>
+                </Foldout>
+                <Foldout text="Analytics" style={mainFoldoutStyle} defaultValue={false}>
+                    <Analytics pack={pack}/>
                 </Foldout>
                 {(error != null && error !== '') && <b style={{ fontFamily: 'Inconsolata', color: 'red' }}>{error}</b>}
                 <RowDiv style={{ gap: 8, justifyContent: 'space-evenly', width: '10%' }}>
