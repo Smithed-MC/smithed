@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import styled from 'styled-components';
 import { RowDiv, userData } from '..';
 import Home from '../pages/Home';
@@ -9,20 +9,13 @@ import Dropdown, { Option } from './Dropdown';
 import { StyledLabel } from '../Shared';
 import { useHistory } from 'react-router';
 import { setSelectedProfile } from '../pages/Browse';
-import PackDownloader from '../shared/PackDownload';
 import Profile from 'shared/Profile';
-import JSZip from 'jszip';
 import * as zip from '@zip.js/zip.js'
 
 const { ipcRenderer } = window.require('electron');
 interface ProfileDisplayProps {
     profile: Profile,
     active: boolean
-}
-
-interface ProfileDisplayState {
-    mouseOver: boolean,
-    editMenu: boolean
 }
 
 const ProfileDisplayDiv = styled.div`

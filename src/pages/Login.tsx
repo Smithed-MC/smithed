@@ -7,7 +7,7 @@ import appSettings, { saveSettings } from '../Settings';
 import { PackHelper } from '../Pack';
 import { ButtonLabel } from '../Shared';
 import TabButton from '../components/TabButton';
-import { matchPath, useHistory, useRouteMatch } from 'react-router';
+import { useHistory, useRouteMatch } from 'react-router';
 import RadioButton from '../components/RadioButton';
 import { auth, database } from '../shared/ConfigureFirebase';
 
