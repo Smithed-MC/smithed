@@ -170,7 +170,7 @@ if (isDev && process.platform === 'win32') {
 }
 
 const onOpenedFromUrl = (url) => {
-	let data = url.replace(protocolLink + '://', '').split('/')
+	let data = url.substring((protocolLink + '://').length).split('/')
 
 	if (data[0] === 'packs' && data.length == 3) {
 		win.webContents.send('go-to-page', `/app/browse/view/${data[1]}/${data[2]}`)
