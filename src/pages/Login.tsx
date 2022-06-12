@@ -94,9 +94,9 @@ function Login(props: LoginProps) {
     const match = useRouteMatch('/')
     const history = useHistory()
 
-    ipcRenderer.on('user-data-changed', () => {
+    ipcRenderer.on('user-data-changed', (oldData: any) => {
         console.log(match)
-        if (firebaseUser != null && match?.isExact) {
+        if (firebaseUser != null && oldData.uid !== '' && match?.isExact) {
             history.push('/app')
         }
     })

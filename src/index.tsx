@@ -71,10 +71,11 @@ interface UserData {
 
 export let userData: UserData = { uid: '', displayName: '', role: '', profiles: [], modsDict: {}, versions: [], packs: asEnumerable([]) }
 export function setUserData(data: UserData) {
+	let oldData = userData
 	userData = data
 	userData.ref = database.ref(`/users/${userData.uid}`)
 
-	remote.getCurrentWindow().webContents.send('user-data-changed')
+	remote.getCurrentWindow().webContents.send('user-data-changed', oldData)
 }
 
 
