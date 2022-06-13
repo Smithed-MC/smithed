@@ -77,21 +77,11 @@ function Edit(props: any) {
 
     // console.log(packId)
 
-    const [versions, setVersions] = useState([] as JSX.Element[])
-    const [newFlag, setNewFlag] = useState(false)
     const [error, setError] = useState('')
 
 
     const generateSelectedCategories = (pack: PackWithMessages) => {
-        if (pack.categories) {
-            let elements: JSX.Element[] = []
-            for (let c of pack.categories) {
-                elements.push(<StyledLabel>{c}</StyledLabel>)
-            }
-            console.log(elements)
-            setCategories(elements)
-        }
-        setCategories([] as JSX.Element[])
+        setCategories(pack.categories.map(c => <label>{c}</label>))
     }
     const [categories, setCategories] = useState<JSX.Element[]>()
 

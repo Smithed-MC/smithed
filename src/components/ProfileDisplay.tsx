@@ -11,6 +11,7 @@ import { useHistory } from 'react-router';
 import { setSelectedProfile } from '../pages/Browse';
 import Profile from 'shared/Profile';
 import * as zip from '@zip.js/zip.js'
+import { disableSidebar } from './Sidebar';
 
 const { ipcRenderer } = window.require('electron');
 interface ProfileDisplayProps {
@@ -100,6 +101,7 @@ function ProfileDisplay(props: ProfileDisplayProps) {
                                 if (props.profile.setup === undefined || !props.profile.setup) {
                                     if (props.profile.packs !== undefined) {
                                         setDownloading(true)
+                                        // disableSidebar(true)
 
                                         const baseUrl = 'https://smithed.dev'// 'http://vps-fb6d39ae.vps.ovh.us'
                                         const url = `${baseUrl}/api/download?version=${props.profile.version}&` + props.profile.packs.map(p => {
@@ -124,6 +126,7 @@ function ProfileDisplay(props: ProfileDisplayProps) {
                                                 fs.writeFileSync(pathModule.join(props.profile.directory, 'resourcepacks/resourcepacks.zip'), buffer)
                                         }
 
+                                        // disableSidebar(false)
                                         setDownloading(false)
                                         props.profile.setup = true;
                                         saveProfiles(userData.profiles)

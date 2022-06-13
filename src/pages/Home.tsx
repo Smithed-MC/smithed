@@ -166,14 +166,14 @@ class Home extends React.Component {
     renderMain() {
         return (
             <div style={{ width: '100%', height: '100%' }}>
-                <div style={{ backgroundColor: 'var(--darkBackground)', width: '100%', height: '30px', marginTop: 1, display: 'flex', justifyContent: 'space-evenly' }}>
+                {/* <div style={{ backgroundColor: 'var(--darkBackground)', width: '100%', height: '30px', marginTop: 1, display: 'flex', justifyContent: 'space-evenly' }}>
                     <TabButton group="home-tab" name="my-profiles" defaultValue={true}
                     // onChange={(n: string)=>{this.swapTab('/app/home/')}}
                     >My Profiles</TabButton>
                     <TabButton group="home-tab" name="trending"
                     // onChange={(n: string)=>{this.swapTab('/app/home/trending')}}
                     >Trending</TabButton>
-                </div>
+                </div> */}
                 <Switch>
                     <Route path='/app/home/trending'>{this.renderTrendingProfiles()}</Route>
                     <Route path='/app/home'>{this.renderMyProfiles()}</Route>

@@ -22,10 +22,11 @@ const ColoredSvg = styled.img`
 `
 
 interface SidebarOptionProps {
-    img: React.FunctionComponent<React.SVGProps<SVGSVGElement> & { title?: string }>
-    hint: string
-    onClick?: () => void
-    style?: React.CSSProperties
+    img: React.FunctionComponent<React.SVGProps<SVGSVGElement> & { title?: string }>,
+    hint: string,
+    onClick?: () => void,
+    style?: React.CSSProperties,
+    disabled?: boolean
 }
 
 
@@ -38,7 +39,7 @@ function SidebarOption(props: SidebarOptionProps) {
     return (
         <div style={{ height: 32, width: 32 }}>
             <props.img title={props.hint} style={props.style} className={`fill-lightAccent hover:brightness-75 active:brightness-50 h-[32px] w-[32px] cursor-pointer`} fill='none' stroke='0' onClick={() => {
-                if (props.onClick != null)
+                if (props.onClick != null && !props.disabled)
                     props.onClick()
             }} />
         </div>
@@ -52,7 +53,7 @@ export function PageBasedSidebarOption(props: GroupedSidebarOptionProps) {
     return (
         <div style={{ height: 32, width: 32 }}>
             <props.img title={props.hint} style={style} className={(match ? 'fill-text' : `fill-lightAccent hover:brightness-75 active:brightness-50`) + ' cursor-pointer'} fill='none' stroke='0' onClick={() => {
-                if (props.onClick != null)
+                if (props.onClick != null && !props.disabled)
                     props.onClick()
             }} />
         </div>

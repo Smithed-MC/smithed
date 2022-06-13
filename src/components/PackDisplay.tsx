@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import styled from 'styled-components';
-import { ColumnDiv, RowDiv } from '..';
+import { ColumnDiv, mainEvents, RowDiv } from '..';
 import { Display, PackEntry } from '../Pack';
 import palette from '../shared/Palette'
 import { RouteComponentProps, withRouter } from 'react-router';
@@ -98,6 +98,9 @@ function PackDisplay(props: PackDisplayProps) {
         setContained(profileContains())
     }, [])
 
+    mainEvents.on('profile-changed', () => {
+        setContained(profileContains())
+    })
 
     const dateAdded = new Date(props.packEntry.updated !== undefined ? props.packEntry.updated : props.packEntry.added)
     const timeDiff = Math.floor(Math.abs(dateAdded.getTime() - Date.now()) / (1000 * 3600 * 24))

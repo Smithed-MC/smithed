@@ -42,10 +42,11 @@ export default function Analytics({ pack }: { pack: Pack }) {
 
     function getPrev30Data(downloads: any) {
         let date = new Date(Date.now());
+        console.log(date.toLocaleDateString())
         date.setDate(date.getDate() - 30);
-
-        const downloadDates = Object.keys(downloads).filter(key => { return new Date(key) > date; });
-
+        console.log(date.toLocaleDateString())
+        const downloadDates = Object.keys(downloads).filter(key => { let result = new Date(key) > date; console.log(key, result); return result; });
+        console.log(downloadDates.sort((a,b) => {return (new Date(a)) > (new Date(b)) ? 1 : -1}))
         const data = downloadDates.map(key => {
             return {
                 date: key,

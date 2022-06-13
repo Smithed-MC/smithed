@@ -39,9 +39,10 @@ function TabNavigator(props: any) {
     '/app/news',
     '/app/home',
     '/app/browse',
-    '/app/create',
-    '/app/queue'
+    '/app/create'
   ]
+
+  if(userData.role === 'admin') pages.push('/app/queue')
 
   const listener = ({key}: {key: string}) => {
     const match = (matchPath(location.pathname, {path:'/app/:page', exact:true}) || matchPath(location.pathname, {path:'/app/'}))
@@ -66,29 +67,40 @@ function TabNavigator(props: any) {
   }
 
   useEffect(() => {
-    mainEvents.addListener('key-press', listener)
+    if(!props.disabled) {
+      mainEvents.addListener('key-press', listener)
 
-    return () => {
-      mainEvents.removeListener('key-press', listener)
+      return () => {
+        mainEvents.removeListener('key-press', listener)
+      }
     }
-  })
+  }, [props.disabled])
 
   return (
     <span style={{display:'none'}}/>
   )
 }
 
+
+let globalSetDisable: React.Dispatch<React.SetStateAction<boolean>>
+export function disableSidebar(disable: boolean) {
+  console.log('Disable:',disable)
+  globalSetDisable(disable)
+}
+
 function Sidebar(props: SidebarProps) {
   const [sidebar, setSidebar] = useState((<div></div>));
+  const [disable, setDisable] = useState(false)
+  globalSetDisable = setDisable
   const history = useHistory();
   useEffect(() => {
     setSidebar((
       <div className={`flex flex-col items-center h-full py-[15px] px-[10px] gap-[16px] bg-darkBackground`}>
-          <TabNavigator/>
-          <PageBasedSidebarOption page='/app/news/' img={NewsSvg} hint='News' onClick={() => {props.onClick('news')}}/>
-          <PageBasedSidebarOption page='/app/home/' img={HomeSvg} hint='Home' onClick={() => {props.onClick('home')}}/>
-          <PageBasedSidebarOption page='/app/browse/' img={BrowseSvg} hint='Browse' onClick={() => {props.onClick('browse')}}/>
-          <PageBasedSidebarOption page='/app/create/' img={CreateSvg} hint='Create' onClick={() => {props.onClick('create')}}/>
+          <TabNavigator disabled={disable}/>
+          <PageBasedSidebarOption disabled={disable} page='/app/news/' img={NewsSvg} hint='News' onClick={() => {props.onClick('news')}}/>
+          <PageBasedSidebarOption disabled={disable} page='/app/home/' img={HomeSvg} hint='Home' onClick={() => {props.onClick('home')}}/>
+          <PageBasedSidebarOption disabled={disable} page='/app/browse/' img={BrowseSvg} hint='Browse' onClick={() => {props.onClick('browse')}}/>
+          <PageBasedSidebarOption disabled={disable} page='/app/create/' img={CreateSvg} hint='Create' onClick={() => {props.onClick('create')}}/>
           {userData.role === 'admin' && <PageBasedSidebarOption page='/app/queue/' img={QueueSvg} hint='Queue' onClick={() => {props.onClick('queue')}}/>}
           <li style={{visibility: 'hidden', flexGrow: 1}}/>
           <SidebarOption img={DiscordSvg} hint='Join the Discord' onClick={()=>{

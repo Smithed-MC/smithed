@@ -16,7 +16,7 @@ import Profile from 'shared/Profile';
 
 export let selectedProfile: Profile = { name: '', version: '' }
 export function setSelectedProfile(name: string) {
-    selectedProfile = asEnumerable(userData.profiles).Where(p => p.name === name).FirstOrDefault()
+    selectedProfile = userData.profiles.filter(p => p.name == name)[0]
     mainEvents.emit('profile-changed')
 }
 
@@ -40,34 +40,37 @@ const getProfiles = () => {
     return elements;
 }
 
+const updatedSort = (p: PackEntry) => {
+    if(p.updated !== undefined)
+        return -p.updated
+    else
+        return -p.added
+}
+const newSort = (p: PackEntry) => -p.added
+const downloadsSort = (p: PackEntry) => p.downloads !== undefined ? -p.downloads : 0
 
 function Browse(props: any) {
     const [tab, setTab] = useState(0)
     const [search, setSearch] = useState('')
     const [packs, setPacks] = useState([] as JSX.Element[])
     const [filters, setFilters] = useState([] as string[])
-    let sort = (p: PackEntry) => -p.added
+    let sort = updatedSort
 
     const renderTabs = () => {
         return (
             <div className='bg-darkBackground' style={{paddingLeft:16, paddingRight: 16, borderRadius: 8, justifyContent:'center', display:'flex', gap: 16, marginTop: 8}}>
                     <TabButton onChange={()=>{
-                    sort = (p: PackEntry) => {
-                        if(p.updated !== undefined)
-                            return -p.updated
-                        else
-                            return -p.added
-                    }
+                    sort = updatedSort
                     renderPacks(sort)
                 }} defaultValue={true} group="browse-sorting" name="updated">Updated</TabButton>
                 <TabButton onChange={()=>{
-                    sort = (p: PackEntry) => -p.added
+                    sort = newSort
                     renderPacks(sort)
                 }} group="browse-sorting" name="new">New</TabButton>
                 <TabButton onChange={()=>{
-                    sort = (p: PackEntry) => p.downloads !== undefined ? -p.downloads : 0
+                    sort = downloadsSort
                     renderPacks(sort)
-                }} group="browse-sorting" name="trending">Downloads</TabButton>
+                }} group="browse-sorting" name="downloads">Downloads</TabButton>
             </div>
         )
     }
@@ -91,7 +94,7 @@ function Browse(props: any) {
             if (!display.name.toLowerCase().includes(search)) 
                 return false
 
-            if(filters.length > 0 && (!p.data.categories || p.data.categories.filter(c => filters.includes(c)).length == 0))
+            if(filters.length > 0 && (!p.data.categories || p.data.categories.filter(c => filters.includes(c)).length != filters.length))
                 return false
             return true
         }
