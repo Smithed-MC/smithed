@@ -65,7 +65,7 @@ class HandleLauncher {
         if (!fs.existsSync(launcherPath) && platform !== 'darwin') {
             if(platform === 'win32') {
                 try {
-                    var pid = exec(`start shell:appsFolder\\Microsoft.4297127D64EC6_8wekyb3d8bbwe!Minecraft --workdir "${profile.directory}"`).pid
+                    var pid = exec(`start shell:appsFolder\\Microsoft.4297127D64EC6_8wekyb3d8bbwe!Minecraft --workdir "${path.profile.directory.replace(' ', '^ ')}"`).pid
                     // var process = spawn('start', ['shell:appsFolder\\Microsoft.4297127D64EC6_8wekyb3d8bbwe!Minecraft', '--workdir', profile.directory], {detached: true})
                 } catch {
                     this.window.webContents.send('invalid-launcher')
