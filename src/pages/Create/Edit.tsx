@@ -81,6 +81,10 @@ function Edit(props: any) {
 
 
     const generateSelectedCategories = (pack: PackWithMessages) => {
+        if(pack.categories === undefined || pack.categories.length === 0) {
+            setCategories([])
+            return
+        }
         setCategories(pack.categories.map(c => <label>{c}</label>))
     }
     const [categories, setCategories] = useState<JSX.Element[]>()
