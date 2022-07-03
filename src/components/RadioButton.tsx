@@ -9,7 +9,8 @@ interface RadioButtonProps {
     text: string,
     defaultValue?: boolean;
     children?: any,
-    style?: React.CSSProperties
+    style?: React.CSSProperties,
+    [key: string]: any
 }
 
 interface RadioButtonState {

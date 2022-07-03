@@ -80,11 +80,11 @@ class Home extends React.Component {
     }
 
     async checkForRunningProfile() {
-        
+
         const info = await ipcRenderer.invoke('get-launcher-info')
         console.log(info)
-        if(info.running)
-            this.setState({activeProfile: info.profile})
+        if (info.running)
+            this.setState({ activeProfile: info.profile })
     }
 
     componentDidMount() {
@@ -120,19 +120,18 @@ class Home extends React.Component {
             }
         }
         return (
-            <ColumnDiv style={{ width: 200, height: 300, justifyContent: 'center' }}>
-                <ColumnDiv style={{ width: 150, height: 150, backgroundColor: 'var(--darkBackground)', justifyContent: 'center' }}>
-                    <StyledLabel style={{ textAlign: 'center', fontSize: 196, fontFamily: 'Disket', color: 'var(--text)', WebkitUserSelect: 'none' }}
-                        onMouseOver={e => setFilter(e, 'brightness(0.8)')}
-                        onMouseLeave={e => setFilter(e, 'brightness(1)')}
-                        onMouseDown={e => setFilter(e, 'brightness(0.6)')}
-                        onMouseUp={e => setFilter(e, 'brightness(1)')}
+            <div className='flex flex-col w-[200px] h-[300px] pl-[25px] pr-[25px] justify-center'>
+                {this.state.profileDisplays?.length === 0 && <label className='absolute w-[150px] top-[25px] text-center text-wrap'>
+                    Click to create a new profile
+                </label>}
+                <div className='flex flex-col w-[150px] h-[150px] justify-center rounded-lg bg-darkBackground hover:brightness-90 active:brightness-75'>
+                    <StyledLabel className='cursor-pointer' style={{ textAlign: 'center', fontSize: 196, fontFamily: 'Disket', color: 'var(--text)', WebkitUserSelect: 'none' }}
                         onClick={() => {
                             this.swapTab('/app/home/new_profile')
                         }}
                     >+</StyledLabel>
-                </ColumnDiv>
-            </ColumnDiv>
+                </div>
+            </div>
         )
     }
 
@@ -272,15 +271,15 @@ class Home extends React.Component {
                 <Popup trigger={
                     <ImportText>Import from link</ImportText>
                 }>
-                    <ColumnDiv style={{backgroundColor: 'var(--lightBackground)', padding:16, border: `4px solid ${palette.darkAccent}`, borderRadius: 8, width:'100%'}}>
-                        <StyledInput style={{width:'100%'}} placeholder='Share link...' id='home:import-link'/>
+                    <ColumnDiv style={{ backgroundColor: 'var(--lightBackground)', padding: 16, border: `4px solid ${palette.darkAccent}`, borderRadius: 8, width: '100%' }}>
+                        <StyledInput style={{ width: '100%' }} placeholder='Share link...' id='home:import-link' />
                         <StyledButton onClick={() => {
                             const link = (document.getElementById('home:import-link') as HTMLInputElement).value
                             const getParam = (param: string) => {
                                 return decodeURIComponent(link.substring(link.indexOf(param + '=') + param.length + 1, link.indexOf('&', link.indexOf(param + '='))))
                             }
 
-                            if(!link.startsWith('https://smithed.dev/download?')) return
+                            if (!link.startsWith('https://smithed.dev/download?')) return
                             let newProfile: Profile = {
                                 name: getParam('name'),
                                 version: getParam('version'),
@@ -289,7 +288,7 @@ class Home extends React.Component {
                                 packs: (() => {
                                     let packs: Dependency[] = []
                                     const listOfPacks = link.substring(link.indexOf('&pack=') + 6).split('&pack=')
-                                    for(let p of listOfPacks)
+                                    for (let p of listOfPacks)
                                         packs.push({
                                             id: p.split('@')[0],
                                             version: decodeURIComponent(p.split('@')[1])
@@ -304,13 +303,13 @@ class Home extends React.Component {
                                 this.setState({ error: "Profile of that name exists!" })
                                 return;
                             }
-                            
+
                             setupProfile(newProfile, {}).then(() => {
                                 p.push(newProfile)
-        
+
                                 saveProfiles(p)
                                 this.buildProfileDisplays()
-        
+
                                 setSelectedProfile(newProfile.name)
                                 this.props.history.push(`/app/home/`)
                             })

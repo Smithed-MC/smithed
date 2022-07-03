@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import styled from 'styled-components';
 import { ColumnDiv, mainEvents, RowDiv } from '..';
-import { Display, PackEntry } from '../Pack';
+import { Display, PackEntry, PackHelper } from '../Pack';
 import palette from '../shared/Palette'
 import { RouteComponentProps, withRouter } from 'react-router';
 import { selectedProfile } from '../pages/Browse';
@@ -92,14 +92,17 @@ function PackDisplay(props: PackDisplayProps) {
         }
         return false
     }
+    const [valid, setValid] = useState(PackHelper.hasVersion(props.packEntry.data, selectedProfile.version))
     const [contained, setContained] = useState(profileContains())
 
     useEffect(() => {
         setContained(profileContains())
+        setValid(PackHelper.hasVersion(props.packEntry.data, selectedProfile.version))
     }, [])
 
     mainEvents.on('profile-changed', () => {
         setContained(profileContains())
+        setValid(PackHelper.hasVersion(props.packEntry.data, selectedProfile.version))
     })
 
     const dateAdded = new Date(props.packEntry.updated !== undefined ? props.packEntry.updated : props.packEntry.added)
@@ -107,13 +110,12 @@ function PackDisplay(props: PackDisplayProps) {
 
     const display: Display = props.packEntry.data.display
 
-
     return (
-        <div style={{ width: '85%' }}>
+        <div id={props.packEntry.id} style={{ width: '85%' }}>
             <div className='flex bg-darkBackground w-full h-[96px] p-4 justify-left rounded-xl gap-4'>
-                <img style={{ width: 64, height: 64, WebkitUserSelect: 'none' }} src={display.icon} alt="Pack Icon" />
-                <ColumnDiv style={{ alignItems: 'left', width: '100%', justifyContent: 'space-evenly'}}>
-                    <RowDiv style={{ alignItems: 'bottom', justifyContent: 'space-between', gap: 4, width: '100%'}}>
+                <img style={{ width: 64, height: 64, WebkitUserSelect: 'none' }} src={display.icon} alt="Pack Icon" title={props.packEntry.id} />
+                <ColumnDiv style={{ alignItems: 'left', width: '100%', justifyContent: 'space-evenly' }}>
+                    <RowDiv style={{ alignItems: 'bottom', justifyContent: 'space-between', gap: 4, width: '100%' }}>
                         <div style={{ display: 'table', tableLayout: 'fixed', width: '100%' }}>
                             <PackName onClick={() => {
                                 const id = props.packEntry.id.split(':')
@@ -121,16 +123,22 @@ function PackDisplay(props: PackDisplayProps) {
                                 props.history.push(link)
                             }}>{display.name}</PackName>
                         </div>
-                        <div className='relative right-0 bg-red'>
-                            {!contained && <PackAddButton className='bg-lightAccent' disabled={selectedProfile.name === ''} onClick={() => {
-                                setContained(true)
-                                addPackToProfile(selectedProfile, props.packEntry)
-                            }}>+</PackAddButton>}
-                            {contained && <PackAddButton className='bg-badAccent' onClick={() => {
-                                setContained(false)
-                                removePackFromProfile(selectedProfile, props.packEntry);
-                            }}>-</PackAddButton>}
-                        </div>
+                        {!valid && <div className='relative right-0 bg-red'>
+                            <PackAddButton className='bg-lightAccent brightness-50' disabled title={selectedProfile.version === '' ? 
+                            'Select a profile to add!' : 'This pack is not compatible with your version of the game'}>+</PackAddButton>     
+                        </div>}
+                        {valid &&
+                            <div className='relative right-0 bg-red'>
+                                {!contained && <PackAddButton className='bg-lightAccent' disabled={selectedProfile.name === ''} onClick={() => {
+                                    setContained(true)
+                                    addPackToProfile(selectedProfile, props.packEntry)
+                                }}>+</PackAddButton>}
+                                {contained && <PackAddButton className='bg-badAccent' onClick={() => {
+                                    setContained(false)
+                                    removePackFromProfile(selectedProfile, props.packEntry);
+                                }}>-</PackAddButton>}
+                            </div>
+                        }
                     </RowDiv>
                     <RowDiv style={{ justifySelf: 'left', gap: 32, width: '100%' }} className='mt-[-8px]'>
                         <PackStats>{`${formatDownloads(props.packEntry.downloads !== undefined ? props.packEntry.downloads : 0)} Download${props.packEntry.downloads !== 1 ? 's' : ''}`}</PackStats>

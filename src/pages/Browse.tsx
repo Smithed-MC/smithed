@@ -2,7 +2,7 @@ import { useCallback, useEffect, useState } from 'react';
 import '../font.css'
 import { ColumnDiv, StyledInput, RowDiv, userData, Header2, mainEvents } from '..';
 import PackDisplay from '../components/PackDisplay';
-import { PackEntry, PackHelper } from '../Pack';
+import { Pack, PackEntry, PackHelper } from '../Pack';
 import Dropdown, { Option } from '../components/Dropdown';
 import { Route, Switch } from 'react-router';
 import PackView from './Browse/PackView';
@@ -11,6 +11,7 @@ import TabButton from '../components/TabButton';
 import Foldout from '../components/Foldout';
 import RadioButton from '../components/RadioButton';
 import Profile from 'shared/Profile';
+import { OrderedEnumerable } from 'linq-es5/lib/enumerable';
 
 
 
@@ -40,112 +41,91 @@ const getProfiles = () => {
     return elements;
 }
 
-const updatedSort = (p: PackEntry) => {
-    if(p.updated !== undefined)
-        return -p.updated
-    else
+const sorts: {[key: string]: (p: PackEntry) => number} = {
+    'updated': function updatedSort(p: PackEntry) {
+        if (p.updated !== undefined)
+            return -p.updated
+        else
+            return -p.added
+    },
+    'new': function newSort(p: PackEntry) {
         return -p.added
+    },
+    'downloads': function downloadsSort(p: PackEntry) {
+        return p.downloads !== undefined ? -p.downloads : 0
+    }
 }
-const newSort = (p: PackEntry) => -p.added
-const downloadsSort = (p: PackEntry) => p.downloads !== undefined ? -p.downloads : 0
 
 function Browse(props: any) {
-    const [tab, setTab] = useState(0)
     const [search, setSearch] = useState('')
-    const [packs, setPacks] = useState([] as JSX.Element[])
-    const [filters, setFilters] = useState([] as string[])
-    let sort = updatedSort
+    const [hideUnsupported, setHideUnsupported] = useState(false)
+    const [packs, setPacks] = useState<PackEntry[] | undefined>()
+    const [filters, setFilters] = useState<string[]>([])
+    const [sort, setSort] = useState<string>('updated')
 
     const renderTabs = () => {
         return (
-            <div className='bg-darkBackground' style={{paddingLeft:16, paddingRight: 16, borderRadius: 8, justifyContent:'center', display:'flex', gap: 16, marginTop: 8}}>
-                    <TabButton onChange={()=>{
-                    sort = updatedSort
-                    renderPacks(sort)
+            <div className='bg-darkBackground' style={{ paddingLeft: 16, paddingRight: 16, borderRadius: 8, justifyContent: 'center', display: 'flex', gap: 16, marginTop: 8 }}>
+                <TabButton onChange={() => {
+                    setSort('updated')
                 }} defaultValue={true} group="browse-sorting" name="updated">Updated</TabButton>
-                <TabButton onChange={()=>{
-                    sort = newSort
-                    renderPacks(sort)
+                <TabButton onChange={() => {
+                    setSort('new')
                 }} group="browse-sorting" name="new">New</TabButton>
-                <TabButton onChange={()=>{
-                    sort = downloadsSort
-                    renderPacks(sort)
+                <TabButton onChange={() => {
+                    setSort('downloads')
                 }} group="browse-sorting" name="downloads">Downloads</TabButton>
             </div>
         )
     }
 
-    const renderPacks = useCallback((sort: (p: PackEntry) => any) => {
-        if(selectedProfile.name === '') {
-            setPacks([<Header2>Select a profile to continue</Header2>])
-            return;
+    const processPacks = useCallback(() => {
+        if (selectedProfile.name === '') {
+            selectedProfile.version = ''
         }
-
-        let elements: JSX.Element[] = []
-
         function validatePack(p: PackEntry): boolean {
             const display = p.data.display;
-            if (display.hidden) 
+            if (display.hidden || p.owner === undefined || p.added === undefined || display.name === '')
                 return false
 
-            if (!PackHelper.hasVersion(p.data, selectedProfile.version))
-                return false;
-
-            if (!display.name.toLowerCase().includes(search)) 
+            if (hideUnsupported && !PackHelper.hasVersion(p.data, selectedProfile.version))
                 return false
 
-            if(filters.length > 0 && (!p.data.categories || p.data.categories.filter(c => filters.includes(c)).length != filters.length))
+            if (!display.name.toLowerCase().includes(search))
+                return false
+
+            if (filters.length > 0 && (!p.data.categories || p.data.categories.filter(c => filters.includes(c)).length != filters.length))
                 return false
             return true
         }
 
-        const packs = userData.packs.Where(validatePack).OrderBy(sort)
+        const packs = userData.packs.Where(validatePack).OrderBy(sorts[sort])
 
         if (packs.Count() === 0) {
-            setPacks([<Header2>No packs found!</Header2>])
+            setPacks(undefined)
         } else {
-
-            packs.ToArray().forEach((p) => {
-                elements.push(<PackDisplay packEntry={p} />)
-            })
-
-            setPacks(elements)
+            console.log(packs.ToArray())
+            setPacks(packs.ToArray())
         }
-    }, [search, filters])
-
-    
-    const updatePacks = useCallback(() => {
-        renderPacks(sort)
-    }, [renderPacks])
+    }, [[setPacks]])
 
     useEffect(() => {
-        updatePacks()
-        const onProfileChange = () => updatePacks()
-        mainEvents.addListener('profile-changed', onProfileChange)
-
-        return () => {
-            mainEvents.removeListener('profile-changed', onProfileChange)
-        }
-    }, [updatePacks])
-
-    useEffect(() => {
-        updatePacks()
-    }, [updatePacks])
+        processPacks()
+    }, [search, filters, hideUnsupported, sort, selectedProfile])
 
     const generateCategoryFilters = () => {
         let elements: JSX.Element[] = []
-        for(let c of packCategories) {
+        for (let c of packCategories) {
             elements.push(<RadioButton text={c} onChange={v => {
                 let tempFilters = filters
-                if(!v) {
+                if (!v) {
                     tempFilters.splice(tempFilters.indexOf(c), 1)
                 } else {
                     tempFilters.push(c)
                 }
                 setFilters(tempFilters)
-                renderPacks(sort)
-            }}/>)
-            
+            }} />)
+
         }
         return elements
     }
@@ -157,22 +137,27 @@ function Browse(props: any) {
                 {renderTabs()}
                 <RowDiv style={{ width: '100%', height: '100%', marginTop: 16 }}>
                     <ColumnDiv className='flex-[25%] gap-2'>
-                        <Dropdown className='w-3/4' defaultValue={selectedProfile.name !== '' ? selectedProfile.name : undefined} reset={false} onChange={(v) => setSelectedProfile(v)} placeholder='Select a profile'>
+                        <Dropdown className='w-3/4' defaultValue={selectedProfile.name !== '' ? selectedProfile.name : undefined} reset={false} onChange={(v) => {setSelectedProfile(v); processPacks()}} placeholder='Select a profile'>
                             {getProfiles()}
                         </Dropdown>
                         <input className='w-3/4' placeholder="Search..." onChange={(e) => {
                             let v = e.target.value
                             setSearch(v)
                         }} />
-                        <Foldout style={{ width: '75%' }} text='Filters'>
-                            <ColumnDiv style={{alignItems:'left', width:'100%'}}>
+                        <div className='w-3/4 p-2'>
+                            <RadioButton text='Hide Unsupported?' onChange={setHideUnsupported} />
+                        </div>
+                        <Foldout style={{ width: '75%' }} text='Filters' defaultValue={true}>
+                            <ColumnDiv style={{ alignItems: 'left', width: '100%' }}>
                                 {generateCategoryFilters()}
                             </ColumnDiv>
                         </Foldout>
                     </ColumnDiv>
                     <div style={{ flex: '50%' }}>
-                        <ColumnDiv style={{ display: 'inline-flex', gap: 8, overflowY: 'auto', overflowX: 'visible', width: '100%', height: '100%', }}>
-                            {packs}
+                        <ColumnDiv style={{ display: 'inline-flex', gap: 8, overflowY: 'auto', overflowX: 'visible', width: '100%', height: '100%', paddingBottom: 64 }}>
+                            {packs !== undefined && packs.map(p => {
+                                return (<PackDisplay key={p.id} packEntry={p} />)
+                            })}
                         </ColumnDiv>
                     </div>
                     <div style={{ flex: '25%' }}></div>
@@ -186,7 +171,7 @@ function Browse(props: any) {
     return (
         <Switch>
             <Route path="/app/browse/view/:owner/:id">
-                <PackView/>
+                <PackView />
             </Route>
             <Route path="/app/browse">
                 {renderMain()}
