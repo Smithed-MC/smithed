@@ -49,6 +49,15 @@ export class PackWithMessages extends Pack {
     messages: string[] = []
 }
 
+const invalidDownloadSites = [
+    'planetminecraft',
+    'curseforge',
+    'mediafire'
+].map(s => { return {
+    raw: s, 
+    regex: new RegExp(`^https:\/\/([\S]+\.)?${s}\.com`, 'g') 
+}})
+
 function Edit(props: any) {
     const packs: PackWithMessages[] = props.packs ? props.packs : []
     const [packId, setPackId] = useQueryParam('id', StringParam)
@@ -72,7 +81,7 @@ function Edit(props: any) {
     }, [newPack, packId])
 
     useEffect(() => {
-        if(pack) generateSelectedCategories(pack)
+        if (pack) generateSelectedCategories(pack)
     }, [pack])
 
     // console.log(packId)
@@ -81,7 +90,7 @@ function Edit(props: any) {
 
 
     const generateSelectedCategories = (pack: PackWithMessages) => {
-        if(pack.categories === undefined || pack.categories.length === 0) {
+        if (pack.categories === undefined || pack.categories.length === 0) {
             setCategories([])
             return
         }
@@ -108,6 +117,17 @@ function Edit(props: any) {
             for (let v = 0; v < pack.versions.length; v++) {
                 if (Object.keys(pack.versions[v].downloads).length === 0 || pack.versions[v].downloads === null)
                     return `No downloads have been added to version ${v}`
+                else {
+                    for (let d of Object.values(pack.versions[v].downloads)) {
+                        console.log(d)
+                        for (let s of invalidDownloadSites) {
+                            console.log(s)
+                            if (d.match(s.regex))
+                                return `Version ${pack.versions[v].name}: Downloads may not be from ${s.raw}. Please consider an alterative download site such as github.`;
+                        }
+                    }
+                }
+
                 if (pack.versions[v].supports.length === 0)
                     return `Version ${v} must support atleast 1 game version!`
             }
@@ -165,7 +185,7 @@ function Edit(props: any) {
                     </Dropdown>
                 </Foldout>
                 <Foldout text="Analytics" style={mainFoldoutStyle} defaultValue={false}>
-                    <Analytics pack={pack}/>
+                    <Analytics pack={pack} />
                 </Foldout>
                 {(error != null && error !== '') && <b style={{ fontFamily: 'Inconsolata', color: 'red' }}>{error}</b>}
                 <RowDiv style={{ gap: 8, justifyContent: 'space-evenly', width: '10%' }}>
