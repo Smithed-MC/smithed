@@ -47,20 +47,24 @@ function TabNavigator(props: any) {
   const listener = ({key}: {key: string}) => {
     const match = (matchPath(location.pathname, {path:'/app/:page', exact:true}) || matchPath(location.pathname, {path:'/app/'}))
 
-    if(!match?.isExact) return;
+    console.log(match)
+    if(match == null || !match.isExact) return;
 
-    if(key.match(/[0-9]/)) {
+    if(key.match(/[1-9]/) && pages.includes(history.location.pathname)) {
       const tab = Number.parseInt(key)
       
-      if(match.url !== pages[tab - 1] && (tab !== 5 || userData.role === 'admin'))
+      if(tab >= 0 && tab <= pages.length) {
         history.push(pages[tab - 1])
+      }
     } else if(key === 'ArrowUp' || key === 'ArrowDown') {
 
-      const tab = pages.indexOf(match.url)
-
-      if(tab !== -1 && key === 'ArrowUp') {
-        history.push(pages[tab - 1 >= 0 ? tab - 1 : pages.length - 1])
-      } else if(tab !== -1 && key === 'ArrowDown') {
+      const tab = pages.findIndex(p => history.location.pathname.startsWith(p))
+      if(tab === -1) return;
+      
+      if(key === 'ArrowUp') {
+        const nextPage = pages[tab > 0 ? tab - 1 : pages.length - 1]
+        history.push(nextPage)
+      } else if(key === 'ArrowDown') {
         history.push(pages[tab + 1 < pages.length ? tab + 1 : 0])
       }
     }
