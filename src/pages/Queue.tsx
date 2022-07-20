@@ -6,18 +6,20 @@ import * as linq from 'linq-es5'
 import { getPack } from '../UserData';
 import GroupedFoldout from '../components/GroupedFoldout';
 import palette from '../shared/Palette';
-import { Pack, PackDict, PackEntry, PackHelper } from '../Pack';
+import { Pack, PackDict, PackEntry, PackHelper, Version } from '../Pack';
 import Popup from 'reactjs-popup';
 import { fs, pathModule, remote, settingsFolder } from '../Settings';
 import { StyledLabel, StyledButton } from '../Shared';
 import { database } from '../shared/ConfigureFirebase';
 import * as zip from '@zip.js/zip.js'
 import { dirExists } from 'FSWrapper';
+import semver from 'semver'
+import JSZip from 'jszip';
 
 const { Webhook } = window.require('simple-discord-webhooks');
 
 let reason = ''
-function QueueEntry(props: {data: Pack, owner: string, id: string}) {
+function QueueEntry(props: { data: Pack, owner: string, id: string }) {
     function pushWebhook() {
         const pack = props.data;
         const webhook = new Webhook(userData.discordWebhook);
@@ -39,68 +41,23 @@ function QueueEntry(props: {data: Pack, owner: string, id: string}) {
                 color: 1788100,
                 footer: {
                     text: `Approved by: ${userData.displayName}`
-                }
+                },
+                url: `https://smithed.dev/packs/${props.owner}/${props.id}`
             }]);
         });
     }
 
     return (
-        <GroupedFoldout text={props.id} group="queue" style={{ width: '95%', backgroundColor:'var(--darkBackground)' }}>
+        <GroupedFoldout text={props.id} group="queue" style={{ width: '95%', backgroundColor: 'var(--darkBackground)' }}>
             <ColumnDiv style={{ gap: 8 }}>
                 <ColumnDiv style={{ gap: 8 }}>
                     <StyledLabel style={{}}><b style={{ fontSize: 18 }}>Description: </b> {props.data.display.description.length < 400 ? props.data.display.description : props.data.display.description.substring(0, 400) + '...'}</StyledLabel>
                     <div className='flex flex-row gap-2 justify-center'>
                         <StyledButton onClick={async () => {
-                            const ver = props.data.versions[0]
+                            const ver = props.data.versions.sort((a, b) => semver.gt(a.name, b.name) ? 1 : -1).reverse()[0]
                             console.log(props.data.versions)
-                            if(ver.downloads === undefined) return;
-                            const url = ver.downloads['datapack']
-                            if(url === undefined) return
-                            const tempFolder = pathModule.join(settingsFolder, 'temp')
-                            if(dirExists(tempFolder)) fs.rmdirSync(tempFolder, {recursive: true})
-                            fs.mkdirSync(tempFolder)
-
-                            const tempPath = pathModule.join(tempFolder, 'temp.zip')
-
-                            const resp = await fetch(`https://api.allorigins.win/raw?url=${encodeURIComponent(url)}`)
-                            console.log(url)
-                            if (!resp.ok) return
-                            const buffer = (await resp.arrayBuffer())
-                            fs.writeFileSync(tempPath, Buffer.from(buffer))
-
-                            const blob = new Blob([buffer])
-                            const tempZip = new zip.ZipReader(new zip.BlobReader(blob))
-
-                            const entries = await tempZip.getEntries()
-                            console.log(entries)
-                            for(let e of entries) {
-                                let path = tempFolder
-
-                                for(let part of e.filename.split('/').slice(0, -1)) {
-                                    if(!fs.existsSync(path)) fs.mkdirSync(path)
-                                    path = pathModule.join(path, part)
-                                }
-                                path = pathModule.join(tempFolder, e.filename)
-
-                                if(e.directory) {
-                                    console.log(e.filename)
-                                    fs.mkdirSync(path)
-                                    continue 
-                                }
-                                const fileDataWriter = new zip.BlobWriter()
-                                if(e.getData === undefined) return
-                                await e.getData(fileDataWriter)
-
-                                try {
-                                    fs.writeFileSync(path, Buffer.from(await fileDataWriter.getData().arrayBuffer()))
-                                } catch (e) {
-                                    console.log(e)
-                                }
-                            }
-                            
-                            const exec = window.require('child_process').exec
-                            exec(`code ${tempFolder}`)
-                        }} style={{width:'128px'}}>Open</StyledButton>
+                            await downloadPackAndOpen(ver)
+                        }} style={{ width: '128px' }}>Open</StyledButton>
                         {props.data.display.webPage !== '' && <StyledButton style={{ width: '128px' }} onClick={() => {
                             remote.shell.openExternal(props.data.display.webPage)
                         }}>View Page</StyledButton>}
@@ -207,5 +164,69 @@ class Queue extends React.Component {
     }
 }
 
+async function extractZip(tempZip: zip.ZipReader, tempFolder: string) {
+    const entries = await tempZip.getEntries()
+    console.log(entries)
+    for (let e of entries) {
+        let path = tempFolder
+
+        for (let part of e.filename.split('/').slice(0, -1)) {
+            if (!fs.existsSync(path)) fs.mkdirSync(path)
+            path = pathModule.join(path, part)
+        }
+        path = pathModule.join(tempFolder, e.filename)
+
+        if (e.directory) {
+            console.log(e.filename)
+            fs.mkdirSync(path)
+            continue
+        }
+        const fileDataWriter = new zip.BlobWriter()
+        if (e.getData === undefined) return
+        await e.getData(fileDataWriter)
+
+        try {
+            fs.writeFileSync(path, Buffer.from(await fileDataWriter.getData().arrayBuffer()))
+        } catch (e) {
+            console.log(e)
+        }
+    }
+}
+
+function deleteAndCreate(path: string) {
+    if (dirExists(path)) fs.rmdirSync(path, { recursive: true })
+    fs.mkdirSync(path)
+}
+
+async function downloadPackAndOpen(ver: Version) {
+    if (ver.downloads === undefined) return;
+
+    const tempFolder = pathModule.join(settingsFolder, 'temp')
+    deleteAndCreate(tempFolder)
+    
+    for(let type in ver.downloads) {
+        const url = ver.downloads[type]
+        if (url === undefined) return
+        const extractTo = pathModule.join(tempFolder, type);
+        deleteAndCreate(extractTo)
+    
+        const tempPath = pathModule.join(extractTo, 'temp.zip')
+    
+        const resp = await fetch(`https://api.allorigins.win/raw?url=${encodeURIComponent(url)}`)
+        console.log(url)
+        console.log(resp)
+        if (!resp.ok) return
+        console.log(await resp.text())
+        const buffer = (await resp.arrayBuffer())
+        fs.writeFileSync(tempPath, Buffer.from(buffer))
+    
+        const blob = new Blob([buffer])
+        const tempZip = new zip.ZipReader(new zip.BlobReader(blob))
+        await extractZip(tempZip, tempFolder)
+    }    
+
+    const exec = window.require('child_process').exec
+    exec(`code ${tempFolder}`)
+}
 
 export default Queue;
