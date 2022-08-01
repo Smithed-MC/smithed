@@ -31,6 +31,7 @@ const CreateButton = styled.button`
     width: 15.9%;
     font-family: Disket-Bold;
     border: none;
+    border-radius: 8px;
     background-color: var(--lightAccent);
     color: var(--text);
     :hover {
@@ -224,11 +225,11 @@ class Home extends React.Component {
         return (
             <ColumnDiv style={{ width: '100%', height: '100%', gap: 6 }}>
                 <Header2>Create new profile</Header2>
-                <StyledInput placeholder="Name" style={{ width: '15%' }} onChange={(e) => {
+                <StyledInput placeholder="Name" style={{ width: '16%' }} onChange={(e) => {
                     let v = (e.target as HTMLInputElement).value
                     this.profileCreationInfo.name = v
                 }} />
-                <Dropdown reset={false} placeholder="Pick a version" onChange={(v) => { this.profileCreationInfo.version = v; this.renderMods() }} style={{ width: '15.8%' }}>
+                <Dropdown reset={false} placeholder="Pick a version" onChange={(v) => { this.profileCreationInfo.version = v; this.renderMods() }} style={{ width: '16%' }}>
                     {this.renderVersions(userData.versions)}
                 </Dropdown>
                 <CreateButton onClick={async (e) => {
@@ -265,7 +266,7 @@ class Home extends React.Component {
                     // Browse.instance.update()
                 }}>Create</CreateButton>
                 {this.state.error !== '' && <StyledLabel style={{ color: 'red' }}>{this.state.error}</StyledLabel>}
-                <Foldout text='Advanced Settings' style={{ width: '15%' }}>
+                <Foldout text='Advanced Settings' style={{ width: '20%' }}>
                     {this.state.mods}
                 </Foldout>
                 <Popup trigger={
