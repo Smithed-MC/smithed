@@ -103,10 +103,11 @@ function ProfileDisplay(props: ProfileDisplayProps) {
                                         setDownloading(true)
                                         // disableSidebar(true)
 
-                                        const baseUrl = 'https://smithed.dev'// 'http://vps-fb6d39ae.vps.ovh.us'
-                                        const url = `${baseUrl}/api/download?version=${props.profile.version}&` + props.profile.packs.map(p => {
+                                        const baseUrl = 'https://api.smithed.dev'// 'http://vps-fb6d39ae.vps.ovh.us'
+                                        const url = `${baseUrl}/download?version=${props.profile.version}&` + props.profile.packs.map(p => {
                                             return 'pack=' + p.id + '@' + p.version
                                         }).join('&')
+                                        console.log(url)
 
                                         const response = await fetch(`https://api.allorigins.win/raw?url=${encodeURIComponent(url)}`)
                                         const packsBuf = await (response).blob()
@@ -158,7 +159,7 @@ function ProfileDisplay(props: ProfileDisplayProps) {
                         alert('No packs in this profile!')
                         return
                     }
-                    let link = `https://smithed.dev/download?version=${props.profile.version}&name=${encodeURIComponent(props.profile.name)}&author=${encodeURIComponent(props.profile.author ? props.profile.author : 'Unknown')}`
+                    let link = `https://api.smithed.dev/download?version=${props.profile.version}&name=${encodeURIComponent(props.profile.name)}&author=${encodeURIComponent(props.profile.author ? props.profile.author : 'Unknown')}`
                     for (let p of props.profile.packs) {
                         link += `&pack=${p.id}@${encodeURIComponent(p.version)}`
                     }
