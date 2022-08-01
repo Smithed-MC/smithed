@@ -9,7 +9,7 @@ import Dropdown, { Option } from './Dropdown';
 import { StyledLabel } from '../Shared';
 import { useHistory } from 'react-router';
 import { setSelectedProfile } from '../pages/Browse';
-import Profile from 'shared/Profile';
+import Profile, { Dependency } from 'shared/Profile';
 import * as zip from '@zip.js/zip.js'
 import { disableSidebar } from './Sidebar';
 
@@ -28,6 +28,7 @@ const ProfileDisplayDiv = styled.div`
     flex-direction: column;
     align-items: center;
     border-radius: 8px;
+    // gap: 8px;
 `
 
 const ProfilePlayButton = styled.button`
@@ -74,12 +75,13 @@ function ProfileDisplay(props: ProfileDisplayProps) {
 
     return (
         <ProfileDisplayDiv onMouseEnter={() => setMouseOver(true)} onMouseLeave={() => setMouseOver(false)}>
-            <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
+            <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'right', justifyContent: 'left' }}>
                 {props.profile.img !== undefined && <img className='bg-darkAccent rounded-md' style={{ width: 192, height: 192 }} src={props.profile.img} alt="Profile Icon" />}
-                {props.profile.img === undefined && <div className='bg-darkAccent rounded-md' style={{ width: 192, height: 192 }} />}
-                <StyledLabel style={{ width: '40%', position: 'relative', textAlign: 'center', top: -180, left: 45, backgroundColor: 'rgba(0.140625,0.13671875,0.16796875,0.25)', fontFamily: 'Inconsolata', WebkitUserSelect: 'none', color: 'var(--titlebar)' }}>{props.profile.version}</StyledLabel>
+                {props.profile.img === undefined && <div className='bg-darkAccent rounded-md flex justify-end' style={{ width: 192, height: 192 }}>
+                    <StyledLabel className='w-auto h-fit px-2 py-1 rounded-md text-center mx-2 my-2 font-inconsolata select-none text-titlebar bg-black bg-opacity-30'>{props.profile.version}</StyledLabel>
+                </div>}
             </div>
-            <div style={{ width: '90%', flexGrow: 1, display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
+            <div style={{ width: '90%', flexGrow: 1, display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center' }}>
                 {!mouseOver &&
                     <ProfileNameLabel>
                         <b>{props.profile.name}</b>
@@ -93,45 +95,13 @@ function ProfileDisplay(props: ProfileDisplayProps) {
                     <Option value="Edit" />
                 </Dropdown>
                 {mouseOver &&
-                    <RowDiv style={{ width: '100%', height: '100%', gap: 4, alignItems: 'center', marginTop: -4 }}>
+                    <RowDiv style={{ width: '100%', height: '100%', gap: 4, alignItems: 'center', justifyContent: 'center', marginTop: -4 }}>
                         <ProfilePlayButton onClick={async (e) => {
                             if (e.altKey) return
 
                             if (Home.instance.state.activeProfile === '') {
                                 if (props.profile.setup === undefined || !props.profile.setup) {
-                                    if (props.profile.packs !== undefined) {
-                                        setDownloading(true)
-                                        // disableSidebar(true)
-
-                                        const baseUrl = 'https://api.smithed.dev'// 'http://vps-fb6d39ae.vps.ovh.us'
-                                        const url = `${baseUrl}/download?version=${props.profile.version}&` + props.profile.packs.map(p => {
-                                            return 'pack=' + p.id + '@' + p.version
-                                        }).join('&')
-                                        console.log(url)
-
-                                        const response = await fetch(`https://api.allorigins.win/raw?url=${encodeURIComponent(url)}`)
-                                        const packsBuf = await (response).blob()
-
-                                        const packsZip = new zip.ZipReader(new zip.BlobReader(packsBuf))
-
-                                        const entries = await packsZip.getEntries()
-                                        for (let e of entries) {
-                                            if (e.getData === undefined) continue;
-
-                                            const data: Blob = (await e.getData(new zip.BlobWriter()))
-                                            const buffer: Buffer = Buffer.from(await data.arrayBuffer())
-
-                                            if (e.filename.includes('datapack'))
-                                                fs.writeFileSync(pathModule.join(props.profile.directory, 'datapacks/datapacks.zip'), buffer)
-                                            else if (e.filename.includes('resourcepack'))
-                                                fs.writeFileSync(pathModule.join(props.profile.directory, 'resourcepacks/resourcepacks.zip'), buffer)
-                                        }
-
-                                        // disableSidebar(false)
-                                        setDownloading(false)
-                                        props.profile.setup = true;
-                                        saveProfiles(userData.profiles)
-                                    }
+                                    if (props.profile.packs !== undefined) await setupProfile(props.profile.packs);
                                 }
                                 ipcRenderer.send('start-launcher', props.profile, appSettings.launcher)
 
@@ -185,6 +155,56 @@ function ProfileDisplay(props: ProfileDisplayProps) {
         </ProfileDisplayDiv>
     );
 
+
+    async function setupProfile(packs: Dependency[]) {
+
+        setDownloading(true);
+        // disableSidebar(true)
+        console.log('Downloading packs!')
+        const baseUrl = 'https://api.smithed.dev'; // 'http://vps-fb6d39ae.vps.ovh.us'
+        const url = `${baseUrl}/download?version=${props.profile.version}&` + packs.map(p => {
+            return 'pack=' + p.id + '@' + p.version;
+        }).join('&');
+        console.log(url);
+
+        try {
+            const response = await fetch(`https://api.allorigins.win/raw?url=${encodeURIComponent(url)}`);
+            console.log('Downloaded')
+            const packsBuf = await (response).blob();
+            console.log('File size:', packsBuf.size)
+            const packsZip = new zip.ZipReader(new zip.BlobReader(packsBuf));
+
+            const entries = await packsZip.getEntries();
+            for (let e of entries) {
+                if (e.getData === undefined)
+                    continue;
+
+                const data: Blob = (await e.getData(new zip.BlobWriter()));
+                const buffer: Buffer = Buffer.from(await data.arrayBuffer());
+
+                if (e.filename.includes('datapack')) {
+                    fs.writeFileSync(pathModule.join(props.profile.directory, 'datapacks/datapacks.zip'), buffer);
+                    console.log('Wrote datapacks.zip')
+                }
+                else if (e.filename.includes('resourcepack')) {
+                    fs.writeFileSync(pathModule.join(props.profile.directory, 'resourcepacks/resourcepacks.zip'), buffer);
+                    console.log('Wrote resourcepacks.zip')
+                }
+            }
+
+            // disableSidebar(false)
+            setDownloading(false);
+            props.profile.setup = true;
+            saveProfiles(userData.profiles);
+        } catch (e) {
+            alert('Failed to download packs!')
+            console.log(e)
+            setDownloading(false);
+            throw e
+        }
+
+
+    }
 }
 
 export default ProfileDisplay;
