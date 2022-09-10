@@ -42,7 +42,7 @@ function QueueEntry(props: { data: Pack, owner: string, id: string }) {
                 footer: {
                     text: `Approved by: ${userData.displayName}`
                 },
-                url: `https://smithed.dev/packs/${props.owner}/${props.id}`
+                url: `https://smithed.dev/packs/${props.id.split(':')[0]}/${props.id.split(':')[1]}`
             }]);
         });
     }
