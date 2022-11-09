@@ -98,6 +98,7 @@ function Browse(props: any) {
                 return false
             return true
         }
+        console.log('processPacks')
 
         const packs = userData.packs.Where(validatePack).OrderBy(sorts[sort])
 
@@ -123,7 +124,9 @@ function Browse(props: any) {
                 } else {
                     tempFilters.push(c)
                 }
+                console.log(tempFilters)
                 setFilters(tempFilters)
+                processPacks()
             }} />)
 
         }

@@ -5,7 +5,6 @@ import { Enumerable } from 'linq-es5/lib/enumerable';
 import * as linq from 'linq-es5'
 import { getPack } from '../UserData';
 import GroupedFoldout from '../components/GroupedFoldout';
-import palette from '../shared/Palette';
 import { Pack, PackDict, PackEntry, PackHelper, Version } from '../Pack';
 import Popup from 'reactjs-popup';
 import { fs, pathModule, remote, settingsFolder } from '../Settings';
@@ -14,7 +13,6 @@ import { database } from '../shared/ConfigureFirebase';
 import * as zip from '@zip.js/zip.js'
 import { dirExists } from 'FSWrapper';
 import semver from 'semver'
-import JSZip from 'jszip';
 
 const { Webhook } = window.require('simple-discord-webhooks');
 
@@ -216,7 +214,7 @@ async function downloadPackAndOpen(ver: Version) {
         console.log(url)
         console.log(resp)
         if (!resp.ok) return
-        console.log(await resp.text())
+        // console.log(await resp.text())
         const buffer = (await resp.arrayBuffer())
         fs.writeFileSync(tempPath, Buffer.from(buffer))
     

@@ -32,7 +32,7 @@ class RadioButton extends React.Component {
 
     render() {
         return (
-            <StyledLabel style={{width:'100%', WebkitUserSelect: 'none'}}><Checkbox type='checkbox' onChange={(v) => {
+            <StyledLabel className='cursor-pointer hover:brightness-[85%] active:brightness-[60%]' style={{width:'100%', WebkitUserSelect: 'none'}}><Checkbox type='checkbox' onChange={(v) => {
                 if(!this.props.onChange) return
                 this.props.onChange((v.target as HTMLInputElement).checked)
             }}/> {this.props.text}</StyledLabel>

@@ -105,7 +105,7 @@ function Sidebar(props: SidebarProps) {
           <PageBasedSidebarOption disabled={disable} page='/app/home/' img={HomeSvg} hint='Home' onClick={() => {props.onClick('home')}}/>
           <PageBasedSidebarOption disabled={disable} page='/app/browse/' img={BrowseSvg} hint='Browse' onClick={() => {props.onClick('browse')}}/>
           <PageBasedSidebarOption disabled={disable} page='/app/create/' img={CreateSvg} hint='Create' onClick={() => {props.onClick('create')}}/>
-          {userData.role === 'admin' && <PageBasedSidebarOption page='/app/queue/' img={QueueSvg} hint='Queue' onClick={() => {props.onClick('queue')}}/>}
+          <PageBasedSidebarOption page='/app/queue/' img={QueueSvg} hint='Queue' onClick={() => {props.onClick('queue')}}/>
           <li style={{visibility: 'hidden', flexGrow: 1}}/>
           <SidebarOption img={DiscordSvg} hint='Join the Discord' onClick={()=>{
             window.require("electron").shell.openExternal('https://smithed.dev/discord')

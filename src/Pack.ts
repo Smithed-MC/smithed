@@ -132,12 +132,14 @@ export class PackHelper {
         return new Pack(pack.meta, pack.display, pack.id, tempVersions, pack.categories)
     }
 
-    static displayNameToID(displayName: string): string {
-        return displayName.toLowerCase().replaceAll(' ', '-').replaceAll(SafeDisplayName, '')
+    static async sanitizeStringToFirebaseKey(rawString: string): Promise<string> {
+        const resp = await fetch(`https://api.smithed.dev/util/sanitize?username=${rawString}`, {mode:'cors'});
+        console.log(resp.statusText)
+        return await (resp).text()
     }
 
-    private static addToQueueIfNot(pack: Pack) {
-        const id = `${this.displayNameToID(userData.displayName)}:${pack.id}`
+    private static async addToQueueIfNot(pack: Pack) {
+        const id = `${await this.sanitizeStringToFirebaseKey(userData.displayName)}:${pack.id}`
         database.ref(`queue/${id}`).get().then((snapshot) => {
             const val = snapshot.val()
             if (val == null)
@@ -145,39 +147,39 @@ export class PackHelper {
         })
     }
 
-    static deletePack(pack: Pack, callback?: () => void) {
+    static async deletePack(pack: Pack, callback?: () => void) {
         pack = this.toFirebaseValid(pack)
-        const packsRef = database.ref(`packs/${PackHelper.displayNameToID(userData.displayName)}:${pack.id}`)
+        const packsRef = database.ref(`packs/${await PackHelper.sanitizeStringToFirebaseKey(userData.displayName)}:${pack.id}`)
 
-        packsRef.get().then((snap) => {
-            if (snap.exists()) {
-                packsRef.remove();
-            }
-            else {
-                const queueRef = database.ref(`queue/${PackHelper.displayNameToID(userData.displayName)}:${pack.id}`)
-                queueRef.remove();
-            }
+        const snap = await packsRef.get()
+        if (snap.exists()) {
+            packsRef.remove();
+        }
+        else {
+            const queueRef = database.ref(`queue/${await PackHelper.sanitizeStringToFirebaseKey(userData.displayName)}:${pack.id}`)
+            queueRef.remove();
+        }
 
-            const userPacks = database.ref(`users/${userData.uid}/packs`)
+        const userPacks = database.ref(`users/${userData.uid}/packs`)
 
-            userPacks.get().then((snap => {
-                const packs: Pack[] = snap.val();
+        userPacks.get().then((snap => {
+            const packs: Pack[] = snap.val();
 
-                packs.splice(packs.findIndex(p => p.id === pack.id), 1)
+            packs.splice(packs.findIndex(p => p.id === pack.id), 1)
 
-                userPacks.set(packs).then(() => {
-                    if (callback != null)
-                        callback();
-                })
-            }))
-        })
+            userPacks.set(packs).then(() => {
+                if (callback != null)
+                    callback();
+            })
+        }))
+
     }
 
     static async createOrUpdatePack(pack: Pack, addToQueue?: boolean) {
         pack = this.toFirebaseValid(pack)
         console.log(pack)
 
-        const packsRef = database.ref(`packs/${PackHelper.displayNameToID(userData.displayName)}:${pack.id}`)
+        const packsRef = database.ref(`packs/${await PackHelper.sanitizeStringToFirebaseKey(userData.displayName)}:${pack.id}`)
 
         const packsSnap = await packsRef.get()
 
@@ -197,7 +199,7 @@ export class PackHelper {
                         packsRef.child('updated').set(Date.now())
 
                     if (!packsSnap.exists())
-                        this.addToQueueIfNot(pack)
+                        await this.addToQueueIfNot(pack)
                     return;
                 }
             }
@@ -225,10 +227,10 @@ export class PackHelper {
         })
     }
 
-    static addPackToQueue(pack: Pack) {
+    static async addPackToQueue(pack: Pack) {
         pack = this.toFirebaseValid(pack)
         const queue = database.ref(`queue`)
-        const id = `${userData.displayName.toLowerCase()}:${pack.id}`
+        const id = await this.sanitizeStringToFirebaseKey(`${userData.displayName}:${pack.id}`)
         queue.child(id).get().then((snapshot) => {
             if (snapshot.val() === null) {
                 queue.child(id).set({
@@ -239,27 +241,26 @@ export class PackHelper {
         })
     }
 
-    static movePackFromQueue(pack: Pack | string, callback?: () => void) {
-        const id = typeof pack == 'string' ? pack : `${this.displayNameToID(userData.displayName)}:${pack.id}`
-        const queueRef = database.ref(`queue/${id}`)
-        const packRef = database.ref(`packs/${id}`)
 
-        queueRef.get().then((snapshot) => {
-            console.log('got queue')
-            let val = snapshot.val()
-            if (val != null) {
-                console.log('removing')
-                queueRef.remove().then(() => {
-                    console.log('removed')
-                    val.added = Date.now()
-                    packRef.set(val).then(() => {
-                        console.log('added')
-                        if (callback != null)
-                            callback()
-                    })
-                })
-            }
-        })
+    static async movePackFromQueue(pack: Pack | string, callback?: () => void) {
+        const id = typeof pack == 'string' ? pack : `${await this.sanitizeStringToFirebaseKey(userData.displayName)}:${pack.id}`
+        console.log(id)
+        const queueRef = database.ref(`queue/${id}`)
+        const packRef = database.ref(`packs/${await this.sanitizeStringToFirebaseKey(id)}`)
+
+        const snapshot = await queueRef.get()
+        console.log('got queue')
+        let val = snapshot.val()
+        if (val == null) return
+
+        console.log('removing')
+        await queueRef.remove()
+        console.log('removed')
+        val.added = Date.now()
+        await packRef.set(val)
+        console.log('added')
+        if (callback != null)
+            callback()
     }
 
     static removePackFromQueue(id: string, owner: string, reason: string, callback?: () => void) {
@@ -288,12 +289,8 @@ export class PackHelper {
     }
 
     static hasVersion(pack: Pack, version: string): boolean {
-        const versionData = new DataVersion(version)
-
         for (let v = 0; v < pack.versions.length; v++) {
-            for (let s of pack.versions[v].supports) {
-                if (pack.versions[v].supports.includes(version)) return true;
-            }
+            if (pack.versions[v].supports.includes(version)) return true;
         }
         return false
     }

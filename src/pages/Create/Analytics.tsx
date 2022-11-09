@@ -10,7 +10,7 @@ export default function Analytics({ pack }: { pack: Pack }) {
     const [percentChange, setPercentChange] = useState<number>(0)
     useEffect(() => {
         (async () => {
-            const id = PackHelper.displayNameToID(userData.displayName)
+            const id = await PackHelper.sanitizeStringToFirebaseKey(userData.displayName)
             const ref = database.ref(`packs/${id}:${pack.id}/downloads`)
             const downloadsSnap = await ref.get()
             if (!downloadsSnap.exists()) return;

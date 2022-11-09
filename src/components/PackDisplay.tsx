@@ -112,8 +112,8 @@ function PackDisplay(props: PackDisplayProps) {
 
     return (
         <div id={props.packEntry.id} style={{ width: '85%' }}>
-            <div className='flex bg-darkBackground w-full h-[96px] p-4 justify-left rounded-xl gap-4'>
-                <img style={{ width: 64, height: 64, WebkitUserSelect: 'none' }} src={display.icon} alt="Pack Icon" title={props.packEntry.id} />
+            <div className='flex bg-darkBackground min-w-[512px] w-full min-h-[96px] p-4 justify-left rounded-xl gap-4'>
+                <img className='rounded-lg bg-lightBackground' style={{ width: 64, height: 64, WebkitUserSelect: 'none' }} src={display.icon} alt="Pack Icon" title={props.packEntry.id} />
                 <ColumnDiv style={{ alignItems: 'left', width: '100%', justifyContent: 'space-evenly' }}>
                     <RowDiv style={{ alignItems: 'bottom', justifyContent: 'space-between', gap: 4, width: '100%' }}>
                         <div style={{ display: 'table', tableLayout: 'fixed', width: '100%' }}>
@@ -123,17 +123,17 @@ function PackDisplay(props: PackDisplayProps) {
                                 props.history.push(link)
                             }}>{display.name}</PackName>
                         </div>
-                        {!valid && <div className='relative right-0 bg-red'>
-                            <PackAddButton className='bg-lightAccent brightness-50' disabled title={selectedProfile.version === '' ? 
+                        {!valid && <div className='relative right-0 rounded-md'>
+                            <PackAddButton className='bg-lightAccent brightness-50 rounded-lg' disabled title={selectedProfile.version === '' ? 
                             'Select a profile to add!' : 'This pack is not compatible with your version of the game'}>+</PackAddButton>     
                         </div>}
                         {valid &&
-                            <div className='relative right-0 bg-red'>
-                                {!contained && <PackAddButton className='bg-lightAccent' disabled={selectedProfile.name === ''} onClick={() => {
+                            <div className='relative right-0 rounded-md'>
+                                {!contained && <PackAddButton className='bg-lightAccent rounded-lg' disabled={selectedProfile.name === ''} onClick={() => {
                                     setContained(true)
                                     addPackToProfile(selectedProfile, props.packEntry)
                                 }}>+</PackAddButton>}
-                                {contained && <PackAddButton className='bg-badAccent' onClick={() => {
+                                {contained && <PackAddButton className='bg-badAccent rounded-lg' onClick={() => {
                                     setContained(false)
                                     removePackFromProfile(selectedProfile, props.packEntry);
                                 }}>-</PackAddButton>}
@@ -146,9 +146,9 @@ function PackDisplay(props: PackDisplayProps) {
                         <PackStats>{`Added ${dateAdded.toLocaleDateString()}`}</PackStats>
                         <li style={{ flexGrow: 1, width: '100%', visibility: 'hidden' }} />
                     </RowDiv>
-                    <div style={{ width: '100%' }} className='mt-[-4px]'>
-                        <PackDescription>{display.description}</PackDescription>
-                    </div>
+                    <p style={{ width: '100%' }} className='mt-[-4px] font-inconsolata text-text leading-snug text-sm'>
+                        {`${display.description.substring(0, 100).trimEnd()}${display.description.length > 100 ? '...' : ''}`}
+                    </p>
                 </ColumnDiv>
             </div>
         </div>

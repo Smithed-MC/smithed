@@ -75,7 +75,7 @@ function Create(props: any) {
             }
         }
 
-        elements.push(<AddDiv onClick={() => {
+        elements.push(<AddDiv className='rounded-lg' onClick={() => {
             swapToAddPage()
         }}>
             <StyledLabel className='text-text' style={{ fontSize: 96, textAlign: 'center', fontFamily: 'Disket-Bold' }}>+</StyledLabel>

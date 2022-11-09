@@ -251,9 +251,9 @@ function Login(props: LoginProps) {
                     let snapshot = await ref.get()
                     let users: { [key: string]: { displayName: string } } = snapshot.val()
 
-                    const chosenName = PackHelper.displayNameToID(displayName)
+                    const chosenName = await PackHelper.sanitizeStringToFirebaseKey(displayName)
                     for (let u in users) {
-                        const userName = PackHelper.displayNameToID(users[u].displayName)
+                        const userName = await PackHelper.sanitizeStringToFirebaseKey(users[u].displayName)
                         if (userName === chosenName) {
                             setDisplayNameValid2(false)
                             return;
