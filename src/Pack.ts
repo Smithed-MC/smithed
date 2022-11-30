@@ -133,7 +133,7 @@ export class PackHelper {
     }
 
     static async sanitizeStringToFirebaseKey(rawString: string): Promise<string> {
-        const resp = await fetch(`https://api.smithed.dev/util/sanitize?username=${rawString}`, {mode:'cors'});
+        const resp = await fetch(`https://api.smithed.dev/getSanitizedUsername?username=${rawString}`, {mode:'cors'});
         console.log(resp.statusText)
         return await (resp).text()
     }
