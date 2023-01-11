@@ -193,12 +193,16 @@ export class Index extends React.Component {
 const IndexWithRouter = withRouter(Index)
 
 ReactDOM.render(
-	<HashRouter>
-		<QueryParamProvider ReactRouterRoute={Route}>
-			<IndexWithRouter />
-		</QueryParamProvider>
-	</HashRouter>
-	,
+	<div className='h-full w-full absolute overflow-clip'>
+		<Titlebar />
+		<div className='flex flex-col text-text justify-center items-center h-full'>
+			Thank you for downloading the Smithed Launcher,
+			this version of the launcher has been discontinued
+			a replacement is being built.
+			<button className='bg-darkAccent p-4 rounded-md font-disket font-bold hover:brightness-75 active:brightness-[60%]' onClick={() => { window.open('https://smithed.dev/discord') }}>Join the discord</button>
+
+		</div>
+	</div>,
 	document.getElementById('root')
 );
 
